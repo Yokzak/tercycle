@@ -11,18 +11,22 @@ return new class extends Migration
      */
     public function up(): void
 {
-    Schema::create('tukar_botols', function (Blueprint $table) {
+    Schema::create('transaksi_tukar_botols', function (Blueprint $table) {
         $table->id();
 
-        $table->foreignId('user_id')
-            ->constrained()
+        $table->foreignId('tukar_botol_id')
+            ->constrained('tukar_botols')
             ->cascadeOnDelete();
 
-        $table->foreignId('admin_id')
-            ->constrained('users')
+        $table->foreignId('jenis_botol_id')
+            ->constrained('jenis_botols')
             ->restrictOnDelete();
 
-        $table->unsignedInteger('total_points');
+        $table->unsignedInteger('jumlah');
+
+        $table->unsignedInteger('poin_per_item');
+
+        $table->unsignedInteger('subtotal');
 
         $table->timestamps();
     });
@@ -33,6 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tukar_botols');
+        Schema::dropIfExists('transaksi_tukar_botols');
     }
 };
