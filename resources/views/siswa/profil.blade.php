@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html
+    lang="id"
+    x-data="{
+        dark: localStorage.getItem('theme') !== 'light',
+
+        toggleTheme() {
+            this.dark = !this.dark;
+            localStorage.setItem('theme', this.dark ? 'dark' : 'light');
+            document.documentElement.classList.toggle('dark', this.dark);
+        }
+    }"
+    x-init="document.documentElement.classList.toggle('dark', dark)"
+    :class="{ 'dark': dark }"
+>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Profil Siswa - Tercycle</title>
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <script
+        defer
+        src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+
+</head>
+
+
+<body
+    class="min-h-screen bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-950 dark:text-white"
+>
+
+
+{{-- ========================================================= --}}
+{{-- SIDEBAR --}}
+{{-- ========================================================= --}}
+
+<aside
+    class="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-gray-200 bg-white dark:border-white/10 dark:bg-gray-950 lg:block"
+>
+
+    <div class="flex h-full flex-col">
+
+
+        {{-- LOGO --}}
+
+        <div
+            class="flex h-20 items-center border-b border-gray-200 px-6 dark:border-white/10"
+        >
+
+            <a
+                href="/siswa/dashboard"
+                class="flex items-center gap-3"
+            >
+
+                <div
+                    class="flex h-10 w-10 items-center justify-center rounded-xl bg-green-500 font-black text-gray-950"
+                >
+                    T
+                </div>
+
+                <span class="text-xl font-bold">
+                    Ter<span class="text-green-500">cycle</span>
+                </span>
+
+            </a>
+
+        </div>
+
+
+
+        {{-- NAVIGATION --}}
+
+        <nav class="flex-1 space-y-1 px-4 py-6">
+
+
+            <p
+                class="mb-3 px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400"
+            >
+                Menu
+            </p>
+
+
+            <a
+                href="/siswa/dashboard"
+                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+            >
+
+                <span class="text-lg">⌂</span>
+
+                Dashboard
+
+            </a>
+
+
+            <a
+                href="/siswa/riwayat"
+                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+            >
+
+                <span class="text-lg">◷</span>
+
+                Riwayat Poin
+
+            </a>
+
+
+            <a
+                href="/siswa/tukar"
+                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+            >
+
+                <span class="text-lg">♻</span>
+
+                Setor Botol
+
+            </a>
+
+
+            <a
+                href="/siswa/produk"
+                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+            >
+
+                <span class="text-lg">□</span>
+
+                Produk
+
+            </a>
+
+
+            <a
+                href="/siswa/pesanan"
+                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+            >
+
+                <span class="text-lg">≡</span>
+
+                Pesanan
+
+            </a>
+
+
+            <p
+                class="mb-3 mt-8 px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400"
+            >
+                Account
+            </p>
+
+
+            {{-- ACTIVE --}}
+
+            <a
+                href="/siswa/profil"
+                class="flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500"
+            >
+
+                <span class="text-lg">♙</span>
+
+                Profil
+
+            </a>
+
+        </nav>
+
+
+
+        {{-- USER --}}
+
+        <div
+            class="border-t border-gray-200 p-4 dark:border-white/10"
+        >
+
+            <div class="flex items-center gap-3">
+
+                <div
+                    class="flex h-10 w-10 items-center justify-center rounded-full bg-green-500 font-bold text-gray-950"
+                >
+                    K
+                </div>
+
+                <div>
+
+                    <p class="text-sm font-semibold">
+                        Kevin
+                    </p>
+
+                    <p class="text-xs text-gray-500">
+                        Siswa
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</aside>
+
+
+
+{{-- ========================================================= --}}
+{{-- MAIN --}}
+{{-- ========================================================= --}}
+
+<div class="lg:pl-64">
+
+
+    {{-- TOPBAR --}}
+
+    <header
+        class="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-gray-200 bg-white/90 px-6 backdrop-blur-xl dark:border-white/10 dark:bg-gray-950/90 lg:px-8"
+    >
+
+        <div>
+
+            <p class="text-sm font-medium text-gray-500">
+                Account
+            </p>
+
+            <h1 class="font-bold">
+                Profil Saya
+            </h1>
+
+        </div>
+
+
+        <button
+            type="button"
+            @click="toggleTheme()"
+            class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
+        >
+
+            <svg
+                x-show="dark"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.8"
+                stroke="currentColor"
+                class="h-5 w-5"
+            >
+
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 3v2m0 14v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M3 12h2m14 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"
+                />
+
+            </svg>
+
+
+            <svg
+                x-show="!dark"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.8"
+                stroke="currentColor"
+                class="h-5 w-5"
+            >
+
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"
+                />
+
+            </svg>
+
+        </button>
+
+    </header>
+
+
+
+    {{-- CONTENT --}}
+
+    <main class="mx-auto max-w-6xl px-6 py-8 lg:px-8">
+
+
+        <div class="mb-8">
+
+            <h2 class="text-2xl font-black">
+                Profil Siswa
+            </h2>
+
+            <p class="mt-1 text-sm text-gray-500">
+                Kelola informasi akun dan kode unik Tercycle kamu.
+            </p>
+
+        </div>
+
+
+
+        {{-- PROFILE HEADER --}}
+
+        <div
+            class="overflow-hidden rounded-3xl border border-gray-200 bg-white dark:border-white/10 dark:bg-white/[0.03]"
+        >
+
+            <div
+                class="h-32 bg-gradient-to-r from-green-500/30 via-green-400/10 to-transparent"
+            ></div>
+
+
+            <div class="px-6 pb-6 lg:px-8">
+
+                <div
+                    class="-mt-12 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"
+                >
+
+                    <div class="flex items-end gap-4">
+
+                        <div
+                            class="flex h-24 w-24 items-center justify-center rounded-3xl border-4 border-white bg-green-500 text-3xl font-black text-gray-950 dark:border-gray-950"
+                        >
+                            K
+                        </div>
+
+
+                        <div class="pb-1">
+
+                            <h3 class="text-xl font-black">
+                                Kevin
+                            </h3>
+
+                            <p class="text-sm text-gray-500">
+                                Siswa • XI RPL
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        class="rounded-xl bg-green-500 px-5 py-2.5 text-sm font-bold text-gray-950 transition hover:bg-green-400"
+                    >
+                        Edit Profil
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        {{-- GRID --}}
+
+        <div class="mt-6 grid gap-6 lg:grid-cols-3">
+
+
+            {{-- PERSONAL INFORMATION --}}
+
+            <div
+                class="rounded-2xl border border-gray-200 bg-white p-6 lg:col-span-2 dark:border-white/10 dark:bg-white/[0.03]"
+            >
+
+                <div class="mb-6">
+
+                    <h3 class="font-bold">
+                        Informasi Akun
+                    </h3>
+
+                    <p class="mt-1 text-xs text-gray-500">
+                        Informasi dasar akun siswa.
+                    </p>
+
+                </div>
+
+
+                <div class="grid gap-5 sm:grid-cols-2">
+
+
+                    <div>
+
+                        <label
+                            class="text-xs font-semibold text-gray-500"
+                        >
+                            Nama Lengkap
+                        </label>
+
+                        <div
+                            class="mt-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm dark:border-white/10 dark:bg-gray-900"
+                        >
+                            Kevin
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <label
+                            class="text-xs font-semibold text-gray-500"
+                        >
+                            NIS
+                        </label>
+
+                        <div
+                            class="mt-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm dark:border-white/10 dark:bg-gray-900"
+                        >
+                            202600125
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <label
+                            class="text-xs font-semibold text-gray-500"
+                        >
+                            Kelas
+                        </label>
+
+                        <div
+                            class="mt-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm dark:border-white/10 dark:bg-gray-900"
+                        >
+                            XI RPL
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <label
+                            class="text-xs font-semibold text-gray-500"
+                        >
+                            Email
+                        </label>
+
+                        <div
+                            class="mt-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm dark:border-white/10 dark:bg-gray-900"
+                        >
+                            kevin@example.com
+                        </div>
+
+                    </div>
+
+
+                    <div class="sm:col-span-2">
+
+                        <label
+                            class="text-xs font-semibold text-gray-500"
+                        >
+                            Bergabung Sejak
+                        </label>
+
+                        <div
+                            class="mt-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm dark:border-white/10 dark:bg-gray-900"
+                        >
+                            10 Januari 2026
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            {{-- QR / UNIQUE CODE --}}
+
+            <div
+                class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/[0.03]"
+            >
+
+                <div>
+
+                    <h3 class="font-bold">
+                        Kode Tercycle
+                    </h3>
+
+                    <p class="mt-1 text-xs text-gray-500">
+                        Gunakan kode ini saat setor botol.
+                    </p>
+
+                </div>
+
+
+                {{-- QR PLACEHOLDER --}}
+
+                <div
+                    class="mx-auto mt-6 flex h-44 w-44 items-center justify-center rounded-2xl border-4 border-gray-900 bg-white p-4 dark:border-white"
+                >
+
+                    <div
+                        class="grid grid-cols-7 gap-1"
+                    >
+
+                        <template
+                            x-for="i in 49"
+                            :key="i"
+                        >
+
+                            <div
+                                class="h-2.5 w-2.5"
+                                :class="[
+                                    i % 3 === 0 ||
+                                    i % 5 === 0 ||
+                                    i === 8 ||
+                                    i === 9 ||
+                                    i === 15 ||
+                                    i === 31 ||
+                                    i === 42
+                                    ? 'bg-gray-900'
+                                    : 'bg-white'
+                                ]"
+                            ></div>
+
+                        </template>
+
+                    </div>
+
+                </div>
+
+
+                <div class="mt-5 text-center">
+
+                    <p class="text-xs text-gray-500">
+                        Kode unik
+                    </p>
+
+                    <p
+                        class="mt-1 font-mono text-lg font-black tracking-widest text-green-500"
+                    >
+                        ECO-2026-00125
+                    </p>
+
+                </div>
+
+
+                <button
+                    class="mt-5 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm font-semibold transition hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
+                >
+                    Salin Kode
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        {{-- ACCOUNT STATUS --}}
+
+        <div
+            class="mt-6 rounded-2xl border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/[0.03]"
+        >
+
+            <div
+                class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between"
+            >
+
+                <div>
+
+                    <h3 class="font-bold">
+                        Status Akun
+                    </h3>
+
+                    <p class="mt-1 text-xs text-gray-500">
+                        Status akun siswa saat ini.
+                    </p>
+
+                </div>
+
+
+                <span
+                    class="inline-flex w-fit items-center gap-2 rounded-full bg-green-500/10 px-4 py-2 text-xs font-bold text-green-500"
+                >
+
+                    <span
+                        class="h-2 w-2 rounded-full bg-green-500"
+                    ></span>
+
+                    Akun Aktif
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        {{-- FOOTER --}}
+
+        <div
+            class="mt-8 border-t border-gray-200 pt-6 text-center text-xs text-gray-500 dark:border-white/10"
+        >
+            Tercycle • Sistem Pengelolaan Daur Ulang Sekolah
+        </div>
+
+    </main>
+
+</div>
+
+
+</body>
+</html>
+```

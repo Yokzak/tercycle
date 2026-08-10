@@ -1,27 +1,65 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    return view('home');
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+Route::get('/login', function () {
+    return view('auth.login');
 });
 
-require __DIR__.'/auth.php';
+Route::get('/register', function () {
+    return view('auth.register');
+});
+
+Route::get('/siswa/dashboard', function () {
+    return view('siswa.dashboard');
+});
+
+Route::get('/siswa/profil', function () {
+    return view('siswa.profil');
+});
+
+Route::get('/siswa/poin', function () {
+    return view('siswa.poin');
+});
+
+Route::get('/siswa/tukar', function () {
+    return view('siswa.tukar');
+});
+
+Route::get('/siswa/produk', function () {
+    return view('siswa.produk');
+});
+
+Route::get('/siswa/pesanan', function () {
+    return view('siswa.pesanan');
+});
+
+Route::get('/admin/dashboard', function () {
+    return view('admin.dashboard');
+});
+
+Route::get('/admin/penukaran', function () {
+    return view('admin.penukaran');
+});
+
+Route::get('/admin/botol', function () {
+    return view('admin.botol');
+});
+
+Route::get('/admin/siswa', function () {
+    return view('admin.siswa');
+});
+
+Route::get('/admin/produk', function () {
+    return view('admin.produk');
+});
+
+Route::get('/admin/transaksi', function () {
+    return view('admin.transaksi');
+});
+
