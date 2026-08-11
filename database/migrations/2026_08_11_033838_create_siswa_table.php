@@ -11,9 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('poin_transaksis', function (Blueprint $table) {
+        Schema::create('siswa', function (Blueprint $table) {
             $table->id();
-            $table->
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->string('nis')->unique();
+            $table->string('kode_siswa')->unique();
+            $table->string('kelas');
+            $table->string('jurusan');
+            $table->unsignedInteger('saldo_poin')->default(0);
             $table->timestamps();
         });
     }
@@ -23,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('poin_transaksis');
+        Schema::dropIfExists('siswa');
     }
 };
