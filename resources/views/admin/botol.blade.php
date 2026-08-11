@@ -3,6 +3,7 @@
     lang="id"
     x-data="{
         dark: localStorage.getItem('theme') !== 'light',
+        sidebarOpen: false,
 
         toggleTheme() {
             this.dark = !this.dark;
@@ -49,16 +50,16 @@
     class="min-h-screen bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-950 dark:text-white"
 >
 
-
 {{-- ========================================================= --}}
 {{-- SIDEBAR --}}
 {{-- ========================================================= --}}
 
 <aside
-    class="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-gray-200 bg-white dark:border-white/10 dark:bg-gray-950 lg:block"
+    class="fixed inset-y-0 left-0 z-50 w-64 border-r border-gray-200 bg-white transition-transform duration-300 dark:border-white/10 dark:bg-gray-950 lg:translate-x-0" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
 >
 
     <div class="flex h-full flex-col">
+
 
         {{-- LOGO --}}
 
@@ -86,9 +87,10 @@
         </div>
 
 
-        {{-- NAVIGATION --}}
+        {{-- MENU --}}
 
         <nav class="flex-1 space-y-1 px-4 py-6">
+
 
             <p
                 class="mb-3 px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400"
@@ -96,10 +98,13 @@
                 Overview
             </p>
 
-
+            
             <a
                 href="/admin/dashboard"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+                class="{{ request()->is('admin/dashboard')
+                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
+                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
+                }}"
             >
                 <span class="text-lg">⌂</span>
                 Dashboard
@@ -108,7 +113,10 @@
 
             <a
                 href="/admin/penukaran"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+                class="{{ request()->is('admin/penukaran')
+                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
+                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
+                }}"
             >
                 <span class="text-lg">♻</span>
                 Penukaran Botol
@@ -121,12 +129,14 @@
                 Management
             </p>
 
-
             {{-- ACTIVE --}}
 
             <a
                 href="/admin/botol"
-                class="flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500"
+                class="{{ request()->is('admin/botol')
+                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
+                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
+                }}"
             >
                 <span class="text-lg">♲</span>
                 Jenis Botol
@@ -135,7 +145,10 @@
 
             <a
                 href="/admin/siswa"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+                class="{{ request()->is('admin/siswa')
+                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
+                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
+                }}"
             >
                 <span class="text-lg">♙</span>
                 Siswa
@@ -144,7 +157,10 @@
 
             <a
                 href="/admin/produk"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+                class="{{ request()->is('admin/produk')
+                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
+                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
+                }}"
             >
                 <span class="text-lg">□</span>
                 Produk
@@ -153,7 +169,10 @@
 
             <a
                 href="/admin/transaksi"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+                class="{{ request()->is('admin/transaksi')
+                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
+                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
+                }}"
             >
                 <span class="text-lg">≡</span>
                 Transaksi
@@ -162,7 +181,7 @@
         </nav>
 
 
-        {{-- ADMIN --}}
+        {{-- ADMIN PROFILE --}}
 
         <div
             class="border-t border-gray-200 p-4 dark:border-white/10"
@@ -176,14 +195,14 @@
                     A
                 </div>
 
-                <div>
+                <div class="min-w-0">
 
-                    <p class="text-sm font-semibold">
+                    <p class="truncate text-sm font-semibold">
                         Administrator
                     </p>
 
                     <p class="text-xs text-gray-500">
-                        Admin Tercycle
+                        Admin
                     </p>
 
                 </div>
@@ -196,7 +215,13 @@
 
 </aside>
 
-
+<div
+    x-show="sidebarOpen"
+    x-transition.opacity
+    @click="sidebarOpen = false"
+    class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+    style="display: none;"
+></div>
 
 {{-- ========================================================= --}}
 {{-- MAIN --}}
@@ -211,19 +236,44 @@
         class="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-gray-200 bg-white/90 px-6 backdrop-blur-xl dark:border-white/10 dark:bg-gray-950/90 lg:px-8"
     >
 
-        <div>
+        <div class="flex items-center gap-3">
 
-            <p class="text-sm font-medium text-gray-500">
-                Management
-            </p>
+            <button
+                type="button"
+                @click="sidebarOpen = true"
+                class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 lg:hidden"
+            >
 
-            <h1 class="font-bold">
-                Jenis Botol
-            </h1>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M4 6h16M4 12h16M4 18h16"
+                    />
+                </svg>
 
-        </div>
+            </button>
 
+                <div>
 
+                    <p class="text-sm font-medium text-gray-500">
+                        Management
+                    </p>
+
+                    <h1 class="font-bold">
+                        Jenis Botol
+                    </h1>
+
+                </div>
+
+        </div>           
         <button
             type="button"
             @click="toggleTheme()"

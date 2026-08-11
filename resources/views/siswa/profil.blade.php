@@ -3,6 +3,7 @@
     lang="id"
     x-data="{
         dark: localStorage.getItem('theme') !== 'light',
+        sidebarOpen: false,
 
         toggleTheme() {
             this.dark = !this.dark;
@@ -27,11 +28,6 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <script
-        defer
-        src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
-    ></script>
-
 </head>
 
 
@@ -45,23 +41,21 @@
 {{-- ========================================================= --}}
 
 <aside
-    class="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-gray-200 bg-white dark:border-white/10 dark:bg-gray-950 lg:block"
+    class="fixed inset-y-0 left-0 z-50 w-64 border-r border-gray-200 bg-white transition-transform duration-300 dark:border-white/10 dark:bg-gray-950 lg:block"
+    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
 >
 
     <div class="flex h-full flex-col">
-
 
         {{-- LOGO --}}
 
         <div
             class="flex h-20 items-center border-b border-gray-200 px-6 dark:border-white/10"
         >
-
             <a
                 href="/siswa/dashboard"
                 class="flex items-center gap-3"
             >
-
                 <div
                     class="flex h-10 w-10 items-center justify-center rounded-xl bg-green-500 font-black text-gray-950"
                 >
@@ -71,17 +65,13 @@
                 <span class="text-xl font-bold">
                     Ter<span class="text-green-500">cycle</span>
                 </span>
-
             </a>
-
         </div>
-
 
 
         {{-- NAVIGATION --}}
 
         <nav class="flex-1 space-y-1 px-4 py-6">
-
 
             <p
                 class="mb-3 px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400"
@@ -90,60 +80,141 @@
             </p>
 
 
+            {{-- DASHBOARD --}}
+
             <a
                 href="/siswa/dashboard"
                 class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
             >
 
-                <span class="text-lg">⌂</span>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M3 13h8V3H3v10Zm10 8h8V11h-8v10ZM3 21h8v-6H3v6Zm10-18v6h8V3h-8Z"
+                    />
+                </svg>
 
                 Dashboard
 
             </a>
 
 
+            {{-- POIN --}}
+
             <a
-                href="/siswa/riwayat"
+                href="/siswa/poin"
                 class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
             >
 
-                <span class="text-lg">◷</span>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <circle
+                        cx="12"
+                        cy="12"
+                        r="9"
+                    />
+
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M12 7v5l3 2"
+                    />
+                </svg>
 
                 Riwayat Poin
 
             </a>
 
 
+            {{-- SETOR BOTOL --}}
+
             <a
                 href="/siswa/tukar"
                 class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
             >
 
-                <span class="text-lg">♻</span>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M7 3h10M8 3v4l-2 3v8a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3v-8l-2-3V3"
+                    />
+                </svg>
 
                 Setor Botol
 
             </a>
 
 
+            {{-- PRODUK --}}
+
             <a
                 href="/siswa/produk"
                 class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
             >
 
-                <span class="text-lg">□</span>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M20 7 12 3 4 7m16 0-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                    />
+                </svg>
 
                 Produk
 
             </a>
 
 
+            {{-- PESANAN --}}
+
             <a
                 href="/siswa/pesanan"
                 class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
             >
 
-                <span class="text-lg">≡</span>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M3 7h18M5 7v12h14V7M8 7V5a4 4 0 0 1 8 0v2"
+                    />
+                </svg>
 
                 Pesanan
 
@@ -157,21 +228,33 @@
             </p>
 
 
-            {{-- ACTIVE --}}
+            {{-- PROFIL ACTIVE --}}
 
             <a
                 href="/siswa/profil"
                 class="flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500"
             >
 
-                <span class="text-lg">♙</span>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15 19a6 6 0 0 0-12 0m6-8a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"
+                    />
+                </svg>
 
                 Profil
 
             </a>
 
         </nav>
-
 
 
         {{-- USER --}}
@@ -207,6 +290,109 @@
     </div>
 
 </aside>
+
+<div
+    x-show="sidebarOpen"
+    x-transition.opacity
+    @click="sidebarOpen = false"
+    class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+    style="display: none;"
+></div>
+
+<!-- MOBILE HEADER -->
+<header
+    class="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-5 dark:border-white/10 dark:bg-gray-950 lg:hidden"
+>
+
+    <!-- HAMBURGER -->
+    <button
+        type="button"
+        @click="sidebarOpen = true"
+        class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:border-green-500 hover:text-green-500 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
+        aria-label="Buka menu"
+    >
+
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.8"
+            stroke="currentColor"
+            class="h-5 w-5"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M4 6h16M4 12h16M4 18h16"
+            />
+        </svg>
+
+    </button>
+
+
+    <!-- LOGO -->
+
+    <a
+        href="/siswa/dashboard"
+        class="flex items-center gap-2"
+    >
+
+        <div
+            class="flex h-9 w-9 items-center justify-center rounded-lg bg-green-500 font-black text-gray-950"
+        >
+            T
+        </div>
+
+        <span class="font-bold">
+            Ter<span class="text-green-500">cycle</span>
+        </span>
+
+    </a>
+
+
+    <!-- THEME -->
+
+    <button
+        type="button"
+        @click="toggleTheme()"
+        class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
+    >
+
+        <svg
+            x-show="dark"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.8"
+            stroke="currentColor"
+            class="h-5 w-5"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 3v2m0 14v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M3 12h2m14 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"
+            />
+        </svg>
+
+        <svg
+            x-show="!dark"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.8"
+            stroke="currentColor"
+            class="h-5 w-5"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"
+            />
+        </svg>
+
+    </button>
+
+</header>
 
 
 

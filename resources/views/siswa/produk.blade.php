@@ -3,6 +3,7 @@
     lang="id"
     x-data="{
         dark: localStorage.getItem('theme') !== 'light',
+        sidebarOpen: false,
 
         toggleTheme() {
             this.dark = !this.dark;
@@ -119,7 +120,8 @@
 {{-- ========================================================= --}}
 
 <aside
-    class="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-gray-200 bg-white dark:border-white/10 dark:bg-gray-950 lg:block"
+    class="fixed inset-y-0 left-0 z-50 w-64 border-r border-gray-200 bg-white transition-transform duration-300 dark:border-white/10 dark:bg-gray-950 lg:block"
+    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
 >
 
     <div class="flex h-full flex-col">
@@ -129,12 +131,10 @@
         <div
             class="flex h-20 items-center border-b border-gray-200 px-6 dark:border-white/10"
         >
-
             <a
                 href="/siswa/dashboard"
                 class="flex items-center gap-3"
             >
-
                 <div
                     class="flex h-10 w-10 items-center justify-center rounded-xl bg-green-500 font-black text-gray-950"
                 >
@@ -144,9 +144,7 @@
                 <span class="text-xl font-bold">
                     Ter<span class="text-green-500">cycle</span>
                 </span>
-
             </a>
-
         </div>
 
 
@@ -372,15 +370,48 @@
 
 </aside>
 
-
-
-{{-- ========================================================= --}}
-{{-- MOBILE HEADER --}}
-{{-- ========================================================= --}}
-
 <div
+    x-show="sidebarOpen"
+    x-transition.opacity
+    @click="sidebarOpen = false"
+    class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+    style="display: none;"
+></div>
+
+
+
+<!-- MOBILE HEADER -->
+<header
     class="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-5 dark:border-white/10 dark:bg-gray-950 lg:hidden"
 >
+
+    <!-- HAMBURGER -->
+    <button
+        type="button"
+        @click="sidebarOpen = true"
+        class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:border-green-500 hover:text-green-500 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
+        aria-label="Buka menu"
+    >
+
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.8"
+            stroke="currentColor"
+            class="h-5 w-5"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M4 6h16M4 12h16M4 18h16"
+            />
+        </svg>
+
+    </button>
+
+
+    <!-- LOGO -->
 
     <a
         href="/siswa/dashboard"
@@ -400,10 +431,12 @@
     </a>
 
 
+    <!-- THEME -->
+
     <button
         type="button"
         @click="toggleTheme()"
-        class="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 dark:border-white/10"
+        class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
     >
 
         <svg
@@ -440,8 +473,7 @@
 
     </button>
 
-</div>
-
+</header>
 
 
 {{-- ========================================================= --}}
