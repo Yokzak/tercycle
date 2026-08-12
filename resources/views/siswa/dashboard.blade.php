@@ -561,7 +561,7 @@
             </p>
 
             <h2 class="mt-2 text-3xl font-black">
-                Selamat datang, Kevin
+                Selamat datang, {{ Auth::user()->name }}
             </h2>
 
             <p class="mt-1 text-sm text-gray-500">
