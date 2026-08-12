@@ -3,6 +3,8 @@
     lang="id"
     x-data="{
         dark: localStorage.getItem('theme') !== 'light',
+        sidebarOpen: false,
+        logoutModal: false,
 
         toggleTheme() {
             this.dark = !this.dark;
@@ -55,7 +57,8 @@
 {{-- ========================================================= --}}
 
 <aside
-    class="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-gray-200 bg-white dark:border-white/10 dark:bg-gray-950 lg:block"
+    class="fixed inset-y-0 left-0 z-50 w-64 border-r border-gray-200 bg-white transition-transform duration-300 dark:border-white/10 dark:bg-gray-950 lg:block"
+    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
 >
 
     <div class="flex h-full flex-col">
@@ -65,12 +68,10 @@
         <div
             class="flex h-20 items-center border-b border-gray-200 px-6 dark:border-white/10"
         >
-
             <a
                 href="/siswa/dashboard"
                 class="flex items-center gap-3"
             >
-
                 <div
                     class="flex h-10 w-10 items-center justify-center rounded-xl bg-green-500 font-black text-gray-950"
                 >
@@ -80,9 +81,7 @@
                 <span class="text-xl font-bold">
                     Ter<span class="text-green-500">cycle</span>
                 </span>
-
             </a>
-
         </div>
 
 
@@ -291,16 +290,17 @@
         <div
             class="border-t border-gray-200 p-4 dark:border-white/10"
         >
-
             <div class="flex items-center gap-3">
 
+                {{-- AVATAR --}}
                 <div
-                    class="flex h-10 w-10 items-center justify-center rounded-full bg-green-500 font-bold text-gray-950"
+                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-500 font-bold text-gray-950"
                 >
                     K
                 </div>
 
-                <div class="min-w-0">
+                {{-- NAMA --}}
+                <div class="min-w-0 flex-1">
 
                     <p class="truncate text-sm font-semibold">
                         Kevin
@@ -312,23 +312,94 @@
 
                 </div>
 
-            </div>
+                {{-- LOGOUT ICON --}}
+                <form
+                    action="/logout"
+                    method="POST"
+                >
+                    @csrf
 
+                <button
+                    type="button"
+                    title="Logout"
+                    @click="logoutModal = true"
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-400 transition hover:bg-red-500/10 hover:text-red-500"
+                >
+
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.8"
+                            stroke="currentColor"
+                            class="h-5 w-5"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"
+                            />
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="m10 17 5-5-5-5m5 5H3"
+                            />
+                        </svg>
+
+                    </button>
+
+                </form>
+
+            </div>
         </div>
 
     </div>
 
 </aside>
 
-
-
-{{-- ========================================================= --}}
-{{-- MOBILE HEADER --}}
-{{-- ========================================================= --}}
-
 <div
+    x-show="sidebarOpen"
+    x-transition.opacity
+    @click="sidebarOpen = false"
+    class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+    style="display: none;"
+></div>
+
+
+
+<!-- MOBILE HEADER -->
+<header
     class="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-5 dark:border-white/10 dark:bg-gray-950 lg:hidden"
 >
+
+    <!-- HAMBURGER -->
+    <button
+        type="button"
+        @click="sidebarOpen = true"
+        class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:border-green-500 hover:text-green-500 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
+        aria-label="Buka menu"
+    >
+
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.8"
+            stroke="currentColor"
+            class="h-5 w-5"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M4 6h16M4 12h16M4 18h16"
+            />
+        </svg>
+
+    </button>
+
+
+    <!-- LOGO -->
 
     <a
         href="/siswa/dashboard"
@@ -348,10 +419,12 @@
     </a>
 
 
+    <!-- THEME -->
+
     <button
         type="button"
         @click="toggleTheme()"
-        class="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 dark:border-white/10"
+        class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
     >
 
         <svg
@@ -363,15 +436,12 @@
             stroke="currentColor"
             class="h-5 w-5"
         >
-
             <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 d="M12 3v2m0 14v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M3 12h2m14 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"
             />
-
         </svg>
-
 
         <svg
             x-show="!dark"
@@ -382,19 +452,16 @@
             stroke="currentColor"
             class="h-5 w-5"
         >
-
             <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"
             />
-
         </svg>
 
     </button>
 
-</div>
-
+</header>
 
 
 {{-- ========================================================= --}}
@@ -981,6 +1048,115 @@
 
 </div>
 
+{{-- ========================================================= --}}
+{{-- MODAL KONFIRMASI LOGOUT --}}
+{{-- ========================================================= --}}
 
+<div
+    x-show="logoutModal"
+    x-transition.opacity
+    x-effect="document.body.style.overflow = logoutModal ? 'hidden' : ''"
+    class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
+    style="display: none;"
+>
+    {{-- BACKDROP --}}
+    <div
+        class="absolute inset-0 bg-black/50 backdrop-blur-md"
+        @click="logoutModal = false"
+    ></div>
+
+
+    {{-- MODAL --}}
+    <div
+        x-show="logoutModal"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        @click.stop
+        class="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900"
+    >
+
+        {{-- ICON --}}
+        <div class="flex justify-center">
+
+            <div
+                class="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 text-red-500"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-6 w-6"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"
+                    />
+
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="m10 17 5-5-5-5m5 5H3"
+                    />
+                </svg>
+            </div>
+
+        </div>
+
+
+        {{-- TEXT --}}
+        <div class="mt-4 text-center">
+
+            <h2 class="text-lg font-bold">
+                Yakin mau logout?
+            </h2>
+
+            <p class="mt-2 text-sm text-gray-500">
+                Kamu akan keluar dari akun dan harus login kembali.
+            </p>
+
+        </div>
+
+
+        {{-- BUTTON --}}
+        <div class="mt-6 grid grid-cols-2 gap-3">
+
+            {{-- BATAL --}}
+            <button
+                type="button"
+                @click="logoutModal = false"
+                class="rounded-xl border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+            >
+                Batal
+            </button>
+
+
+            {{-- LOGOUT --}}
+            <form
+                action="/logout"
+                method="POST"
+            >
+                @csrf
+
+                <button
+                    type="submit"
+                    class="w-full rounded-xl bg-red-500 px-4 py-3 text-sm font-bold text-white transition hover:bg-red-600"
+                >
+                    Logout
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
 </body>
 </html>

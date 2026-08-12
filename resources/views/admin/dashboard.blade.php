@@ -1,17 +1,28 @@
-```blade
 <!DOCTYPE html>
 <html
     lang="id"
     x-data="{
         dark: localStorage.getItem('theme') !== 'light',
+        sidebarOpen: false,
+        logoutModal: false,
 
         toggleTheme() {
             this.dark = !this.dark;
-            localStorage.setItem('theme', this.dark ? 'dark' : 'light');
-            document.documentElement.classList.toggle('dark', this.dark);
+
+            localStorage.setItem(
+                'theme',
+                this.dark ? 'dark' : 'light'
+            );
+
+            document.documentElement.classList.toggle(
+                'dark',
+                this.dark
+            );
         }
     }"
-    x-init="document.documentElement.classList.toggle('dark', dark)"
+    x-init="
+        document.documentElement.classList.toggle('dark', dark)
+    "
     :class="{ 'dark': dark }"
 >
 
@@ -40,13 +51,12 @@
     class="min-h-screen bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-950 dark:text-white"
 >
 
-
 {{-- ========================================================= --}}
 {{-- SIDEBAR --}}
 {{-- ========================================================= --}}
 
 <aside
-    class="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-gray-200 bg-white dark:border-white/10 dark:bg-gray-950 lg:block"
+    class="fixed inset-y-0 left-0 z-50 w-64 border-r border-gray-200 bg-white transition-transform duration-300 dark:border-white/10 dark:bg-gray-950 lg:translate-x-0" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
 >
 
     <div class="flex h-full flex-col">
@@ -78,8 +88,7 @@
         </div>
 
 
-
-        {{-- NAVIGATION --}}
+        {{-- MENU --}}
 
         <nav class="flex-1 space-y-1 px-4 py-6">
 
@@ -90,30 +99,29 @@
                 Overview
             </p>
 
-
-            {{-- ACTIVE DASHBOARD --}}
+            {{-- ACTIVE --}}
 
             <a
                 href="/admin/dashboard"
-                class="flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500"
+                class="{{ request()->is('admin/dashboard')
+                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
+                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
+                }}"
             >
-
                 <span class="text-lg">⌂</span>
-
                 Dashboard
-
             </a>
 
 
             <a
                 href="/admin/penukaran"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+                class="{{ request()->is('admin/penukaran')
+                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
+                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
+                }}"
             >
-
                 <span class="text-lg">♻</span>
-
                 Penukaran Botol
-
             </a>
 
 
@@ -126,53 +134,52 @@
 
             <a
                 href="/admin/botol"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+                class="{{ request()->is('admin/botol')
+                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
+                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
+                }}"
             >
-
                 <span class="text-lg">♲</span>
-
                 Jenis Botol
-
             </a>
 
 
             <a
                 href="/admin/siswa"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+                class="{{ request()->is('admin/siswa')
+                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
+                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
+                }}"
             >
-
                 <span class="text-lg">♙</span>
-
                 Siswa
-
             </a>
 
 
             <a
                 href="/admin/produk"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+                class="{{ request()->is('admin/produk')
+                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
+                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
+                }}"
             >
-
                 <span class="text-lg">□</span>
-
                 Produk
-
             </a>
 
 
             <a
                 href="/admin/transaksi"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+                class="{{ request()->is('admin/transaksi')
+                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
+                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
+                }}"
             >
-
                 <span class="text-lg">≡</span>
-
                 Transaksi
-
             </a>
 
         </nav>
-
 
 
         {{-- ADMIN PROFILE --}}
@@ -180,194 +187,40 @@
         <div
             class="border-t border-gray-200 p-4 dark:border-white/10"
         >
-
             <div class="flex items-center gap-3">
 
+                {{-- AVATAR --}}
                 <div
-                    class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-900 font-bold text-white dark:bg-white dark:text-gray-950"
+                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-900 font-bold text-white dark:bg-white dark:text-gray-950"
                 >
                     A
                 </div>
 
-                <div>
+                {{-- NAMA --}}
+                <div class="min-w-0 flex-1">
 
-                    <p class="text-sm font-semibold">
+                    <p class="truncate text-sm font-semibold">
                         Administrator
                     </p>
 
                     <p class="text-xs text-gray-500">
-                        Admin Tercycle
+                        Admin
                     </p>
 
                 </div>
 
-            </div>
-
-        </div>
-
-    </div>
-
-</aside>
-
-
-
-{{-- ========================================================= --}}
-{{-- MAIN --}}
-{{-- ========================================================= --}}
-
-<div class="lg:pl-64">
-
-
-    {{-- TOPBAR --}}
-
-    <header
-        class="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-gray-200 bg-white/90 px-6 backdrop-blur-xl dark:border-white/10 dark:bg-gray-950/90 lg:px-8"
-    >
-
-        <div>
-
-            <p class="text-sm font-medium text-gray-500">
-                Admin Panel
-            </p>
-
-            <h1 class="font-bold">
-                Dashboard
-            </h1>
-
-        </div>
-
-
-
-        <div class="flex items-center gap-3">
-
-
-            {{-- NOTIFICATION --}}
-
-            <button
-                class="relative flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-600 transition hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
-            >
-
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
+                {{-- LOGOUT ICON --}}
+                <form
+                    action="/logout"
+                    method="POST"
                 >
+                    @csrf
 
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9a6 6 0 0 0-12 0v.75a8.967 8.967 0 0 1-2.31 6.022c1.735.613 3.576 1.077 5.454 1.31m5.713 0a24.255 24.255 0 0 1-5.713 0m5.713 0a3 3 0 1 1-5.713 0"
-                    />
-
-                </svg>
-
-
-                <span
-                    class="absolute right-2 top-2 h-2 w-2 rounded-full bg-green-500"
-                ></span>
-
-            </button>
-
-
-
-            {{-- THEME --}}
-
-            <button
-                type="button"
-                @click="toggleTheme()"
-                class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
-            >
-
-                <svg
-                    x-show="dark"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M12 3v2m0 14v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M3 12h2m14 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"
-                    />
-
-                </svg>
-
-
-                <svg
-                    x-show="!dark"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"
-                    />
-
-                </svg>
-
-            </button>
-
-        </div>
-
-    </header>
-
-
-
-    {{-- ========================================================= --}}
-    {{-- CONTENT --}}
-    {{-- ========================================================= --}}
-
-    <main class="mx-auto max-w-7xl px-6 py-8 lg:px-8">
-
-
-        {{-- WELCOME --}}
-
-        <div class="mb-8">
-
-            <h2 class="text-2xl font-black">
-                Selamat datang, Admin.
-            </h2>
-
-            <p class="mt-1 text-sm text-gray-500">
-                Berikut ringkasan aktivitas Tercycle hari ini.
-            </p>
-
-        </div>
-
-
-
-        {{-- ================================================= --}}
-        {{-- STATISTICS --}}
-        {{-- ================================================= --}}
-
-        <div
-            class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
-        >
-
-
-            {{-- SISWA --}}
-
-            <div
-                class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-white/[0.03]"
-            >
-
-                <div class="flex items-center justify-between">
-
-                    <div
-                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-green-500/10 text-green-500"
+                    <button
+                        type="button"
+                        title="Logout"
+                        @click="logoutModal = true"
+                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-400 transition hover:bg-red-500/10 hover:text-red-500"
                     >
 
                         <svg
@@ -378,129 +231,312 @@
                             stroke="currentColor"
                             class="h-5 w-5"
                         >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"
+                            />
 
                             <path
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
-                                d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.125-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.003a9.36 9.36 0 0 1-3.375.625 9.36 9.36 0 0 1-3.375-.625m6.75 0a24.255 24.255 0 0 0-1.688-3.073M9 19.128a9.38 9.38 0 0 1-2.625.372 9.337 9.337 0 0 1-4.125-.952 4.125 4.125 0 0 1 7.533-2.493M9 19.128v-.003c0-1.113.285-2.16.786-3.07M9 19.128v.003a9.36 9.36 0 0 0 3.375.625M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
+                                d="m10 17 5-5-5-5m5 5H3"
                             />
-
                         </svg>
 
-                    </div>
+                    </button>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+
+</aside>
+
+<div
+    x-show="sidebarOpen"
+    x-transition.opacity
+    @click="sidebarOpen = false"
+    class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+    style="display: none;"
+></div>
 
 
-                    <span
-                        class="text-xs font-semibold text-green-500"
-                    >
-                        +12.5%
-                    </span>
 
-                </div>
+{{-- ========================================================= --}}
+{{-- MAIN --}}
+{{-- ========================================================= --}}
+
+<div class="lg:pl-64">
 
 
-                <p class="mt-5 text-sm text-gray-500">
-                    Total Siswa
+    {{-- ===================================================== --}}
+    {{-- TOPBAR --}}
+    {{-- ===================================================== --}}
+
+    <header
+        class="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-gray-200 bg-white/90 px-4 backdrop-blur-xl dark:border-white/10 dark:bg-gray-950/90 sm:px-6 lg:px-8"
+    >
+
+
+        <div class="flex items-center gap-3">
+
+
+            {{-- HAMBURGER MOBILE --}}
+
+            <button
+                type="button"
+                @click="sidebarOpen = true"
+                class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 lg:hidden"
+            >
+
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M4 6h16M4 12h16M4 18h16"
+                    />
+                </svg>
+
+            </button>
+
+
+            <div>
+
+                <p class="text-xs font-medium text-gray-500 sm:text-sm">
+                    Overview
                 </p>
 
-                <p class="mt-1 text-3xl font-black">
-                    428
-                </p>
-
-                <p class="mt-2 text-xs text-gray-500">
-                    Siswa terdaftar
-                </p>
+                <h1 class="font-bold">
+                    Dashboard Admin
+                </h1>
 
             </div>
 
+        </div>
 
 
-            {{-- BOTOL --}}
+        {{-- THEME BUTTON --}}
+
+        <button
+            type="button"
+            @click="toggleTheme()"
+            class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
+        >
+
+            <svg
+                x-show="dark"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.8"
+                stroke="currentColor"
+                class="h-5 w-5"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 3v2m0 14v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M3 12h2m14 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"
+                />
+            </svg>
+
+
+            <svg
+                x-show="!dark"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.8"
+                stroke="currentColor"
+                class="h-5 w-5"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"
+                />
+            </svg>
+
+        </button>
+
+    </header>
+
+
+
+    {{-- ===================================================== --}}
+    {{-- CONTENT --}}
+    {{-- ===================================================== --}}
+
+    <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+
+
+        {{-- HEADER --}}
+
+        <div class="mb-8">
+
+            <p class="text-sm font-medium text-green-500">
+                Tercycle Admin
+            </p>
+
+            <h2 class="mt-1 text-2xl font-black sm:text-3xl">
+                Selamat datang, Administrator
+            </h2>
+
+            <p class="mt-2 text-sm text-gray-500">
+                Pantau aktivitas bank sampah dan sistem Tercycle.
+            </p>
+
+        </div>
+
+
+
+        {{-- ================================================= --}}
+        {{-- STATISTICS --}}
+        {{-- ================================================= --}}
+
+        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
+
+            {{-- TOTAL SISWA --}}
 
             <div
                 class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-white/[0.03]"
             >
 
-                <div class="flex items-center justify-between">
+                <div class="flex items-start justify-between">
+
+                    <div>
+
+                        <p class="text-sm text-gray-500">
+                            Total Siswa
+                        </p>
+
+                        <p class="mt-2 text-3xl font-black">
+                            248
+                        </p>
+
+                        <p class="mt-2 text-xs text-green-500">
+                            +12 bulan ini
+                        </p>
+
+                    </div>
 
                     <div
                         class="flex h-11 w-11 items-center justify-center rounded-xl bg-green-500/10 text-green-500"
                     >
-
-                        <span class="text-xl">
-                            ♻
-                        </span>
-
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.8"
+                            stroke="currentColor"
+                            class="h-5 w-5"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M15 19a6 6 0 0 0-12 0m6-8a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm6-4h3m-1.5-1.5v3"
+                            />
+                        </svg>
                     </div>
 
-
-                    <span
-                        class="text-xs font-semibold text-green-500"
-                    >
-                        +18.4%
-                    </span>
-
                 </div>
-
-
-                <p class="mt-5 text-sm text-gray-500">
-                    Botol Terkumpul
-                </p>
-
-                <p class="mt-1 text-3xl font-black">
-                    12.840
-                </p>
-
-                <p class="mt-2 text-xs text-gray-500">
-                    Total botol didaur ulang
-                </p>
 
             </div>
 
 
-
-            {{-- POIN --}}
+            {{-- TOTAL BOTOL --}}
 
             <div
                 class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-white/[0.03]"
             >
 
-                <div class="flex items-center justify-between">
+                <div class="flex items-start justify-between">
+
+                    <div>
+
+                        <p class="text-sm text-gray-500">
+                            Botol Terkumpul
+                        </p>
+
+                        <p class="mt-2 text-3xl font-black">
+                            8.420
+                        </p>
+
+                        <p class="mt-2 text-xs text-green-500">
+                            +1.240 bulan ini
+                        </p>
+
+                    </div>
 
                     <div
                         class="flex h-11 w-11 items-center justify-center rounded-xl bg-green-500/10 text-green-500"
                     >
-
-                        <span class="text-xl">
-                            ◉
-                        </span>
-
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.8"
+                            stroke="currentColor"
+                            class="h-5 w-5"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M9 3h6m-5 0v4.5L6.5 12v5.5A3.5 3.5 0 0 0 10 21h4a3.5 3.5 0 0 0 3.5-3.5V12L14 7.5V3"
+                            />
+                        </svg>
                     </div>
-
-
-                    <span
-                        class="text-xs font-semibold text-green-500"
-                    >
-                        +9.8%
-                    </span>
 
                 </div>
 
-
-                <p class="mt-5 text-sm text-gray-500">
-                    Poin Beredar
-                </p>
-
-                <p class="mt-1 text-3xl font-black">
-                    163.350
-                </p>
-
-                <p class="mt-2 text-xs text-gray-500">
-                    Total poin siswa
-                </p>
-
             </div>
 
+
+            {{-- POIN BEREDAR --}}
+
+            <div
+                class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-white/[0.03]"
+            >
+
+                <div class="flex items-start justify-between">
+
+                    <div>
+
+                        <p class="text-sm text-gray-500">
+                            Poin Beredar
+                        </p>
+
+                        <p class="mt-2 text-3xl font-black">
+                            124K
+                        </p>
+
+                        <p class="mt-2 text-xs text-green-500">
+                            +8,4% bulan ini
+                        </p>
+
+                    </div>
+
+                    <div
+                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-green-500/10 text-green-500"
+                    >
+                        <span class="text-lg font-black">
+                            P
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
 
 
             {{-- TRANSAKSI --}}
@@ -509,39 +545,44 @@
                 class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-white/[0.03]"
             >
 
-                <div class="flex items-center justify-between">
+                <div class="flex items-start justify-between">
+
+                    <div>
+
+                        <p class="text-sm text-gray-500">
+                            Transaksi
+                        </p>
+
+                        <p class="mt-2 text-3xl font-black">
+                            1.284
+                        </p>
+
+                        <p class="mt-2 text-xs text-green-500">
+                            +156 bulan ini
+                        </p>
+
+                    </div>
 
                     <div
                         class="flex h-11 w-11 items-center justify-center rounded-xl bg-green-500/10 text-green-500"
                     >
-
-                        <span class="text-xl">
-                            ≡
-                        </span>
-
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.8"
+                            stroke="currentColor"
+                            class="h-5 w-5"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M4 6h16M4 12h16M4 18h16"
+                            />
+                        </svg>
                     </div>
 
-
-                    <span
-                        class="text-xs font-semibold text-green-500"
-                    >
-                        +14.2%
-                    </span>
-
                 </div>
-
-
-                <p class="mt-5 text-sm text-gray-500">
-                    Transaksi Bulan Ini
-                </p>
-
-                <p class="mt-1 text-3xl font-black">
-                    1.284
-                </p>
-
-                <p class="mt-2 text-xs text-gray-500">
-                    Semua jenis transaksi
-                </p>
 
             </div>
 
@@ -550,301 +591,139 @@
 
 
         {{-- ================================================= --}}
-        {{-- CHART + QUICK ACTION --}}
+        {{-- QUICK ACTION --}}
         {{-- ================================================= --}}
 
-        <div
-            class="mt-6 grid gap-6 xl:grid-cols-3"
-        >
+        <div class="mt-8">
 
-
-            {{-- ACTIVITY CHART --}}
-
-            <div
-                class="rounded-2xl border border-gray-200 bg-white p-6 xl:col-span-2 dark:border-white/10 dark:bg-white/[0.03]"
-            >
-
-                <div
-                    class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center"
-                >
-
-                    <div>
-
-                        <h3 class="font-bold">
-                            Aktivitas Penukaran
-                        </h3>
-
-                        <p class="mt-1 text-xs text-gray-500">
-                            Jumlah botol yang dikumpulkan minggu ini.
-                        </p>
-
-                    </div>
-
-
-                    <select
-                        class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs outline-none dark:border-white/10 dark:bg-gray-900"
-                    >
-
-                        <option>
-                            7 Hari Terakhir
-                        </option>
-
-                        <option>
-                            30 Hari Terakhir
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-
-                {{-- SIMPLE BAR CHART --}}
-
-                <div
-                    class="mt-8 flex h-64 items-end justify-between gap-3"
-                >
-
-
-                    {{-- SENIN --}}
-
-                    <div class="flex flex-1 flex-col items-center gap-2">
-
-                        <div
-                            class="w-full rounded-t-lg bg-green-500"
-                            style="height: 45%"
-                        ></div>
-
-                        <span class="text-xs text-gray-500">
-                            Sen
-                        </span>
-
-                    </div>
-
-
-                    {{-- SELASA --}}
-
-                    <div class="flex flex-1 flex-col items-center gap-2">
-
-                        <div
-                            class="w-full rounded-t-lg bg-green-500"
-                            style="height: 68%"
-                        ></div>
-
-                        <span class="text-xs text-gray-500">
-                            Sel
-                        </span>
-
-                    </div>
-
-
-                    {{-- RABU --}}
-
-                    <div class="flex flex-1 flex-col items-center gap-2">
-
-                        <div
-                            class="w-full rounded-t-lg bg-green-500"
-                            style="height: 55%"
-                        ></div>
-
-                        <span class="text-xs text-gray-500">
-                            Rab
-                        </span>
-
-                    </div>
-
-
-                    {{-- KAMIS --}}
-
-                    <div class="flex flex-1 flex-col items-center gap-2">
-
-                        <div
-                            class="w-full rounded-t-lg bg-green-500"
-                            style="height: 82%"
-                        ></div>
-
-                        <span class="text-xs text-gray-500">
-                            Kam
-                        </span>
-
-                    </div>
-
-
-                    {{-- JUMAT --}}
-
-                    <div class="flex flex-1 flex-col items-center gap-2">
-
-                        <div
-                            class="w-full rounded-t-lg bg-green-500"
-                            style="height: 72%"
-                        ></div>
-
-                        <span class="text-xs text-gray-500">
-                            Jum
-                        </span>
-
-                    </div>
-
-
-                    {{-- SABTU --}}
-
-                    <div class="flex flex-1 flex-col items-center gap-2">
-
-                        <div
-                            class="w-full rounded-t-lg bg-green-500"
-                            style="height: 92%"
-                        ></div>
-
-                        <span class="text-xs text-gray-500">
-                            Sab
-                        </span>
-
-                    </div>
-
-
-                    {{-- MINGGU --}}
-
-                    <div class="flex flex-1 flex-col items-center gap-2">
-
-                        <div
-                            class="w-full rounded-t-lg bg-green-500"
-                            style="height: 62%"
-                        ></div>
-
-                        <span class="text-xs text-gray-500">
-                            Min
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            {{-- QUICK ACTION --}}
-
-            <div
-                class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/[0.03]"
-            >
+            <div class="mb-4">
 
                 <h3 class="font-bold">
                     Aksi Cepat
                 </h3>
 
                 <p class="mt-1 text-xs text-gray-500">
-                    Kelola sistem dengan cepat.
+                    Akses fitur administrasi yang sering digunakan.
                 </p>
 
+            </div>
 
-                <div class="mt-6 space-y-3">
+
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 
 
-                    <a
-                        href="/admin/penukaran"
-                        class="flex items-center gap-4 rounded-xl border border-gray-200 p-4 transition hover:border-green-500/30 hover:bg-green-500/5 dark:border-white/10"
+                <a
+                    href="/admin/penukaran"
+                    class="group rounded-2xl border border-gray-200 bg-white p-5 transition hover:-translate-y-1 hover:border-green-500/30 dark:border-white/10 dark:bg-white/[0.03]"
+                >
+
+                    <div
+                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-green-500/10 text-green-500 transition group-hover:bg-green-500 group-hover:text-gray-950"
                     >
+                        +
+                    </div>
 
-                        <div
-                            class="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10 text-green-500"
-                        >
-                            ♻
-                        </div>
+                    <h4 class="mt-4 font-bold">
+                        Penukaran Botol
+                    </h4>
 
-                        <div>
+                    <p class="mt-1 text-xs text-gray-500">
+                        Input penukaran botol siswa.
+                    </p>
 
-                            <p class="text-sm font-semibold">
-                                Penukaran Botol
-                            </p>
-
-                            <p class="text-xs text-gray-500">
-                                7 menunggu konfirmasi
-                            </p>
-
-                        </div>
-
-                    </a>
+                </a>
 
 
-                    <a
-                        href="/admin/siswa"
-                        class="flex items-center gap-4 rounded-xl border border-gray-200 p-4 transition hover:border-green-500/30 hover:bg-green-500/5 dark:border-white/10"
+                <a
+                    href="/admin/siswa"
+                    class="group rounded-2xl border border-gray-200 bg-white p-5 transition hover:-translate-y-1 hover:border-green-500/30 dark:border-white/10 dark:bg-white/[0.03]"
+                >
+
+                    <div
+                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-green-500/10 text-green-500 transition group-hover:bg-green-500 group-hover:text-gray-950"
                     >
-
-                        <div
-                            class="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10 text-green-500"
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.8"
+                            stroke="currentColor"
+                            class="h-5 w-5"
                         >
-                            ♙
-                        </div>
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M15 19a6 6 0 0 0-12 0m6-8a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm6-4h3m-1.5-1.5v3"
+                            />
+                        </svg>
+                    </div>
 
-                        <div>
+                    <h4 class="mt-4 font-bold">
+                        Kelola Siswa
+                    </h4>
 
-                            <p class="text-sm font-semibold">
-                                Kelola Siswa
-                            </p>
+                    <p class="mt-1 text-xs text-gray-500">
+                        Lihat dan kelola data siswa.
+                    </p>
 
-                            <p class="text-xs text-gray-500">
-                                428 siswa terdaftar
-                            </p>
-
-                        </div>
-
-                    </a>
+                </a>
 
 
-                    <a
-                        href="/admin/produk"
-                        class="flex items-center gap-4 rounded-xl border border-gray-200 p-4 transition hover:border-green-500/30 hover:bg-green-500/5 dark:border-white/10"
+                <a
+                    href="/admin/produk"
+                    class="group rounded-2xl border border-gray-200 bg-white p-5 transition hover:-translate-y-1 hover:border-green-500/30 dark:border-white/10 dark:bg-white/[0.03]"
+                >
+
+                    <div
+                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-green-500/10 text-green-500 transition group-hover:bg-green-500 group-hover:text-gray-950"
                     >
-
-                        <div
-                            class="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10 text-green-500"
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.8"
+                            stroke="currentColor"
+                            class="h-5 w-5"
                         >
-                            □
-                        </div>
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M20 7 12 3 4 7m16 0-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                            />
+                        </svg>
+                    </div>
 
-                        <div>
+                    <h4 class="mt-4 font-bold">
+                        Kelola Produk
+                    </h4>
 
-                            <p class="text-sm font-semibold">
-                                Kelola Produk
-                            </p>
+                    <p class="mt-1 text-xs text-gray-500">
+                        Tambah dan kelola produk.
+                    </p>
 
-                            <p class="text-xs text-gray-500">
-                                24 produk tersedia
-                            </p>
-
-                        </div>
-
-                    </a>
+                </a>
 
 
-                    <a
-                        href="/admin/transaksi"
-                        class="flex items-center gap-4 rounded-xl border border-gray-200 p-4 transition hover:border-green-500/30 hover:bg-green-500/5 dark:border-white/10"
+                <a
+                    href="/admin/transaksi"
+                    class="group rounded-2xl border border-gray-200 bg-white p-5 transition hover:-translate-y-1 hover:border-green-500/30 dark:border-white/10 dark:bg-white/[0.03]"
+                >
+
+                    <div
+                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-green-500/10 text-green-500 transition group-hover:bg-green-500 group-hover:text-gray-950"
                     >
+                        ≡
+                    </div>
 
-                        <div
-                            class="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10 text-green-500"
-                        >
-                            ≡
-                        </div>
+                    <h4 class="mt-4 font-bold">
+                        Lihat Transaksi
+                    </h4>
 
-                        <div>
+                    <p class="mt-1 text-xs text-gray-500">
+                        Pantau seluruh transaksi.
+                    </p>
 
-                            <p class="text-sm font-semibold">
-                                Lihat Transaksi
-                            </p>
-
-                            <p class="text-xs text-gray-500">
-                                1.284 transaksi bulan ini
-                            </p>
-
-                        </div>
-
-                    </a>
-
-                </div>
+                </a>
 
             </div>
 
@@ -853,18 +732,16 @@
 
 
         {{-- ================================================= --}}
-        {{-- BOTTOM SECTION --}}
+        {{-- CONTENT GRID --}}
         {{-- ================================================= --}}
 
-        <div
-            class="mt-6 grid gap-6 lg:grid-cols-2"
-        >
+        <div class="mt-8 grid gap-8 lg:grid-cols-3">
 
 
-            {{-- RECENT TRANSACTIONS --}}
+            {{-- TRANSAKSI TERBARU --}}
 
             <div
-                class="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/10 dark:bg-white/[0.03]"
+                class="overflow-hidden rounded-2xl border border-gray-200 bg-white lg:col-span-2 dark:border-white/10 dark:bg-white/[0.03]"
             >
 
                 <div
@@ -878,15 +755,14 @@
                         </h3>
 
                         <p class="mt-1 text-xs text-gray-500">
-                            Aktivitas transaksi terakhir.
+                            Aktivitas terbaru di Tercycle.
                         </p>
 
                     </div>
 
-
                     <a
                         href="/admin/transaksi"
-                        class="text-xs font-semibold text-green-500 hover:text-green-400"
+                        class="text-sm font-semibold text-green-500 hover:text-green-400"
                     >
                         Lihat semua
                     </a>
@@ -894,175 +770,148 @@
                 </div>
 
 
+                <div class="overflow-x-auto">
 
-                <div
-                    class="divide-y divide-gray-200 dark:divide-white/10"
-                >
+                    <table class="w-full text-left text-sm">
 
+                        <thead
+                            class="border-b border-gray-200 text-xs uppercase text-gray-500 dark:border-white/10"
+                        >
 
-                    {{-- ITEM --}}
+                            <tr>
 
-                    <div class="flex items-center justify-between px-6 py-4">
+                                <th class="px-6 py-4">
+                                    Siswa
+                                </th>
 
-                        <div class="flex items-center gap-3">
+                                <th class="px-6 py-4">
+                                    Aktivitas
+                                </th>
 
-                            <div
-                                class="flex h-9 w-9 items-center justify-center rounded-full bg-green-500/10 font-bold text-green-500"
-                            >
-                                K
-                            </div>
+                                <th class="px-6 py-4">
+                                    Poin
+                                </th>
 
-                            <div>
+                                <th class="px-6 py-4">
+                                    Status
+                                </th>
 
-                                <p class="text-sm font-semibold">
-                                    Kevin
-                                </p>
+                            </tr>
 
-                                <p class="text-xs text-gray-500">
-                                    Penukaran Botol
-                                </p>
+                        </thead>
 
-                            </div>
 
-                        </div>
+                        <tbody
+                            class="divide-y divide-gray-200 dark:divide-white/10"
+                        >
 
+                            <tr>
 
-                        <div class="text-right">
+                                <td class="px-6 py-5">
 
-                            <p class="text-sm font-bold text-green-500">
-                                +1.250
-                            </p>
+                                    <p class="font-semibold">
+                                        Kevin
+                                    </p>
 
-                            <p class="text-xs text-gray-500">
-                                14:32
-                            </p>
+                                    <p class="mt-1 text-xs text-gray-500">
+                                        ECO-2026-00125
+                                    </p>
 
-                        </div>
+                                </td>
 
-                    </div>
+                                <td class="px-6 py-5 text-gray-500">
+                                    Penukaran botol
+                                </td>
 
+                                <td class="px-6 py-5 font-bold text-green-500">
+                                    +500
+                                </td>
 
+                                <td class="px-6 py-5">
 
-                    <div class="flex items-center justify-between px-6 py-4">
+                                    <span
+                                        class="rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-500"
+                                    >
+                                        Berhasil
+                                    </span>
 
-                        <div class="flex items-center gap-3">
+                                </td>
 
-                            <div
-                                class="flex h-9 w-9 items-center justify-center rounded-full bg-gray-900 font-bold text-white dark:bg-white dark:text-gray-950"
-                            >
-                                I
-                            </div>
+                            </tr>
 
-                            <div>
 
-                                <p class="text-sm font-semibold">
-                                    Ilyas
-                                </p>
+                            <tr>
 
-                                <p class="text-xs text-gray-500">
-                                    Pembelian Tumbler
-                                </p>
+                                <td class="px-6 py-5">
 
-                            </div>
+                                    <p class="font-semibold">
+                                        Ilyas
+                                    </p>
 
-                        </div>
+                                    <p class="mt-1 text-xs text-gray-500">
+                                        ECO-2026-00118
+                                    </p>
 
+                                </td>
 
-                        <div class="text-right">
+                                <td class="px-6 py-5 text-gray-500">
+                                    Penukaran botol
+                                </td>
 
-                            <p class="text-sm font-bold text-red-500">
-                                -5.000
-                            </p>
+                                <td class="px-6 py-5 font-bold text-green-500">
+                                    +800
+                                </td>
 
-                            <p class="text-xs text-gray-500">
-                                13:57
-                            </p>
+                                <td class="px-6 py-5">
 
-                        </div>
+                                    <span
+                                        class="rounded-full bg-yellow-500/10 px-3 py-1 text-xs font-semibold text-yellow-600 dark:text-yellow-400"
+                                    >
+                                        Menunggu
+                                    </span>
 
-                    </div>
+                                </td>
 
+                            </tr>
 
 
-                    <div class="flex items-center justify-between px-6 py-4">
+                            <tr>
 
-                        <div class="flex items-center gap-3">
+                                <td class="px-6 py-5">
 
-                            <div
-                                class="flex h-9 w-9 items-center justify-center rounded-full bg-green-500/10 font-bold text-green-500"
-                            >
-                                A
-                            </div>
+                                    <p class="font-semibold">
+                                        Arya
+                                    </p>
 
-                            <div>
+                                    <p class="mt-1 text-xs text-gray-500">
+                                        ECO-2026-00112
+                                    </p>
 
-                                <p class="text-sm font-semibold">
-                                    Arya
-                                </p>
+                                </td>
 
-                                <p class="text-xs text-gray-500">
-                                    Penukaran Botol Kaca
-                                </p>
+                                <td class="px-6 py-5 text-gray-500">
+                                    Pembelian produk
+                                </td>
 
-                            </div>
+                                <td class="px-6 py-5 font-bold text-red-500">
+                                    -1.000
+                                </td>
 
-                        </div>
+                                <td class="px-6 py-5">
 
+                                    <span
+                                        class="rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-500"
+                                    >
+                                        Berhasil
+                                    </span>
 
-                        <div class="text-right">
+                                </td>
 
-                            <p class="text-sm font-bold text-yellow-500">
-                                +1.000
-                            </p>
+                            </tr>
 
-                            <p class="text-xs text-gray-500">
-                                13:21
-                            </p>
+                        </tbody>
 
-                        </div>
-
-                    </div>
-
-
-
-                    <div class="flex items-center justify-between px-6 py-4">
-
-                        <div class="flex items-center gap-3">
-
-                            <div
-                                class="flex h-9 w-9 items-center justify-center rounded-full bg-gray-900 font-bold text-white dark:bg-white dark:text-gray-950"
-                            >
-                                W
-                            </div>
-
-                            <div>
-
-                                <p class="text-sm font-semibold">
-                                    Wandi
-                                </p>
-
-                                <p class="text-xs text-gray-500">
-                                    Pembelian Tote Bag
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="text-right">
-
-                            <p class="text-sm font-bold text-red-500">
-                                -3.500
-                            </p>
-
-                            <p class="text-xs text-gray-500">
-                                12:48
-                            </p>
-
-                        </div>
-
-                    </div>
+                    </table>
 
                 </div>
 
@@ -1070,186 +919,132 @@
 
 
 
-            {{-- TOP STUDENTS --}}
+            {{-- RINGKASAN --}}
 
             <div
-                class="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/10 dark:bg-white/[0.03]"
+                class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/[0.03]"
             >
 
-                <div
-                    class="border-b border-gray-200 px-6 py-5 dark:border-white/10"
+                <h3 class="font-bold">
+                    Ringkasan Hari Ini
+                </h3>
+
+                <p class="mt-1 text-xs text-gray-500">
+                    Statistik aktivitas hari ini.
+                </p>
+
+
+                <div class="mt-6 space-y-5">
+
+
+                    <div>
+
+                        <div class="flex items-center justify-between">
+
+                            <p class="text-sm text-gray-500">
+                                Penukaran Botol
+                            </p>
+
+                            <p class="font-bold">
+                                42
+                            </p>
+
+                        </div>
+
+                        <div class="mt-2 h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-white/10">
+
+                            <div
+                                class="h-full w-[75%] rounded-full bg-green-500"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="flex items-center justify-between">
+
+                            <p class="text-sm text-gray-500">
+                                Poin Diberikan
+                            </p>
+
+                            <p class="font-bold">
+                                8.450
+                            </p>
+
+                        </div>
+
+                        <div class="mt-2 h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-white/10">
+
+                            <div
+                                class="h-full w-[65%] rounded-full bg-green-500"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="flex items-center justify-between">
+
+                            <p class="text-sm text-gray-500">
+                                Produk Terjual
+                            </p>
+
+                            <p class="font-bold">
+                                18
+                            </p>
+
+                        </div>
+
+                        <div class="mt-2 h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-white/10">
+
+                            <div
+                                class="h-full w-[45%] rounded-full bg-green-500"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="flex items-center justify-between">
+
+                            <p class="text-sm text-gray-500">
+                                Siswa Aktif
+                            </p>
+
+                            <p class="font-bold">
+                                67
+                            </p>
+
+                        </div>
+
+                        <div class="mt-2 h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-white/10">
+
+                            <div
+                                class="h-full w-[55%] rounded-full bg-green-500"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <a
+                    href="/admin/transaksi"
+                    class="mt-7 block rounded-xl border border-gray-200 px-4 py-3 text-center text-sm font-semibold transition hover:border-green-500 hover:text-green-500 dark:border-white/10"
                 >
-
-                    <h3 class="font-bold">
-                        Siswa Teraktif
-                    </h3>
-
-                    <p class="mt-1 text-xs text-gray-500">
-                        Siswa dengan kontribusi botol terbanyak.
-                    </p>
-
-                </div>
-
-
-
-                <div class="divide-y divide-gray-200 dark:divide-white/10">
-
-
-                    {{-- STUDENT 1 --}}
-
-                    <div
-                        class="flex items-center justify-between px-6 py-4"
-                    >
-
-                        <div class="flex items-center gap-3">
-
-                            <div
-                                class="flex h-9 w-9 items-center justify-center rounded-full bg-green-500 font-black text-gray-950"
-                            >
-                                1
-                            </div>
-
-                            <div>
-
-                                <p class="text-sm font-semibold">
-                                    Kevin
-                                </p>
-
-                                <p class="text-xs text-gray-500">
-                                    1.240 botol
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <span
-                            class="text-sm font-bold text-green-500"
-                        >
-                            12.400 poin
-                        </span>
-
-                    </div>
-
-
-
-                    {{-- STUDENT 2 --}}
-
-                    <div
-                        class="flex items-center justify-between px-6 py-4"
-                    >
-
-                        <div class="flex items-center gap-3">
-
-                            <div
-                                class="flex h-9 w-9 items-center justify-center rounded-full bg-gray-200 font-black text-gray-700 dark:bg-white/10 dark:text-white"
-                            >
-                                2
-                            </div>
-
-                            <div>
-
-                                <p class="text-sm font-semibold">
-                                    Ilyas
-                                </p>
-
-                                <p class="text-xs text-gray-500">
-                                    980 botol
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <span
-                            class="text-sm font-bold text-green-500"
-                        >
-                            9.800 poin
-                        </span>
-
-                    </div>
-
-
-
-                    {{-- STUDENT 3 --}}
-
-                    <div
-                        class="flex items-center justify-between px-6 py-4"
-                    >
-
-                        <div class="flex items-center gap-3">
-
-                            <div
-                                class="flex h-9 w-9 items-center justify-center rounded-full bg-gray-200 font-black text-gray-700 dark:bg-white/10 dark:text-white"
-                            >
-                                3
-                            </div>
-
-                            <div>
-
-                                <p class="text-sm font-semibold">
-                                    Arya
-                                </p>
-
-                                <p class="text-xs text-gray-500">
-                                    865 botol
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <span
-                            class="text-sm font-bold text-green-500"
-                        >
-                            8.650 poin
-                        </span>
-
-                    </div>
-
-
-
-                    {{-- STUDENT 4 --}}
-
-                    <div
-                        class="flex items-center justify-between px-6 py-4"
-                    >
-
-                        <div class="flex items-center gap-3">
-
-                            <div
-                                class="flex h-9 w-9 items-center justify-center rounded-full bg-gray-200 font-black text-gray-700 dark:bg-white/10 dark:text-white"
-                            >
-                                4
-                            </div>
-
-                            <div>
-
-                                <p class="text-sm font-semibold">
-                                    Wandi
-                                </p>
-
-                                <p class="text-xs text-gray-500">
-                                    742 botol
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <span
-                            class="text-sm font-bold text-green-500"
-                        >
-                            7.420 poin
-                        </span>
-
-                    </div>
-
-                </div>
+                    Lihat Semua Aktivitas
+                </a>
 
             </div>
 
@@ -1257,20 +1052,142 @@
 
 
 
+        {{-- ================================================= --}}
         {{-- FOOTER --}}
+        {{-- ================================================= --}}
 
-        <div
-            class="mt-8 border-t border-gray-200 pt-6 text-center text-xs text-gray-500 dark:border-white/10"
+        <footer
+            class="mt-10 border-t border-gray-200 py-6 dark:border-white/10"
         >
 
-            Tercycle Admin Panel • Sistem Pengelolaan Daur Ulang Sekolah
+            <div class="flex flex-col justify-between gap-2 text-xs text-gray-500 sm:flex-row">
 
-        </div>
+                <p>
+                    © {{ date('Y') }} Tercycle
+                </p>
+
+                <p>
+                    Admin Panel · Bank Sampah Digital
+                </p>
+
+            </div>
+
+        </footer>
+
 
     </main>
 
 </div>
 
+{{-- ========================================================= --}}
+{{-- MODAL KONFIRMASI LOGOUT --}}
+{{-- ========================================================= --}}
 
+<div
+    x-show="logoutModal"
+    x-transition.opacity
+    x-effect="document.body.style.overflow = logoutModal ? 'hidden' : ''"
+    class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
+    style="display: none;"
+>
+    {{-- BACKDROP --}}
+    <div
+        class="absolute inset-0 bg-black/50 backdrop-blur-md"
+        @click="logoutModal = false"
+    ></div>
+
+
+    {{-- MODAL --}}
+    <div
+        x-show="logoutModal"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        @click.stop
+        class="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900"
+    >
+
+        {{-- ICON --}}
+        <div class="flex justify-center">
+
+            <div
+                class="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 text-red-500"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-6 w-6"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"
+                    />
+
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="m10 17 5-5-5-5m5 5H3"
+                    />
+                </svg>
+            </div>
+
+        </div>
+
+
+        {{-- TEXT --}}
+        <div class="mt-4 text-center">
+
+            <h2 class="text-lg font-bold">
+                Yakin mau logout?
+            </h2>
+
+            <p class="mt-2 text-sm text-gray-500">
+                Kamu akan keluar dari akun dan harus login kembali.
+            </p>
+
+        </div>
+
+
+        {{-- BUTTON --}}
+        <div class="mt-6 grid grid-cols-2 gap-3">
+
+            {{-- BATAL --}}
+            <button
+                type="button"
+                @click="logoutModal = false"
+                class="rounded-xl border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+            >
+                Batal
+            </button>
+
+
+            {{-- LOGOUT --}}
+            <form
+                action="/logout"
+                method="POST"
+            >
+                @csrf
+
+                <button
+                    type="submit"
+                    class="w-full rounded-xl bg-red-500 px-4 py-3 text-sm font-bold text-white transition hover:bg-red-600"
+                >
+                    Logout
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
 </body>
 </html>

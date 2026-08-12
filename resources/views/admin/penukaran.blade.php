@@ -3,6 +3,8 @@
     lang="id"
     x-data="{
         dark: localStorage.getItem('theme') !== 'light',
+        sidebarOpen: false,
+        logoutModal: false,
 
         toggleTheme() {
             this.dark = !this.dark;
@@ -55,7 +57,7 @@
 {{-- ========================================================= --}}
 
 <aside
-    class="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-gray-200 bg-white dark:border-white/10 dark:bg-gray-950 lg:block"
+    class="fixed inset-y-0 left-0 z-50 w-64 border-r border-gray-200 bg-white transition-transform duration-300 dark:border-white/10 dark:bg-gray-950 lg:translate-x-0" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
 >
 
     <div class="flex h-full flex-col">
@@ -101,16 +103,23 @@
 
             <a
                 href="/admin/dashboard"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+                class="{{ request()->is('admin/dashboard')
+                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
+                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
+                }}"
             >
                 <span class="text-lg">⌂</span>
                 Dashboard
             </a>
 
-
+            {{-- ACTIVE --}}
+            
             <a
                 href="/admin/penukaran"
-                class="flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500"
+                class="{{ request()->is('admin/penukaran')
+                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
+                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
+                }}"
             >
                 <span class="text-lg">♻</span>
                 Penukaran Botol
@@ -126,7 +135,10 @@
 
             <a
                 href="/admin/botol"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+                class="{{ request()->is('admin/botol')
+                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
+                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
+                }}"
             >
                 <span class="text-lg">♲</span>
                 Jenis Botol
@@ -135,7 +147,10 @@
 
             <a
                 href="/admin/siswa"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+                class="{{ request()->is('admin/siswa')
+                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
+                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
+                }}"
             >
                 <span class="text-lg">♙</span>
                 Siswa
@@ -144,7 +159,10 @@
 
             <a
                 href="/admin/produk"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+                class="{{ request()->is('admin/produk')
+                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
+                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
+                }}"
             >
                 <span class="text-lg">□</span>
                 Produk
@@ -153,7 +171,10 @@
 
             <a
                 href="/admin/transaksi"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+                class="{{ request()->is('admin/transaksi')
+                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
+                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
+                }}"
             >
                 <span class="text-lg">≡</span>
                 Transaksi
@@ -167,16 +188,17 @@
         <div
             class="border-t border-gray-200 p-4 dark:border-white/10"
         >
-
             <div class="flex items-center gap-3">
 
+                {{-- AVATAR --}}
                 <div
-                    class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-900 font-bold text-white dark:bg-white dark:text-gray-950"
+                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-900 font-bold text-white dark:bg-white dark:text-gray-950"
                 >
                     A
                 </div>
 
-                <div class="min-w-0">
+                {{-- NAMA --}}
+                <div class="min-w-0 flex-1">
 
                     <p class="truncate text-sm font-semibold">
                         Administrator
@@ -188,14 +210,59 @@
 
                 </div>
 
-            </div>
+                {{-- LOGOUT ICON --}}
+                <form
+                    action="/logout"
+                    method="POST"
+                >
+                    @csrf
 
+                    <button
+                        type="button"
+                        title="Logout"
+                        @click="logoutModal = true"
+                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-400 transition hover:bg-red-500/10 hover:text-red-500"
+                    >
+
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.8"
+                            stroke="currentColor"
+                            class="h-5 w-5"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"
+                            />
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="m10 17 5-5-5-5m5 5H3"
+                            />
+                        </svg>
+
+                    </button>
+
+                </form>
+
+            </div>
         </div>
 
     </div>
 
 </aside>
 
+<div
+    x-show="sidebarOpen"
+    x-transition.opacity
+    @click="sidebarOpen = false"
+    class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+    style="display: none;"
+></div>
 
 
 {{-- ========================================================= --}}
@@ -211,16 +278,39 @@
         class="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-gray-200 bg-white/90 px-6 backdrop-blur-xl dark:border-white/10 dark:bg-gray-950/90 lg:px-8"
     >
 
-        <div>
+        <div class="flex items-center gap-3">
 
-            <p class="text-sm font-medium text-gray-500">
-                Management
-            </p>
+            <button
+                type="button"
+                @click="sidebarOpen = true"
+                class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 lg:hidden"
+            >
 
-            <h1 class="font-bold">
-                Penukaran Botol
-            </h1>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M4 6h16M4 12h16M4 18h16"
+                    />
+                </svg>
+            </button>
 
+            <div>
+                <p class="text-sm font-medium text-gray-500">
+                    Management
+                </p>
+
+                <h1 class="font-bold">
+                    Penukaran Botol
+                </h1>
+            </div>
         </div>
 
 
@@ -722,6 +812,115 @@
 
 </div>
 
+{{-- ========================================================= --}}
+{{-- MODAL KONFIRMASI LOGOUT --}}
+{{-- ========================================================= --}}
 
+<div
+    x-show="logoutModal"
+    x-transition.opacity
+    x-effect="document.body.style.overflow = logoutModal ? 'hidden' : ''"
+    class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
+    style="display: none;"
+>
+    {{-- BACKDROP --}}
+    <div
+        class="absolute inset-0 bg-black/50 backdrop-blur-md"
+        @click="logoutModal = false"
+    ></div>
+
+
+    {{-- MODAL --}}
+    <div
+        x-show="logoutModal"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        @click.stop
+        class="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900"
+    >
+
+        {{-- ICON --}}
+        <div class="flex justify-center">
+
+            <div
+                class="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 text-red-500"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-6 w-6"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"
+                    />
+
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="m10 17 5-5-5-5m5 5H3"
+                    />
+                </svg>
+            </div>
+
+        </div>
+
+
+        {{-- TEXT --}}
+        <div class="mt-4 text-center">
+
+            <h2 class="text-lg font-bold">
+                Yakin mau logout?
+            </h2>
+
+            <p class="mt-2 text-sm text-gray-500">
+                Kamu akan keluar dari akun dan harus login kembali.
+            </p>
+
+        </div>
+
+
+        {{-- BUTTON --}}
+        <div class="mt-6 grid grid-cols-2 gap-3">
+
+            {{-- BATAL --}}
+            <button
+                type="button"
+                @click="logoutModal = false"
+                class="rounded-xl border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+            >
+                Batal
+            </button>
+
+
+            {{-- LOGOUT --}}
+            <form
+                action="/logout"
+                method="POST"
+            >
+                @csrf
+
+                <button
+                    type="submit"
+                    class="w-full rounded-xl bg-red-500 px-4 py-3 text-sm font-bold text-white transition hover:bg-red-600"
+                >
+                    Logout
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
 </body>
 </html>
