@@ -285,22 +285,6 @@
 
             </form>
 
-
-            {{-- LOGIN --}}
-
-            <p class="mt-7 text-center text-sm text-gray-500">
-
-                Sudah punya akun?
-
-                <a
-                    href="/login"
-                    class="font-semibold text-green-500 hover:text-green-400"
-                >
-                    Masuk sekarang
-                </a>
-
-            </p>
-
         </div>
 
 

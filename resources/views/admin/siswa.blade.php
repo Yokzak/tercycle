@@ -4,8 +4,45 @@
     x-data="{
         dark: localStorage.getItem('theme') !== 'light',
         sidebarOpen: false,
-        studentModal: false,
         logoutModal: false,
+        studentModal: false,
+        accountModal: false,
+        search: '',
+        siswas: @js($siswas),
+        searching: false,
+        
+        student: {
+            nama_lengkap: '',
+            nis: '',
+            kelas: '',
+            jurusan: ''
+        },
+
+        async searchStudents() {
+            this.searching = true;
+
+            try {
+                const response = await fetch(
+                    `{{ route('admin.siswa.index') }}?search=${encodeURIComponent(this.search)}`,
+                    {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error('Gagal mengambil data siswa.');
+                }
+
+                this.siswas = await response.json();
+            } catch (error) {
+                console.error(error);
+            } finally {
+                this.searching = false;
+            }
+        },
 
         toggleTheme() {
             this.dark = !this.dark;
@@ -483,11 +520,11 @@
                 </p>
 
                 <p class="mt-2 text-3xl font-black">
-                    248
+                    {{ $totalSiswa }}
                 </p>
 
                 <p class="mt-2 text-xs text-green-500">
-                    +12 bulan ini
+                    +{{ $siswaBulanIni }} bulan ini
                 </p>
 
             </div>
@@ -586,28 +623,34 @@
 
                     <div class="relative">
 
-                        <input
-                            type="text"
-                            placeholder="Cari nama / kode..."
-                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 pl-10 text-sm outline-none transition focus:border-green-500 sm:w-64 dark:border-white/10 dark:bg-gray-900"
+                        <form
+                            method="GET"
+                            action="{{ route('admin.siswa.index') }}"
+                            class="relative"
                         >
+                            <input
+                                type="text"
+                                x-model="search"
+                                @input.debounce.300ms="searchStudents()"
+                                placeholder="Cari nama / kode..."
+                                class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 pl-10 text-sm outline-none transition focus:border-green-500 sm:w-64 dark:border-white/10 dark:bg-gray-900"
+                            >
 
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke-width="2"
-                            stroke="currentColor"
-                            class="absolute left-3 top-3 h-4 w-4 text-gray-400"
-                        >
-
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="m21 21-4.35-4.35m1.35-5.65a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
-                            />
-
-                        </svg>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="2"
+                                stroke="currentColor"
+                                class="absolute left-3 top-3 h-4 w-4 text-gray-400"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="m21 21-4.35-4.35m1.35-5.65a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
+                                />
+                            </svg>
+                        </form>
 
                     </div>
 
@@ -679,70 +722,33 @@
                     </thead>
 
 
-                    <tbody
-                        class="divide-y divide-gray-200 dark:divide-white/10"
-                    >
-
-
-                        {{-- SISWA 1 --}}
-
-                        <tr
-                            class="transition hover:bg-gray-50 dark:hover:bg-white/[0.02]"
-                        >
-
+                    <tbody class="divide-y divide-gray-200 dark:divide-white/10">
+                        <template x-for="siswa in siswas" :key="siswa.id">
+                        <tr class="transition hover:bg-gray-50 dark:hover:bg-white/[0.02]">
                             <td class="px-6 py-5">
-
                                 <div class="flex items-center gap-3">
-
                                     <div
-                                        class="flex h-11 w-11 items-center justify-center rounded-full bg-green-500 font-bold text-gray-950"
+                                        class="flex h-11 w-11 items-center justify-center rounded-full bg-green-500 font-bold text-gray-950" x-text="siswa.nama_lengkap.charAt(0).toUpperCase()"
                                     >
-                                        K
                                     </div>
 
                                     <div>
-
-                                        <p class="font-semibold">
-                                            Kevin
-                                        </p>
-
-                                        <p class="mt-1 text-xs text-gray-500">
-                                            XII RPL 1
-                                        </p>
-
+                                        <p class="font-semibold" x-text="siswa.nama_lengkap"></p>
+                                        <p class="mt-1 text-xs text-gray-500" x-text="siswa.kelas + ' ' + siswa.jurusan"></p>
                                     </div>
-
                                 </div>
-
                             </td>
-
 
                             <td class="px-6 py-5">
-
-                                <span class="font-mono text-xs">
-                                    ECO-2026-00125
-                                </span>
-
+                                <span class="font-mono text-xs" x-text="siswa.kode_siswa"></span>
                             </td>
-
 
                             <td class="px-6 py-5">
-
-                                <p class="font-bold text-green-500">
-                                    12.500
-                                </p>
-
-                                <p class="mt-1 text-xs text-gray-500">
-                                    poin
-                                </p>
-
+                                <p class="font-bold text-green-500" x-text="Number(siswa.saldo_poin).toLocaleString('id-ID')"></p>
+                                <p class="mt-1 text-xs text-gray-500">poin</p>
                             </td>
 
-
-                            <td class="px-6 py-5 font-semibold">
-                                250
-                            </td>
-
+                            <td class="px-6 py-5 font-semibold">0</td>
 
                             <td class="px-6 py-5">
 
@@ -777,388 +783,20 @@
 
                         </tr>
 
+                        </template>
 
+                        <template x-if="siswas.length === 0">
 
-                        {{-- SISWA 2 --}}
-
-                        <tr
-                            class="transition hover:bg-gray-50 dark:hover:bg-white/[0.02]"
-                        >
-
-                            <td class="px-6 py-5">
-
-                                <div class="flex items-center gap-3">
-
-                                    <div
-                                        class="flex h-11 w-11 items-center justify-center rounded-full bg-gray-900 font-bold text-white dark:bg-white dark:text-gray-950"
-                                    >
-                                        I
-                                    </div>
-
-                                    <div>
-
-                                        <p class="font-semibold">
-                                            Ilyas
-                                        </p>
-
-                                        <p class="mt-1 text-xs text-gray-500">
-                                            XII RPL 1
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
+                        <tr>
+                            <td
+                                colspan="6"
+                                class="px-6 py-10 text-center text-sm text-gray-500"
+                            >
+                                Siswa tidak ditemukan.
                             </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <span class="font-mono text-xs">
-                                    ECO-2026-00118
-                                </span>
-
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <p class="font-bold text-green-500">
-                                    8.750
-                                </p>
-
-                                <p class="mt-1 text-xs text-gray-500">
-                                    poin
-                                </p>
-
-                            </td>
-
-
-                            <td class="px-6 py-5 font-semibold">
-                                174
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <span
-                                    class="rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-500"
-                                >
-                                    Aktif
-                                </span>
-
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <div class="flex justify-end gap-2">
-
-                                    <button
-                                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
-                                    >
-                                        Detail
-                                    </button>
-
-                                    <button
-                                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
-                                    >
-                                        Edit
-                                    </button>
-
-                                </div>
-
-                            </td>
-
                         </tr>
 
-
-
-                        {{-- SISWA 3 --}}
-
-                        <tr
-                            class="transition hover:bg-gray-50 dark:hover:bg-white/[0.02]"
-                        >
-
-                            <td class="px-6 py-5">
-
-                                <div class="flex items-center gap-3">
-
-                                    <div
-                                        class="flex h-11 w-11 items-center justify-center rounded-full bg-green-500 font-bold text-gray-950"
-                                    >
-                                        A
-                                    </div>
-
-                                    <div>
-
-                                        <p class="font-semibold">
-                                            Arya
-                                        </p>
-
-                                        <p class="mt-1 text-xs text-gray-500">
-                                            XII RPL 2
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <span class="font-mono text-xs">
-                                    ECO-2026-00109
-                                </span>
-
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <p class="font-bold text-green-500">
-                                    6.200
-                                </p>
-
-                                <p class="mt-1 text-xs text-gray-500">
-                                    poin
-                                </p>
-
-                            </td>
-
-
-                            <td class="px-6 py-5 font-semibold">
-                                124
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <span
-                                    class="rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-500"
-                                >
-                                    Aktif
-                                </span>
-
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <div class="flex justify-end gap-2">
-
-                                    <button
-                                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
-                                    >
-                                        Detail
-                                    </button>
-
-                                    <button
-                                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
-                                    >
-                                        Edit
-                                    </button>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-
-
-                        {{-- SISWA 4 --}}
-
-                        <tr
-                            class="transition hover:bg-gray-50 dark:hover:bg-white/[0.02]"
-                        >
-
-                            <td class="px-6 py-5">
-
-                                <div class="flex items-center gap-3">
-
-                                    <div
-                                        class="flex h-11 w-11 items-center justify-center rounded-full bg-gray-900 font-bold text-white dark:bg-white dark:text-gray-950"
-                                    >
-                                        W
-                                    </div>
-
-                                    <div>
-
-                                        <p class="font-semibold">
-                                            Wandi
-                                        </p>
-
-                                        <p class="mt-1 text-xs text-gray-500">
-                                            XI RPL 1
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <span class="font-mono text-xs">
-                                    ECO-2026-00097
-                                </span>
-
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <p class="font-bold text-green-500">
-                                    4.850
-                                </p>
-
-                                <p class="mt-1 text-xs text-gray-500">
-                                    poin
-                                </p>
-
-                            </td>
-
-
-                            <td class="px-6 py-5 font-semibold">
-                                97
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <span
-                                    class="rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-500"
-                                >
-                                    Aktif
-                                </span>
-
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <div class="flex justify-end gap-2">
-
-                                    <button
-                                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
-                                    >
-                                        Detail
-                                    </button>
-
-                                    <button
-                                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
-                                    >
-                                        Edit
-                                    </button>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-
-
-                        {{-- SISWA NONAKTIF --}}
-
-                        <tr
-                            class="opacity-60 transition hover:bg-gray-50 dark:hover:bg-white/[0.02]"
-                        >
-
-                            <td class="px-6 py-5">
-
-                                <div class="flex items-center gap-3">
-
-                                    <div
-                                        class="flex h-11 w-11 items-center justify-center rounded-full bg-gray-200 font-bold text-gray-700 dark:bg-white/10 dark:text-gray-300"
-                                    >
-                                        O
-                                    </div>
-
-                                    <div>
-
-                                        <p class="font-semibold">
-                                            Omar
-                                        </p>
-
-                                        <p class="mt-1 text-xs text-gray-500">
-                                            XI RPL 2
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <span class="font-mono text-xs">
-                                    ECO-2026-00081
-                                </span>
-
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <p class="font-bold">
-                                    1.200
-                                </p>
-
-                                <p class="mt-1 text-xs text-gray-500">
-                                    poin
-                                </p>
-
-                            </td>
-
-
-                            <td class="px-6 py-5 font-semibold">
-                                24
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <span
-                                    class="rounded-full bg-gray-500/10 px-3 py-1 text-xs font-semibold text-gray-500"
-                                >
-                                    Nonaktif
-                                </span>
-
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <div class="flex justify-end gap-2">
-
-                                    <button
-                                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
-                                    >
-                                        Detail
-                                    </button>
-
-                                    <button
-                                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
-                                    >
-                                        Edit
-                                    </button>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-
-                    </tbody>
+                    </template>
 
                 </table>
 
@@ -1314,6 +952,7 @@
                         name="nama_lengkap"
                         placeholder="Contoh: Kevin Agna Pratama"
                         class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                        x-model="student.nama_lengkap"
                     >
                 </div>
 
@@ -1333,6 +972,7 @@
                         name="nis"
                         placeholder="Contoh: 202600125"
                         class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                        x-model="student.nis"
                     >
                 </div>
 
@@ -1353,6 +993,7 @@
                             id="kelas"
                             name="kelas"
                             class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                            x-model="student.kelas"
                         >
                             <option value="">
                                 Pilih kelas
@@ -1386,6 +1027,7 @@
                             id="jurusan"
                             name="jurusan"
                             class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                            x-model="student.jurusan"
                         >
                             <option value="">
                                 Pilih jurusan
@@ -1427,10 +1069,11 @@
 
 
                     <button
-                        type="submit"
+                        type="button"
+                        @click="studentModal = false; accountModal = true"
                         class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950 transition hover:bg-green-400"
                     >
-                        Simpan Siswa
+                        Lanjut
                     </button>
 
                 </div>
@@ -1439,6 +1082,152 @@
 
         </div>
 
+    </div>
+
+    {{-- ========================================================= --}}
+    {{-- MODAL BUAT AKUN --}}
+    {{-- ========================================================= --}}
+
+    <div
+        x-show="accountModal"
+        x-transition.opacity
+        x-effect="document.body.style.overflow = accountModal ? 'hidden' : ''"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+        style="display: none;"
+    >
+        {{-- BACKDROP --}}
+        <div
+            class="absolute inset-0 bg-black/50 backdrop-blur-md"
+            @click="accountModal = false"
+        ></div>
+
+        {{-- MODAL --}}
+        <div
+            x-show="accountModal"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+            @click.stop
+            class="no-scrollbar relative max-h-[85vh] w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
+        >
+
+            {{-- HEADER --}}
+            <div
+                class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10"
+            >
+                <div>
+                    <h2 class="text-lg font-bold">
+                        Buat Akun
+                    </h2>
+
+                    <p class="mt-1 text-xs text-gray-500">
+                        Masukkan informasi akun siswa.
+                    </p>
+                </div>
+
+                {{-- CLOSE --}}
+                <button
+                    type="button"
+                    @click="accountModal = false"
+                    class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white"
+                >
+                    ✕
+                </button>
+            </div>
+
+            {{-- FORM --}}
+            <form
+                action="{{ route('admin.siswa.store') }}"
+                method="POST"
+                class="p-6"
+            >
+                @csrf
+
+                {{-- Data dari popup pertama --}}
+                <input type="hidden" name="nama_lengkap" :value="student.nama_lengkap">
+                <input type="hidden" name="nis" :value="student.nis">
+                <input type="hidden" name="kelas" :value="student.kelas">
+                <input type="hidden" name="jurusan" :value="student.jurusan">
+
+                {{-- EMAIL --}}
+                <div>
+                    <label
+                        for="email"
+                        class="mb-2 block text-sm font-semibold"
+                    >
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Contoh: siswa@gmail.com"
+                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                    >
+                </div>
+
+                {{-- PASSWORD --}}
+                <div class="mt-5">
+                    <label
+                        for="password"
+                        class="mb-2 block text-sm font-semibold"
+                    >
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Minimal 8 karakter"
+                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                    >
+                </div>
+
+                {{-- KONFIRMASI PASSWORD --}}
+                <div class="mt-5">
+                    <label
+                        for="password_confirmation"
+                        class="mb-2 block text-sm font-semibold"
+                    >
+                        Konfirmasi Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password_confirmation"
+                        name="password_confirmation"
+                        placeholder="Masukkan ulang password"
+                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                    >
+                </div>
+
+                {{-- BUTTON --}}
+                <div class="mt-7 flex justify-end gap-3 border-t border-gray-200 pt-5 dark:border-white/10">
+
+                    <button
+                        type="button"
+                        @click="accountModal = false; studentModal = true"
+                        class="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+                    >
+                        Kembali
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950 transition hover:bg-green-400"
+                    >
+                        Simpan
+                    </button>
+
+                </div>
+            </form>
+
+        </div>
     </div>
 
 </div>

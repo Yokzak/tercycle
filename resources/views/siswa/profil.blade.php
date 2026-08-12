@@ -5,6 +5,7 @@
         dark: localStorage.getItem('theme') !== 'light',
         sidebarOpen: false,
         logoutModal: false,
+        editProfileModal: false,
 
         toggleTheme() {
             this.dark = !this.dark;
@@ -569,9 +570,10 @@
 
                     </div>
 
-
                     <button
-                        class="rounded-xl bg-green-500 px-5 py-2.5 text-sm font-bold text-gray-950 transition hover:bg-green-400"
+                        type="button"
+                        @click="editProfileModal = true"
+                        class="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-2 font-semibold text-gray-700 transition hover:bg-gray-50 dark:border-white/10 dark:bg-white/[0.03] dark:text-gray-300 dark:hover:bg-white/10"
                     >
                         Edit Profil
                     </button>
@@ -591,106 +593,66 @@
 
             {{-- PERSONAL INFORMATION --}}
 
-            <div
-                class="rounded-2xl border border-gray-200 bg-white p-6 lg:col-span-2 dark:border-white/10 dark:bg-white/[0.03]"
-            >
-
+            <div class="rounded-2xl border border-gray-200 bg-white p-6 lg:col-span-2 dark:border-white/10 dark:bg-white/[0.03]">
                 <div class="mb-6">
+                    <h3 class="font-bold">Informasi Akun</h3>
 
-                    <h3 class="font-bold">
-                        Informasi Akun
-                    </h3>
-
-                    <p class="mt-1 text-xs text-gray-500">
-                        Informasi dasar akun siswa.
-                    </p>
+                    <p class="mt-1 text-xs text-gray-500">Informasi dasar akun siswa.</p>
 
                 </div>
 
 
                 <div class="grid gap-5 sm:grid-cols-2">
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500">Nama Lengkap</label>
+                        <div class="mt-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm dark:border-white/10 dark:bg-gray-900">
+                            {{ $user->siswa->nama_lengkap }}
+                        </div>
+                    </div>
 
 
                     <div>
+                        <label class="text-xs font-semibold text-gray-500">NIS</label>
 
-                        <label
-                            class="text-xs font-semibold text-gray-500"
-                        >
-                            Nama Lengkap
-                        </label>
+                        <div class="mt-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm dark:border-white/10 dark:bg-gray-900">
+                            {{ $user->siswa->nis }}
+                        </div>
+                    </div>
 
-                        <div
-                            class="mt-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm dark:border-white/10 dark:bg-gray-900"
-                        >
-                            Kevin
+
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500">Kelas</label>
+
+                        <div class="mt-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm dark:border-white/10 dark:bg-gray-900">
+                            {{ $user->siswa->kelas }}
                         </div>
 
                     </div>
 
 
                     <div>
+                        <label class="text-xs font-semibold text-gray-500">Email</label>
 
-                        <label
-                            class="text-xs font-semibold text-gray-500"
-                        >
-                            NIS
-                        </label>
-
-                        <div
-                            class="mt-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm dark:border-white/10 dark:bg-gray-900"
-                        >
-                            202600125
+                        <div class="mt-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm dark:border-white/10 dark:bg-gray-900">
+                            {{ $user->email }}
                         </div>
 
                     </div>
 
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500">Jurusan</label>
+
+                        <div class="mt-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm dark:border-white/10 dark:bg-gray-900">
+                            {{ $user->siswa->jurusan }}
+                        </div>
+                    </div>
 
                     <div>
 
-                        <label
-                            class="text-xs font-semibold text-gray-500"
-                        >
-                            Kelas
-                        </label>
+                        <label class="text-xs font-semibold text-gray-500">Bergabung Sejak</label>
 
-                        <div
-                            class="mt-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm dark:border-white/10 dark:bg-gray-900"
-                        >
-                            XI RPL
-                        </div>
-
-                    </div>
-
-
-                    <div>
-
-                        <label
-                            class="text-xs font-semibold text-gray-500"
-                        >
-                            Email
-                        </label>
-
-                        <div
-                            class="mt-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm dark:border-white/10 dark:bg-gray-900"
-                        >
-                            kevin@example.com
-                        </div>
-
-                    </div>
-
-
-                    <div class="sm:col-span-2">
-
-                        <label
-                            class="text-xs font-semibold text-gray-500"
-                        >
-                            Bergabung Sejak
-                        </label>
-
-                        <div
-                            class="mt-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm dark:border-white/10 dark:bg-gray-900"
-                        >
-                            10 Januari 2026
+                        <div class="mt-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm dark:border-white/10 dark:bg-gray-900">
+                            {{ $user->created_at->format('d F Y') }}
                         </div>
 
                     </div>
@@ -722,38 +684,8 @@
 
                 {{-- QR PLACEHOLDER --}}
 
-                <div
-                    class="mx-auto mt-6 flex h-44 w-44 items-center justify-center rounded-2xl border-4 border-gray-900 bg-white p-4 dark:border-white"
-                >
-
-                    <div
-                        class="grid grid-cols-7 gap-1"
-                    >
-
-                        <template
-                            x-for="i in 49"
-                            :key="i"
-                        >
-
-                            <div
-                                class="h-2.5 w-2.5"
-                                :class="[
-                                    i % 3 === 0 ||
-                                    i % 5 === 0 ||
-                                    i === 8 ||
-                                    i === 9 ||
-                                    i === 15 ||
-                                    i === 31 ||
-                                    i === 42
-                                    ? 'bg-gray-900'
-                                    : 'bg-white'
-                                ]"
-                            ></div>
-
-                        </template>
-
-                    </div>
-
+                <div class="mx-auto mt-6 flex h-44 w-44 items-center justify-center rounded-2xl border-4 border-gray-900 bg-white p-4 dark:border-white">
+                    {!! $qr !!}
                 </div>
 
 
@@ -763,16 +695,16 @@
                         Kode unik
                     </p>
 
-                    <p
-                        class="mt-1 font-mono text-lg font-black tracking-widest text-green-500"
-                    >
-                        ECO-2026-00125
+                    <p class="mt-1 font-mono text-lg font-black tracking-widest text-green-500">
+                        {{ $user->siswa->kode_siswa }}
                     </p>
 
                 </div>
 
 
                 <button
+                    type="button"
+                    @click="navigator.clipboard.writeText('{{ $user->siswa->kode_siswa }}')"
                     class="mt-5 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm font-semibold transition hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
                 >
                     Salin Kode
@@ -946,6 +878,207 @@
 
     </div>
 
+</div>
+{{-- MODAL EDIT PROFIL --}}
+<div
+    x-show="editProfileModal"
+    x-transition.opacity
+    x-effect="document.body.style.overflow = editProfileModal ? 'hidden' : ''"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+    style="display: none;"
+>
+    {{-- BACKDROP --}}
+    <div
+        class="absolute inset-0 bg-black/50 backdrop-blur-md"
+        @click="editProfileModal = false"
+    ></div>
+
+    {{-- MODAL --}}
+    <div
+        x-show="editProfileModal"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        @click.stop
+        class="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
+    >
+
+        {{-- HEADER --}}
+        <div class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10">
+            <div>
+                <h2 class="text-lg font-bold">
+                    Edit Profil
+                </h2>
+
+                <p class="mt-1 text-sm text-gray-500">
+                    Perbarui informasi profil kamu.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                @click="editProfileModal = false"
+                class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white"
+            >
+                ✕
+            </button>
+        </div>
+
+        {{-- FORM --}}
+        <form
+            action="{{ route('siswa.profil.update') }}"
+            method="POST"
+            class="p-6"
+        >
+            @csrf
+            @method('PUT')
+
+            {{-- NAMA LENGKAP --}}
+            <div>
+                <label
+                    for="edit_nama_lengkap"
+                    class="mb-2 block text-sm font-semibold"
+                >
+                    Nama Lengkap
+                </label>
+
+                <input
+                    type="text"
+                    id="edit_nama_lengkap"
+                    name="nama_lengkap"
+                    value="{{ old('nama_lengkap', $user->siswa->nama_lengkap) }}"
+                    required
+                    class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                >
+            </div>
+
+            {{-- NIS --}}
+            <div class="mt-5">
+                <label
+                    for="edit_nis"
+                    class="mb-2 block text-sm font-semibold"
+                >
+                    NIS
+                </label>
+
+                <input
+                    type="text"
+                    id="edit_nis"
+                    value="{{ $user->siswa->nis }}"
+                    readonly
+                    class="w-full cursor-not-allowed rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-sm text-gray-500 dark:border-white/10 dark:bg-gray-800 dark:text-gray-400"
+                >
+
+                <p class="mt-1 text-xs text-gray-400">
+                    NIS tidak dapat diubah.
+                </p>
+            </div>
+
+            {{-- KELAS --}}
+            <div class="mt-5">
+                <label
+                    for="edit_kelas"
+                    class="mb-2 block text-sm font-semibold"
+                >
+                    Kelas
+                </label>
+
+                <select
+                    id="edit_kelas"
+                    name="kelas"
+                    required
+                    class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                >
+                    <option value="X" @selected($user->siswa->kelas === 'X')>
+                        X
+                    </option>
+
+                    <option value="XI" @selected($user->siswa->kelas === 'XI')>
+                        XI
+                    </option>
+
+                    <option value="XII" @selected($user->siswa->kelas === 'XII')>
+                        XII
+                    </option>
+                </select>
+            </div>
+
+            {{-- EMAIL --}}
+            <div class="mt-5">
+                <label
+                    for="edit_email"
+                    class="mb-2 block text-sm font-semibold"
+                >
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="edit_email"
+                    name="email"
+                    value="{{ old('email', $user->email) }}"
+                    required
+                    class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                >
+            </div>
+
+            {{-- JURUSAN --}}
+            <div class="mt-5">
+                <label
+                    for="edit_jurusan"
+                    class="mb-2 block text-sm font-semibold"
+                >
+                    Jurusan
+                </label>
+
+                <select
+                    id="edit_jurusan"
+                    name="jurusan"
+                    required
+                    class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                >
+                    <option value="RPL" @selected($user->siswa->jurusan === 'RPL')>
+                        RPL
+                    </option>
+
+                    <option value="TKJ" @selected($user->siswa->jurusan === 'TKJ')>
+                        TKJ
+                    </option>
+
+                    <option value="DKV" @selected($user->siswa->jurusan === 'DKV')>
+                        DKV
+                    </option>
+
+                    <option value="AKL" @selected($user->siswa->jurusan === 'AKL')>
+                        AKL
+                    </option>
+                </select>
+            </div>
+
+            {{-- BUTTON --}}
+            <div class="mt-7 flex justify-end gap-3 border-t border-gray-200 pt-5 dark:border-white/10">
+
+                <button
+                    type="button"
+                    @click="editProfileModal = false"
+                    class="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+                >
+                    Batal
+                </button>
+
+                <button
+                    type="submit"
+                    class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950 transition hover:bg-green-400"
+                >
+                    Simpan
+                </button>
+
+            </div>
+        </form>
+    </div>
 </div>
 </body>
 </html>
