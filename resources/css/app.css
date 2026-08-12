@@ -21,3 +21,14 @@ input[type="number"] {
 .no-scrollbar::-webkit-scrollbar {
     display: none;
 }
+
+.no-scrollbar {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;
+}

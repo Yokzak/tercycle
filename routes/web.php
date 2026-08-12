@@ -67,3 +67,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     });
 });
 
+Route::get('/admin/profil', function () {
+    return view('admin.profil');
+});
