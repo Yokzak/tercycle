@@ -2,44 +2,28 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\TukarBotol;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -47,12 +31,19 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    public function tukarBotols()
+
+    // 1 User memiliki 1 data siswa
+    public function siswa(): HasOne
     {
-        return $this->hasMany(TukarBotol::class, 'user_id');
+        return $this->hasOne(Siswa::class);
     }
-    public function transaksiYangDiproses()
+
+    // 1 Admin dapat memproses banyak penukaran
+    public function penukaranBotoSebagaiAdmin(): HasMany
     {
-        return $this->hasMany(TukarBotol::class, 'admin_id');
+        return $this->hasMany(
+            PenukaranBotol::class,
+            'admin_id'
+        );
     }
 }
