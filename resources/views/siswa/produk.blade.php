@@ -372,13 +372,11 @@
                 >
                     @csrf
 
-                <button
-                    type="button"
-                    title="Logout"
-                    @click="logoutModal = true"
-                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-400 transition hover:bg-red-500/10 hover:text-red-500"
-                >
-
+                    <button
+                        type="button"
+                        @click="logoutModal = true"
+                        class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition hover:bg-red-500/10 hover:text-red-500"
+                    >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -390,16 +388,9 @@
                             <path
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
-                                d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"
-                            />
-
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="m10 17 5-5-5-5m5 5H3"
+                                d="M15 12H3m0 0 4-4m-4 4 4 4M15 4h3a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-3"
                             />
                         </svg>
-
                     </button>
 
                 </form>
