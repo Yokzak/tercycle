@@ -5,6 +5,7 @@
         dark: localStorage.getItem('theme') !== 'light',
         sidebarOpen: false,
         logoutModal: false,
+        productModal: false,
 
         toggleTheme() {
             this.dark = !this.dark;
@@ -616,20 +617,45 @@
 
         {{-- HEADER --}}
 
-        <div class="mb-8">
+        <div
+            class="flex flex-col justify-between gap-5 sm:flex-row sm:items-center"
+        >
 
-            <p class="text-sm font-medium text-green-500">
-                Marketplace
-            </p>
+            <div>
 
-            <h2 class="mt-2 text-3xl font-black">
-                Tukarkan Poinmu
-            </h2>
+                <h2 class="text-2xl font-black">
+                    Tukarkan Poinmu
+                </h2>
 
-            <p class="mt-1 text-sm text-gray-500">
-                Gunakan poin yang kamu kumpulkan untuk mendapatkan
-                produk ramah lingkungan.
-            </p>
+                <p class="mt-1 text-sm text-gray-500">
+                    Gunakan poin yang kamu kumpulkan untuk mendapatkan produk ramah lingkungan.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                @click="productModal = true"
+                class="inline-flex items-center gap-2 rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950 transition hover:bg-green-400"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M12 5v14M5 12h14"
+                    />
+                </svg>
+
+                Tambah Produk
+            </button>
 
         </div>
 
@@ -895,6 +921,274 @@
         </div>
 
     </footer>
+
+</div>
+
+{{-- ========================================================= --}}
+{{-- MODAL TAMBAH PRODUK --}}
+{{-- ========================================================= --}}
+
+<div
+    x-show="productModal"
+    x-transition.opacity
+    x-effect="document.body.style.overflow = productModal ? 'hidden' : ''"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+    style="display: none;"
+>
+    {{-- BACKDROP --}}
+    <div
+        class="absolute inset-0 bg-black/50 backdrop-blur-md"
+        @click="productModal = false"
+    ></div>
+
+
+    {{-- MODAL --}}
+    <div
+        x-show="productModal"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        @click.stop
+        class="no-scrollbar relative max-h-[85vh] w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl bg-white p-4 shadow-2xl dark:bg-gray-900 sm:p-5"
+    >
+
+        {{-- HEADER --}}
+        <div
+            class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10"
+        >
+
+            <div>
+                <h2 class="text-lg font-bold">
+                    Tambah Produk
+                </h2>
+
+                <p class="mt-1 text-xs text-gray-500">
+                    Masukkan informasi produk yang ingin dijual.
+                </p>
+            </div>
+
+
+            {{-- CLOSE --}}
+            <button
+                type="button"
+                @click="productModal = false"
+                class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 18 18 6M6 6l12 12"
+                    />
+                </svg>
+            </button>
+
+        </div>
+
+
+        {{-- FORM --}}
+        <form
+            action="#"
+            method="POST"
+            class="p-6"
+        >
+
+            @csrf
+
+
+            {{-- NAMA PRODUK --}}
+            <div>
+                <label
+                    for="nama_produk"
+                    class="mb-2 block text-sm font-semibold"
+                >
+                    Nama Produk
+                </label>
+
+                <input
+                    type="text"
+                    id="nama_produk"
+                    name="nama_produk"
+                    placeholder="Contoh: Tumbler Eco"
+                    class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                >
+            </div>
+
+
+            {{-- DESKRIPSI --}}
+            <div class="mt-5">
+                <label
+                    for="deskripsi"
+                    class="mb-2 block text-sm font-semibold"
+                >
+                    Deskripsi
+                </label>
+
+                <textarea
+                    id="deskripsi"
+                    name="deskripsi"
+                    rows="3"
+                    placeholder="Deskripsi singkat produk..."
+                    class="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                ></textarea>
+            </div>
+
+
+            {{-- HARGA + STOK --}}
+            <div class="mt-5 grid gap-4 sm:grid-cols-2">
+
+                {{-- HARGA --}}
+                <div>
+                    <label
+                        for="harga"
+                        class="mb-2 block text-sm font-semibold"
+                    >
+                        Harga Poin
+                    </label>
+
+                    <div class="relative">
+
+                        <input
+                            type="number"
+                            id="harga"
+                            name="harga"
+                            min="0"
+                            placeholder="5000"
+                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 pr-16 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                        >
+
+                        <span
+                            class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400"
+                        >
+                            poin
+                        </span>
+
+                    </div>
+                </div>
+
+
+                {{-- STOK --}}
+                <div>
+                    <label
+                        for="stok"
+                        class="mb-2 block text-sm font-semibold"
+                    >
+                        Stok
+                    </label>
+
+                    <input
+                        type="number"
+                        id="stok"
+                        name="stok"
+                        min="0"
+                        placeholder="10"
+                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                    >
+                </div>
+
+            </div>
+
+
+            {{-- KATEGORI --}}
+            <div class="mt-5">
+
+                <label
+                    for="kategori"
+                    class="mb-2 block text-sm font-semibold"
+                >
+                    Kategori
+                </label>
+
+                <select
+                    id="kategori"
+                    name="kategori"
+                    class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                >
+                    <option value="">
+                        Pilih kategori
+                    </option>
+
+                    <option value="alat_tulis">
+                        Alat Tulis
+                    </option>
+
+                    <option value="minuman">
+                        Minuman
+                    </option>
+
+                    <option value="aksesoris">
+                        Aksesoris
+                    </option>
+
+                    <option value="lainnya">
+                        Lainnya
+                    </option>
+                </select>
+
+            </div>
+
+
+            {{-- GAMBAR --}}
+            <div class="mt-5">
+
+                <label
+                    for="gambar"
+                    class="mb-2 block text-sm font-semibold"
+                >
+                    Gambar Produk
+                </label>
+
+                <input
+                    type="file"
+                    id="gambar"
+                    name="gambar"
+                    accept="image/*"
+                    class="block w-full cursor-pointer rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-500 file:mr-4 file:border-0 file:bg-green-500 file:px-4 file:py-3 file:font-semibold file:text-gray-950 hover:file:bg-green-400 dark:border-white/10 dark:bg-gray-950"
+                >
+
+                <p class="mt-2 text-xs text-gray-400">
+                    Format JPG, PNG, atau WEBP.
+                </p>
+
+            </div>
+
+
+            {{-- BUTTON --}}
+            <div
+                class="mt-7 flex justify-end gap-3 border-t border-gray-200 pt-5 dark:border-white/10"
+            >
+
+                <button
+                    type="button"
+                    @click="productModal = false"
+                    class="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+                >
+                    Batal
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950 transition hover:bg-green-400"
+                >
+                    Simpan Produk
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
 

@@ -212,7 +212,7 @@
                         </label>
 
                         <a
-                            href="#"
+                            href="{{ route('password.request') }}"
                             class="text-xs font-medium text-green-500 hover:text-green-400"
                         >
                             Lupa password?
@@ -262,23 +262,7 @@
                 </button>
 
             </form>
-
-
-            {{-- REGISTER --}}
-
-            <p class="mt-7 text-center text-sm text-gray-500">
-
-                Belum punya akun?
-
-                <a
-                    href="/register"
-                    class="font-semibold text-green-500 hover:text-green-400"
-                >
-                    Daftar sekarang
-                </a>
-
-            </p>
-
+            
         </div>
 
 
