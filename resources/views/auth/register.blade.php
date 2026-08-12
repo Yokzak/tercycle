@@ -167,7 +167,7 @@
             class="rounded-2xl border border-gray-200 bg-white p-7 shadow-sm dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none sm:p-8"
         >
 
-            <form action="#" method="POST">
+            <form action="{{ route('register') }}" method="POST">
 
                 @csrf
 
@@ -187,9 +187,14 @@
                         type="text"
                         id="name"
                         name="name"
+                        value="{{ old('name') }}"
                         placeholder="Nama lengkap"
-                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-600"
+                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-600 @error('name') border-red-500 focus:border-red-500 focus:ring-red-500/20 @enderror"
                     >
+
+                    @error('name')
+                        <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                    @enderror
 
                 </div>
 
@@ -209,9 +214,14 @@
                         type="email"
                         id="email"
                         name="email"
+                        value="{{ old('email') }}"
                         placeholder="nama@email.com"
-                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-600"
+                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-600 @error('email') border-red-500 focus:border-red-500 focus:ring-red-500/20 @enderror"
                     >
+
+                    @error('email')
+                        <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                    @enderror
 
                 </div>
 
@@ -232,8 +242,12 @@
                         id="password"
                         name="password"
                         placeholder="Minimal 8 karakter"
-                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-600"
+                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-600 @error('password') border-red-500 focus:border-red-500 focus:ring-red-500/20 @enderror"
                     >
+
+                    @error('password')
+                        <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                    @enderror
 
                 </div>
 

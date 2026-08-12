@@ -168,22 +168,43 @@
             </button>
 
 
-            {{-- LOGIN --}}
-            <a
-                href="/login"
-                class="hidden rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-600 transition hover:text-gray-950 dark:text-gray-300 dark:hover:text-white sm:block"
-            >
-                Masuk
-            </a>
+            @guest
+                {{-- LOGIN --}}
+                <a
+                    href="/login"
+                    class="hidden rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-600 transition hover:text-gray-950 dark:text-gray-300 dark:hover:text-white sm:block"
+                >
+                    Masuk
+                </a>
 
 
-            {{-- REGISTER --}}
-            <a
-                href="/register"
-                class="rounded-xl bg-green-500 px-5 py-2.5 text-sm font-bold text-gray-950 transition hover:bg-green-400"
-            >
-                Daftar
-            </a>
+                {{-- REGISTER --}}
+                <a
+                    href="/register"
+                    class="rounded-xl bg-green-500 px-5 py-2.5 text-sm font-bold text-gray-950 transition hover:bg-green-400"
+                >
+                    Daftar
+                </a>
+            @endguest
+
+            @auth
+                <a
+                    href="{{ Auth::user()->role === 'admin' ? '/admin/dashboard' : '/siswa/dashboard' }}"
+                    class="hidden rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-600 transition hover:text-gray-950 dark:text-gray-300 dark:hover:text-white sm:block"
+                >
+                    Dashboard
+                </a>
+
+                <form action="{{ route('logout') }}" method="POST" class="inline">
+                    @csrf
+                    <button
+                        type="submit"
+                        class="rounded-xl bg-red-500 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-red-400"
+                    >
+                        Keluar
+                    </button>
+                </form>
+            @endauth
 
 
             {{-- MOBILE MENU --}}
@@ -251,12 +272,33 @@
                 Fitur
             </a>
 
-            <a
-                href="/login"
-                class="block rounded-lg px-3 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5"
-            >
-                Masuk
-            </a>
+            @guest
+                <a
+                    href="/login"
+                    class="block rounded-lg px-3 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5"
+                >
+                    Masuk
+                </a>
+            @endguest
+
+            @auth
+                <a
+                    href="{{ Auth::user()->role === 'admin' ? '/admin/dashboard' : '/siswa/dashboard' }}"
+                    class="block rounded-lg px-3 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5"
+                >
+                    Dashboard
+                </a>
+
+                <form action="{{ route('logout') }}" method="POST" class="block">
+                    @csrf
+                    <button
+                        type="submit"
+                        class="w-full text-left rounded-lg px-3 py-2.5 text-sm font-semibold text-red-500 hover:bg-gray-100 dark:hover:bg-white/5"
+                    >
+                        Keluar
+                    </button>
+                </form>
+            @endauth
 
         </div>
 
