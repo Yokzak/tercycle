@@ -56,11 +56,11 @@
 {{-- ========================================================= --}}
 
 <aside
-    class="fixed inset-y-0 left-0 z-50 w-64 border-r border-gray-200 bg-white transition-transform duration-300 dark:border-white/10 dark:bg-gray-950 lg:translate-x-0" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+    class="no-scrollbar fixed inset-y-0 left-0 z-50 w-64 overflow-y-auto border-r border-gray-200 bg-white transition-transform duration-300 dark:border-white/10 dark:bg-gray-950 lg:translate-x-0"
+    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
 >
 
     <div class="flex h-full flex-col">
-
 
         {{-- LOGO --}}
 
@@ -90,8 +90,7 @@
 
         {{-- MENU --}}
 
-        <nav class="flex-1 space-y-1 px-4 py-6">
-
+        <nav class="flex-1 space-y-1 px-4 py-6 overflow-y-auto">
 
             <p
                 class="mb-3 px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400"
@@ -99,28 +98,54 @@
                 Overview
             </p>
 
-            {{-- ACTIVE --}}
+
+            {{-- DASHBOARD --}}
 
             <a
                 href="/admin/dashboard"
-                class="{{ request()->is('admin/dashboard')
-                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
-                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
-                }}"
+                class="flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500
+                transition hover:bg-green-500/20 hover:text-green-600 dark:bg-green-500/20 dark:text-green-400 dark:hover:bg-green-500/30 dark:hover:text-green-300"
             >
-                <span class="text-lg">⌂</span>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5M9 21v-6h6v6"
+                    />
+                </svg>
+
                 Dashboard
             </a>
 
 
+            {{-- PENUKARAN --}}
+
             <a
                 href="/admin/penukaran"
-                class="{{ request()->is('admin/penukaran')
-                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
-                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
-                }}"
+                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
             >
-                <span class="text-lg">♻</span>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M7 7h10M7 12h10M7 17h10M5 7h.01M5 12h.01M5 17h.01"
+                    />
+                </svg>
+
                 Penukaran Botol
             </a>
 
@@ -132,71 +157,133 @@
             </p>
 
 
+            {{-- BOTOL --}}
+
             <a
                 href="/admin/botol"
-                class="{{ request()->is('admin/botol')
-                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
-                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
-                }}"
+                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
             >
-                <span class="text-lg">♲</span>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M8 3h8M9 3v4l-2 3v8a3 3 0 0 0 3 3h4a3 3 0 0 0 3-3v-8l-2-3V3"
+                    />
+                </svg>
+
                 Jenis Botol
             </a>
 
 
+            {{-- SISWA --}}
+
             <a
                 href="/admin/siswa"
-                class="{{ request()->is('admin/siswa')
-                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
-                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
-                }}"
+                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
             >
-                <span class="text-lg">♙</span>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15 19a6 6 0 0 0-12 0m6-8a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM18 8v6m3-3h-6"
+                    />
+                </svg>
+
                 Siswa
             </a>
 
 
+            {{-- PRODUK --}}
+
             <a
                 href="/admin/produk"
-                class="{{ request()->is('admin/produk')
-                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
-                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
-                }}"
+                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
             >
-                <span class="text-lg">□</span>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M20 7 12 3 4 7m16 0-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                    />
+                </svg>
+
                 Produk
             </a>
 
 
+            {{-- TRANSAKSI --}}
+
             <a
                 href="/admin/transaksi"
-                class="{{ request()->is('admin/transaksi')
-                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
-                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
-                }}"
+                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
             >
-                <span class="text-lg">≡</span>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M4 6h16M4 12h16M4 18h16"
+                    />
+                </svg>
+
                 Transaksi
             </a>
+
+            {{-- Profil --}}
+
+            <a
+                href="/admin/profil"
+                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+            >
+                <span class="text-lg">⚙</span>
+                Profil
+            </a>    
+
 
         </nav>
 
 
-        {{-- ADMIN PROFILE --}}
+        {{-- ADMIN PROFILE SIDEBAR --}}
 
         <div
             class="border-t border-gray-200 p-4 dark:border-white/10"
         >
+
             <div class="flex items-center gap-3">
 
-                {{-- AVATAR --}}
                 <div
-                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-900 font-bold text-white dark:bg-white dark:text-gray-950"
+                    class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-900 font-bold text-white dark:bg-white dark:text-gray-950"
                 >
                     A
                 </div>
 
-                {{-- NAMA --}}
                 <div class="min-w-0 flex-1">
 
                     <p class="truncate text-sm font-semibold">
@@ -209,46 +296,32 @@
 
                 </div>
 
-                {{-- LOGOUT ICON --}}
-                <form
-                    action="/logout"
-                    method="POST"
+                {{-- LOGOUT --}}
+
+                {{-- LOGOUT --}}
+
+                <button
+                    type="button"
+                    @click="logoutModal = true"
+                    class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition hover:bg-red-500/10 hover:text-red-500"
                 >
-                    @csrf
-
-                    <button
-                        type="button"
-                        title="Logout"
-                        @click="logoutModal = true"
-                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-400 transition hover:bg-red-500/10 hover:text-red-500"
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.8"
+                        stroke="currentColor"
+                        class="h-5 w-5"
                     >
-
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke-width="1.8"
-                            stroke="currentColor"
-                            class="h-5 w-5"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"
-                            />
-
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="m10 17 5-5-5-5m5 5H3"
-                            />
-                        </svg>
-
-                    </button>
-
-                </form>
-
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M15 12H3m0 0 4-4m-4 4 4 4M15 4h3a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-3"
+                        />
+                    </svg>
+                </button>
             </div>
+
         </div>
 
     </div>

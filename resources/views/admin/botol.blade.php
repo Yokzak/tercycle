@@ -5,6 +5,7 @@
         dark: localStorage.getItem('theme') !== 'light',
         sidebarOpen: false,
         logoutModal: false,
+        bottleModal: false,
 
         toggleTheme() {
             this.dark = !this.dark;
@@ -56,11 +57,11 @@
 {{-- ========================================================= --}}
 
 <aside
-    class="fixed inset-y-0 left-0 z-50 w-64 border-r border-gray-200 bg-white transition-transform duration-300 dark:border-white/10 dark:bg-gray-950 lg:translate-x-0" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+    class="fixed inset-y-0 left-0 z-50 w-64 border-r border-gray-200 bg-white transition-transform duration-300 dark:border-white/10 dark:bg-gray-950 lg:translate-x-0"
+    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
 >
 
     <div class="flex h-full flex-col">
-
 
         {{-- LOGO --}}
 
@@ -90,8 +91,7 @@
 
         {{-- MENU --}}
 
-        <nav class="flex-1 space-y-1 px-4 py-6">
-
+        <nav class="flex-1 space-y-1 px-4 py-6 overflow-y-auto">
 
             <p
                 class="mb-3 px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400"
@@ -99,27 +99,53 @@
                 Overview
             </p>
 
-            
+
+            {{-- DASHBOARD --}}
+
             <a
                 href="/admin/dashboard"
-                class="{{ request()->is('admin/dashboard')
-                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
-                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
-                }}"
+                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
             >
-                <span class="text-lg">⌂</span>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5M9 21v-6h6v6"
+                    />
+                </svg>
+
                 Dashboard
             </a>
 
 
+            {{-- PENUKARAN --}}
+
             <a
                 href="/admin/penukaran"
-                class="{{ request()->is('admin/penukaran')
-                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
-                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
-                }}"
+                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
             >
-                <span class="text-lg">♻</span>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M7 7h10M7 12h10M7 17h10M5 7h.01M5 12h.01M5 17h.01"
+                    />
+                </svg>
+
                 Penukaran Botol
             </a>
 
@@ -130,73 +156,135 @@
                 Management
             </p>
 
-            {{-- ACTIVE --}}
+
+            {{-- BOTOL --}}
 
             <a
                 href="/admin/botol"
-                class="{{ request()->is('admin/botol')
-                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
-                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
-                }}"
+                class="flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500
+                transition hover:bg-green-500/20 hover:text-green-600 dark:bg-green-500/20 dark:text-green-400 dark:hover:bg-green-500/30 dark:hover:text-green-300"
             >
-                <span class="text-lg">♲</span>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M8 3h8M9 3v4l-2 3v8a3 3 0 0 0 3 3h4a3 3 0 0 0 3-3v-8l-2-3V3"
+                    />
+                </svg>
+
                 Jenis Botol
             </a>
 
 
+            {{-- SISWA --}}
+
             <a
                 href="/admin/siswa"
-                class="{{ request()->is('admin/siswa')
-                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
-                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
-                }}"
+                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
             >
-                <span class="text-lg">♙</span>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15 19a6 6 0 0 0-12 0m6-8a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM18 8v6m3-3h-6"
+                    />
+                </svg>
+
                 Siswa
             </a>
 
 
+            {{-- PRODUK --}}
+
             <a
                 href="/admin/produk"
-                class="{{ request()->is('admin/produk')
-                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
-                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
-                }}"
+                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
             >
-                <span class="text-lg">□</span>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M20 7 12 3 4 7m16 0-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                    />
+                </svg>
+
                 Produk
             </a>
 
 
+            {{-- TRANSAKSI --}}
+
             <a
                 href="/admin/transaksi"
-                class="{{ request()->is('admin/transaksi')
-                    ? 'flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500'
-                    : 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
-                }}"
+                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
             >
-                <span class="text-lg">≡</span>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M4 6h16M4 12h16M4 18h16"
+                    />
+                </svg>
+
                 Transaksi
             </a>
+
+            {{-- Profil --}}
+
+            <a
+                href="/admin/profil"
+                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+            >
+                <span class="text-lg">⚙</span>
+                Profil
+            </a>    
+
 
         </nav>
 
 
-        {{-- ADMIN PROFILE --}}
+        {{-- ADMIN PROFILE SIDEBAR --}}
 
         <div
             class="border-t border-gray-200 p-4 dark:border-white/10"
         >
+
             <div class="flex items-center gap-3">
 
-                {{-- AVATAR --}}
                 <div
-                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-900 font-bold text-white dark:bg-white dark:text-gray-950"
+                    class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-900 font-bold text-white dark:bg-white dark:text-gray-950"
                 >
                     A
                 </div>
 
-                {{-- NAMA --}}
                 <div class="min-w-0 flex-1">
 
                     <p class="truncate text-sm font-semibold">
@@ -209,46 +297,32 @@
 
                 </div>
 
-                {{-- LOGOUT ICON --}}
-                <form
-                    action="/logout"
-                    method="POST"
+                {{-- LOGOUT --}}
+
+                {{-- LOGOUT --}}
+
+                <button
+                    type="button"
+                    @click="logoutModal = true"
+                    class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition hover:bg-red-500/10 hover:text-red-500"
                 >
-                    @csrf
-
-                    <button
-                        type="button"
-                        title="Logout"
-                        @click="logoutModal = true"
-                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-400 transition hover:bg-red-500/10 hover:text-red-500"
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.8"
+                        stroke="currentColor"
+                        class="h-5 w-5"
                     >
-
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke-width="1.8"
-                            stroke="currentColor"
-                            class="h-5 w-5"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"
-                            />
-
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="m10 17 5-5-5-5m5 5H3"
-                            />
-                        </svg>
-
-                    </button>
-
-                </form>
-
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M15 12H3m0 0 4-4m-4 4 4 4M15 4h3a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-3"
+                        />
+                    </svg>
+                </button>
             </div>
+
         </div>
 
     </div>
@@ -391,6 +465,7 @@
 
             <button
                 type="button"
+                @click="bottleModal = true"
                 class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950 transition hover:bg-green-400"
             >
                 + Tambah Jenis Botol
@@ -1145,6 +1220,232 @@
             </form>
 
         </div>
+
+    </div>
+
+</div>
+
+{{-- ========================================================= --}}
+{{-- MODAL TAMBAH JENIS BOTOL --}}
+{{-- ========================================================= --}}
+
+<div
+    x-show="bottleModal"
+    x-transition.opacity
+    class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
+    style="display: none;"
+>
+
+    {{-- BACKDROP --}}
+
+    <div
+        class="absolute inset-0"
+        @click="bottleModal = false"
+    ></div>
+
+
+    {{-- MODAL --}}
+
+    <div
+        x-show="bottleModal"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        @click.stop
+        class="relative w-full max-w-md rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
+    >
+
+        {{-- HEADER --}}
+
+        <div
+            class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10"
+        >
+
+            <div>
+                <h2 class="text-lg font-bold">
+                    Tambah Jenis Botol
+                </h2>
+
+                <p class="mt-1 text-xs text-gray-500">
+                    Masukkan informasi jenis botol baru.
+                </p>
+            </div>
+
+
+            {{-- CLOSE --}}
+
+            <button
+                type="button"
+                @click="bottleModal = false"
+                class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white"
+            >
+
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 18 18 6M6 6l12 12"
+                    />
+                </svg>
+
+            </button>
+
+        </div>
+
+
+        {{-- FORM --}}
+
+        <form
+            action="#"
+            method="POST"
+            class="p-6"
+        >
+
+            @csrf
+
+
+            {{-- NAMA JENIS BOTOL --}}
+
+            <div>
+
+                <label
+                    for="nama_botol"
+                    class="mb-2 block text-sm font-semibold"
+                >
+                    Nama Jenis Botol
+                </label>
+
+                <input
+                    type="text"
+                    id="nama_botol"
+                    name="nama_botol"
+                    placeholder="Contoh: Botol Plastik 600ml"
+                    class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                >
+
+            </div>
+
+
+            {{-- UKURAN --}}
+
+            <div class="mt-5">
+
+                <label
+                    for="ukuran"
+                    class="mb-2 block text-sm font-semibold"
+                >
+                    Ukuran / Kapasitas
+                </label>
+
+                <input
+                    type="text"
+                    id="ukuran"
+                    name="ukuran"
+                    placeholder="Contoh: 600 ml"
+                    class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                >
+
+            </div>
+
+
+            {{-- POIN --}}
+
+            <div class="mt-5">
+
+                <label
+                    for="poin"
+                    class="mb-2 block text-sm font-semibold"
+                >
+                    Poin per Botol
+                </label>
+
+                <div class="relative">
+
+                    <input
+                        type="number"
+                        id="poin"
+                        name="poin"
+                        min="0"
+                        placeholder="50"
+                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 pr-16 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                    >
+
+                    <span
+                        class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400"
+                    >
+                        poin
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            {{-- STATUS --}}
+
+            <div class="mt-5">
+
+                <label
+                    for="status"
+                    class="mb-2 block text-sm font-semibold"
+                >
+                    Status
+                </label>
+
+                <select
+                    id="status"
+                    name="status"
+                    class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                >
+
+                    <option value="aktif">
+                        Aktif
+                    </option>
+
+                    <option value="nonaktif">
+                        Nonaktif
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            {{-- BUTTON --}}
+
+            <div
+                class="mt-7 flex justify-end gap-3 border-t border-gray-200 pt-5 dark:border-white/10"
+            >
+
+                <button
+                    type="button"
+                    @click="bottleModal = false"
+                    class="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+                >
+                    Batal
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950 transition hover:bg-green-400"
+                >
+                    Simpan Jenis Botol
+                </button>
+
+            </div>
+
+        </form>
 
     </div>
 

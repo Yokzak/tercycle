@@ -63,3 +63,6 @@ Route::get('/admin/transaksi', function () {
     return view('admin.transaksi');
 });
 
+Route::get('/admin/profil', function () {
+    return view('admin.profil');
+});
