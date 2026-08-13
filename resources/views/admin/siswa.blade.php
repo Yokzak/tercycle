@@ -7,9 +7,18 @@
         logoutModal: false,
         studentModal: false,
         accountModal: false,
+        showJurusanOptions: false,
+        showAddJurusanModal: false,
+        showDeleteJurusanModal: false,
         search: '',
         siswas: @js($siswas),
         searching: false,
+        selectedJurusan: [],
+
+        newJurusan: {
+            kode_jurusan: '',
+            nama_jurusan: ''
+        },
         
         student: {
             nama_lengkap: '',
@@ -978,7 +987,7 @@
 
 
                 {{-- KELAS + JURUSAN --}}
-                <div class="mt-5 grid gap-4 sm:grid-cols-2">
+                <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
 
                     {{-- KELAS --}}
                     <div>
@@ -992,8 +1001,9 @@
                         <select
                             id="kelas"
                             name="kelas"
-                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                            required
                             x-model="student.kelas"
+                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
                         >
                             <option value="">
                                 Pilih kelas
@@ -1016,18 +1026,75 @@
 
                     {{-- JURUSAN --}}
                     <div>
-                        <label
-                            for="jurusan"
-                            class="mb-2 block text-sm font-semibold"
-                        >
-                            Jurusan
-                        </label>
+                        <div class="mb-2 flex items-center justify-between">
+                            <label
+                                for="jurusan_id"
+                                class="block text-sm font-semibold"
+                            >
+                                Jurusan
+                            </label>
+
+                            {{-- ATUR JURUSAN --}}
+                            <div class="relative">
+                                <button
+                                    type="button"
+                                    @click="showJurusanOptions = !showJurusanOptions"
+                                    class="rounded-lg border border-gray-200 px-2.5 py-1 text-[11px] font-semibold text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:border-white/10 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"
+                                >
+                                    Atur
+                                </button>
+
+                                {{-- DROPDOWN --}}
+                                <div
+                                    x-show="showJurusanOptions"
+                                    x-transition
+                                    @click.outside="showJurusanOptions = false"
+                                    class="absolute right-0 top-full z-50 mt-2 w-44 rounded-xl border border-gray-200 bg-white p-2 shadow-xl dark:border-white/10 dark:bg-gray-900"
+                                    style="display: none;"
+                                >
+                                    <button
+                                        type="button"
+                                        @click="
+                                            showJurusanOptions = false;
+                                            showAddJurusanModal = true;
+                                        "
+                                        class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition hover:bg-gray-100 dark:hover:bg-white/5"
+                                    >
+                                        <span class="text-lg leading-none text-green-500">
+                                            +
+                                        </span>
+
+                                        <span>
+                                            Tambah Jurusan
+                                        </span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        @click="
+                                            showJurusanOptions = false;
+                                            showDeleteJurusanModal = true;
+                                        "
+                                        class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-red-500 transition hover:bg-red-500/10"
+                                    >
+                                        <span class="text-base leading-none">
+                                            🗑
+                                        </span>
+
+                                        <span>
+                                            Hapus Jurusan
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
 
                         <select
                             id="jurusan_id"
                             name="jurusan_id"
-                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                            required
                             x-model="student.jurusan_id"
+                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
                         >
                             <option value="">
                                 Pilih jurusan
@@ -1073,6 +1140,192 @@
 
         </div>
 
+    </div>
+
+    {{-- MODAL TAMBAH JURUSAN --}}
+    <div
+        x-show="showAddJurusanModal"
+        x-transition.opacity
+        class="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 p-4"
+        style="display: none;"
+    >
+        <div
+            class="absolute inset-0 bg-black/50 backdrop-blur-md"
+            @click="showAddJurusanModal = false"
+        ></div>
+
+        <div
+            @click.stop
+            class="relative w-full max-w-md rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
+        >
+            <div class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10">
+                <div>
+                    <h2 class="text-lg font-bold">
+                        Tambah Jurusan
+                    </h2>
+
+                    <p class="mt-1 text-xs text-gray-500">
+                        Tambahkan jurusan baru.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    @click="showAddJurusanModal = false"
+                    class="text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                >
+                    ✕
+                </button>
+            </div>
+
+            <form
+                action="{{ route('admin.jurusan.store') }}"
+                method="POST"
+                class="p-6"
+            >
+                @csrf
+
+                <div>
+                    <label
+                        for="kode_jurusan"
+                        class="mb-2 block text-sm font-semibold"
+                    >
+                        Kode Jurusan
+                    </label>
+
+                    <input
+                        type="text"
+                        id="kode_jurusan"
+                        name="kode_jurusan"
+                        x-model="newJurusan.kode_jurusan"
+                        placeholder="Contoh: RPL"
+                        required
+                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm uppercase outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                    >
+                </div>
+
+                <div class="mt-5">
+                    <label
+                        for="nama_jurusan"
+                        class="mb-2 block text-sm font-semibold"
+                    >
+                        Nama Jurusan
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nama_jurusan"
+                        name="nama_jurusan"
+                        x-model="newJurusan.nama_jurusan"
+                        placeholder="Contoh: Rekayasa Perangkat Lunak"
+                        required
+                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                    >
+                </div>
+
+                <div class="mt-6 flex justify-end gap-3 border-t border-gray-200 pt-5 dark:border-white/10">
+                    <button
+                        type="button"
+                        @click="showAddJurusanModal = false"
+                        class="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold dark:border-white/10"
+                    >
+                        Batal
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950"
+                    >
+                        Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- MODAL HAPUS JURUSAN --}}
+    <div
+        x-show="showDeleteJurusanModal"
+        x-transition.opacity
+        class="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 p-4"
+        style="display: none;"
+    >
+        <div
+            class="absolute inset-0 bg-black/50 backdrop-blur-md"
+            @click="showDeleteJurusanModal = false"
+        ></div>
+
+        <div
+            @click.stop
+            class="relative w-full max-w-md rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
+        >
+            <div class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10">
+                <div>
+                    <h2 class="text-lg font-bold">
+                        Hapus Jurusan
+                    </h2>
+
+                    <p class="mt-1 text-xs text-gray-500">
+                        Pilih satu atau lebih jurusan.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    @click="showDeleteJurusanModal = false"
+                    class="text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                >
+                    ✕
+                </button>
+            </div>
+
+            <form
+                action="{{ route('admin.jurusan.destroy') }}"
+                method="POST"
+                class="p-6"
+            >
+                @csrf
+                @method('DELETE')
+
+                <div class="max-h-72 space-y-3 overflow-y-auto">
+
+                    @foreach ($jurusans as $jurusan)
+                        <label
+                            class="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 transition hover:bg-gray-50 dark:border-white/10 dark:hover:bg-white/5"
+                        >
+                            <input
+                                type="checkbox"
+                                name="jurusan_ids[]"
+                                value="{{ $jurusan->id }}"
+                                x-model="selectedJurusan"
+                                class="h-4 w-4 rounded border-gray-300 text-green-500 focus:ring-green-500"
+                            >
+
+                            <div>
+                                <p class="text-sm font-semibold">
+                                    {{ $jurusan->kode_jurusan }}
+                                </p>
+
+                                <p class="text-xs text-gray-500">
+                                    {{ $jurusan->nama_jurusan }}
+                                </p>
+                            </div>
+                        </label>
+                    @endforeach
+
+                </div>
+
+                <div class="mt-6 flex justify-end border-t border-gray-200 pt-5 dark:border-white/10">
+                    <button
+                        type="submit"
+                        :disabled="selectedJurusan.length === 0"
+                        class="rounded-xl bg-red-500 px-5 py-3 text-sm font-bold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        Hapus
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
     {{-- ========================================================= --}}

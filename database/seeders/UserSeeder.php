@@ -32,7 +32,6 @@ class UserSeeder extends Seeder
             'nis' => '20260001',
             'kode_siswa' => 'SIS-20260001',
             'kelas' => 'XII',
-            'jurusan' => 'RPL',
             'saldo_poin' => 0,
         ]);
 
@@ -49,7 +48,6 @@ class UserSeeder extends Seeder
             'nis' => '20260002',
             'kode_siswa' => 'SIS-20260002',
             'kelas' => 'XII',
-            'jurusan' => 'TKJ',
             'saldo_poin' => 0,
         ]);
     }

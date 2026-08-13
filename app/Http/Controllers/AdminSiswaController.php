@@ -58,7 +58,7 @@ class AdminSiswaController extends Controller
             'nama_lengkap' => ['required', 'string', 'max:255'],
             'nis' => ['required', 'string', 'max:50', 'unique:siswa,nis'],
             'kelas' => ['required', 'string', 'max:20'],
-            'jurusan_id' => ['required', 'string', 'max:50'],
+            'jurusan_id' => ['required', 'exists:jurusan,id'],
 
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
