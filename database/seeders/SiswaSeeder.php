@@ -13,24 +13,24 @@ class SiswaSeeder extends Seeder
         $budi = User::where('email', 'budi@gmail.com')->firstOrFail();
         $andi = User::where('email', 'andi@gmail.com')->firstOrFail();
 
-        Siswa::create([
-            'user_id' => $budi->id,
-            'nama_lengkap' => 'Budi Santoso',
-            'nis' => '12345',
-            'kode_siswa' => 'SSW-001',
-            'kelas' => 'XI',
-            'jurusan' => 'RPL',
-            'saldo_poin' => 0,
-        ]);
+        // Siswa::create([
+        //     'user_id' => $budi->id,
+        //     'nama_lengkap' => 'Budi Santoso',
+        //     'nis' => '12345',
+        //     'kode_siswa' => 'SW-001',
+        //     'kelas' => 'XI',
+        //     'jurusan' => 'RPL',
+        //     'saldo_poin' => 0,
+        // ]);
 
-        Siswa::create([
-            'user_id' => $andi->id,
-            'nama_lengkap' => 'Andi Pratama',
-            'nis' => '12346',
-            'kode_siswa' => 'SSW-002',
-            'kelas' => 'XI',
-            'jurusan' => 'RPL',
-            'saldo_poin' => 0,
-        ]);
+        // Siswa::create([
+        //     'user_id' => $andi->id,
+        //     'nama_lengkap' => 'Andi Pratama',
+        //     'nis' => '12346',
+        //     'kode_siswa' => 'SW-002',
+        //     'kelas' => 'XI',
+        //     'jurusan' => 'TKR',
+        //     'saldo_poin' => 0,
+        // ]);
     }
 }
