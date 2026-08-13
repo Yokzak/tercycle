@@ -20,7 +20,7 @@ class Siswa extends Model
         'nis',
         'kode_siswa',
         'kelas',
-        'jurusan',
+        'jurusan_id',
         'saldo_poin',
     ];
 
@@ -60,4 +60,8 @@ class Siswa extends Model
     {
         return $this->hasMany(PencairanPoin::class,'siswa_id');
     }
+    public function jurusan(): BelongsTo
+    {
+        return $this->belongsTo(Jurusan::class, 'jurusan_id');
+    }       
 }

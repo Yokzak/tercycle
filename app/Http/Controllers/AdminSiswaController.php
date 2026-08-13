@@ -7,6 +7,7 @@ use App\Models\Siswa;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Jurusan;
 
 class AdminSiswaController extends Controller
 {
@@ -30,6 +31,7 @@ class AdminSiswaController extends Controller
             ->get();
 
         $totalSiswa = Siswa::count();
+        $jurusans = Jurusan::orderBy('nama_jurusan')->get();
 
         if ($request->ajax()) {
             return response()->json(
@@ -40,14 +42,14 @@ class AdminSiswaController extends Controller
                         'nis' => $siswa->nis,
                         'kode_siswa' => $siswa->kode_siswa,
                         'kelas' => $siswa->kelas,
-                        'jurusan' => $siswa->jurusan,
+                        'jurusan' => $siswa->jurusan?->nama_jurusan,
                         'saldo_poin' => $siswa->saldo_poin,
                     ];
                 })
             );
         }
 
-        return view('admin.siswa', compact('siswas', 'totalSiswa', 'siswaBulanIni'));
+        return view('admin.siswa', compact('siswas', 'totalSiswa', 'siswaBulanIni', 'jurusans'));
     }
 
     public function store(Request $request)
@@ -56,7 +58,7 @@ class AdminSiswaController extends Controller
             'nama_lengkap' => ['required', 'string', 'max:255'],
             'nis' => ['required', 'string', 'max:50', 'unique:siswa,nis'],
             'kelas' => ['required', 'string', 'max:20'],
-            'jurusan' => ['required', 'string', 'max:50'],
+            'jurusan_id' => ['required', 'string', 'max:50'],
 
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
@@ -70,14 +72,14 @@ class AdminSiswaController extends Controller
                 'role' => 'siswa',
             ]);
 
-            $kode_siswa = 'SIS-' . $data['nis'];
+            $kode_siswa = 'SW-' . $data['nis'];
             $siswa = Siswa::create([
                 'user_id' => $user->id,
                 'nama_lengkap' => $data['nama_lengkap'],
                 'nis' => $data['nis'],
                 'kode_siswa' => $kode_siswa,
                 'kelas' => $data['kelas'],
-                'jurusan' => $data['jurusan'],
+                'jurusan_id' => $data['jurusan_id'],
                 'saldo_poin' => 0,
             ]);
         });

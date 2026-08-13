@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminSiswaController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\KategoriProdukController;
 use App\Http\Controllers\SiswaProdukController;
+use App\Http\Controllers\JurusanController;
 
 Route::get('/', function () {
     return view('home');
@@ -15,6 +16,15 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 });
+
+Route::get('/admin/jurusan', [JurusanController::class, 'index'])
+    ->name('admin.jurusan.index');
+
+Route::post('/admin/jurusan', [JurusanController::class, 'store'])
+    ->name('admin.jurusan.store');
+
+Route::delete('/admin/jurusan', [JurusanController::class, 'destroy'])
+    ->name('admin.jurusan.destroy');
 
 Route::get('/forgot-password', function () {
     return view('auth.forgot-password');

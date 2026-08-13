@@ -11,6 +11,7 @@ class KategoriBotol extends Model
 
     protected $fillable = [
         'nama_kategori',
+        'ukuran',
         'poin_satuan',
     ];
 
