@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('siswa', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->string('nama_lengkap');
-            $table->string('nis')->unique();
-            $table->string('kode_siswa')->unique();
-            $table->string('kelas');
-            $table->foreignId('jurusan_id')->constrained('jurusan')->cascadeOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('nama_lengkap', 61);
+            $table->string('nis', 8)->unique();
+            $table->string('no_telepon', 13);
+            $table->string('kode_siswa', 12)->unique();
+            $table->string('kelas', 3);
+            $table->foreignId('jurusan_id', 4)->constrained('jurusan')->cascadeOnDelete();
             $table->unsignedInteger('saldo_poin')->default(0);
             $table->timestamps();
         });

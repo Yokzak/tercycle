@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\AdminSiswaController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\KategoriProdukController;
@@ -10,10 +11,12 @@ use App\Http\Controllers\SiswaProdukController;
 Route::get('/', function () {
     return view('home');
 });
-
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/register', [RegisterController::class, 'showRegister'])->name('register');
+    Route::post('/register/check-student', [RegisterController::class, 'checkStudent'])->name('register.check-student');
+    Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
 });
 
 Route::get('/forgot-password', function () {
