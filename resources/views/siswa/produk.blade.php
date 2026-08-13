@@ -24,50 +24,24 @@
         search: '',
         category: 'Semua',
 
-        products: [
-            {
-                name: 'Pulpen Eco',
-                category: 'Alat Tulis',
-                price: 1000,
-                stock: 25,
-                icon: '✎'
-            },
-            {
-                name: 'Notebook Daur Ulang',
-                category: 'Alat Tulis',
-                price: 2500,
-                stock: 15,
-                icon: '▤'
-            },
-            {
-                name: 'Tumbler Eco',
-                category: 'Perlengkapan',
-                price: 5000,
-                stock: 8,
-                icon: '♧'
-            },
-            {
-                name: 'Totebag Daur Ulang',
-                category: 'Fashion',
-                price: 3500,
-                stock: 12,
-                icon: '▱'
-            },
-            {
-                name: 'Tempat Pensil Eco',
-                category: 'Alat Tulis',
-                price: 2000,
-                stock: 20,
-                icon: '▥'
-            },
-            {
-                name: 'Gantungan Kunci',
-                category: 'Aksesoris',
-                price: 1500,
-                stock: 30,
-                icon: '◇'
-            }
-        ],
+        products: @js(
+            $produk->map(function ($produk) {
+                return [
+                    'id' => $produk->id,
+                    'name' => $produk->nama_produk,
+                    'category' => $produk->kategoriProduk->nama_kategori ?? 'Tanpa Kategori',
+                    'price' => $produk->harga_poin,
+                    'stock' => $produk->stok,
+                    'description' => $produk->deskripsi,
+                    'image' => $produk->gambar,
+                ];
+            })
+        ),
+        filteredProducts: [],
+
+        init() {
+            this.filteredProducts = this.products;
+        },
 
         get filteredProducts() {
             return this.products.filter(product => {
@@ -85,9 +59,6 @@
             });
         }
     }"
-    x-init="
-        document.documentElement.classList.toggle('dark', dark)
-    "
     :class="{ 'dark': dark }"
 >
 
@@ -553,12 +524,47 @@
             </div>
 
 
-            {{-- THEME --}}
+            <div class="flex items-center gap-2">
 
+            {{-- KERANJANG --}}
+            <button
+                type="button"
+                class="relative flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
+                title="Keranjang"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="h-5 w-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M2.25 3h1.386a1.5 1.5 0 0 1 1.46 1.15L5.42 6m0 0h14.33a1.5 1.5 0 0 1 1.46 1.85l-1.05 4.5a1.5 1.5 0 0 1-1.46 1.15H8.25a1.5 1.5 0 0 1-1.46-1.15L5.42 6Z"
+                    />
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M8.25 18.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm9 0a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"
+                    />
+                </svg>
+
+                {{-- BADGE JUMLAH --}}
+                <span
+                    class="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white"
+                >
+                    0
+                </span>
+            </button>
+
+            {{-- THEME BUTTON --}}
             <button
                 type="button"
                 @click="toggleTheme()"
-                class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
+                class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
             >
 
                 <svg
@@ -573,7 +579,7 @@
                     <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
-                        d="M12 3v2m0 14v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M3 12h2m14 0h2M4.93 19.07l-1.42 1.42m12.72-12.72 1.42-1.42"
+                        d="M12 3v2m0 14v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M3 12h2m14 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"
                     />
                 </svg>
 
@@ -594,6 +600,8 @@
                 </svg>
 
             </button>
+
+        </div>
 
         </div>
 
@@ -728,7 +736,7 @@
 
             <template
                 x-for="product in filteredProducts"
-                :key="product.name"
+                :key="product.id"
             >
 
                 <div
@@ -739,15 +747,22 @@
                     {{-- IMAGE PLACEHOLDER --}}
 
                     <div
-                        class="flex h-48 items-center justify-center bg-gray-100 text-6xl text-gray-400 transition group-hover:bg-green-500/10 group-hover:text-green-500 dark:bg-white/5"
+                        class="flex h-48 items-center justify-center overflow-hidden bg-gray-100 dark:bg-white/5"
                     >
+                        <template x-if="product.image">
+                            <img
+                                :src="'/storage/' + product.image"
+                                :alt="product.name"
+                                class="h-full w-full object-cover"
+                            >
+                        </template>
 
-                        <span x-text="product.icon">
-                            ✎
-                        </span>
-
+                        <template x-if="!product.image">
+                            <span class="text-6xl text-gray-400">
+                                📦
+                            </span>
+                        </template>
                     </div>
-
 
                     {{-- PRODUCT INFO --}}
 
@@ -761,66 +776,48 @@
                                     class="text-[11px] font-semibold uppercase tracking-wider text-green-500"
                                     x-text="product.category"
                                 >
-                                    Alat Tulis
                                 </p>
 
                                 <h3
                                     class="mt-1 font-bold"
                                     x-text="product.name"
                                 >
-                                    Pulpen Eco
                                 </h3>
 
                             </div>
 
 
-                            <span
-                                class="rounded-full bg-gray-100 px-2.5 py-1 text-[10px] font-semibold text-gray-500 dark:bg-white/5"
-                            >
-
+                            <span class="rounded-full bg-gray-100 px-2.5 py-1 text-[10px] font-semibold text-gray-500 dark:bg-white/5">
                                 Stok
-                                <span x-text="product.stock">
-                                    25
-                                </span>
-
+                                <span x-text="product.stock"></span>
                             </span>
 
                         </div>
 
 
                         <div class="mt-5 flex items-end justify-between">
-
                             <div>
+                                <p class="text-[11px] text-gray-400">Harga</p>
 
-                                <p class="text-[11px] text-gray-400">
-                                    Harga
+                                <p class="text-xl font-black text-green-500">
+                                    <span x-text="product.price.toLocaleString('id-ID')"></span>
+                                    <span class="text-xs font-semibold">poin</span>
                                 </p>
-
-                                <p
-                                    class="text-xl font-black text-green-500"
-                                >
-
-                                    <span
-                                        x-text="product.price.toLocaleString('id-ID')"
-                                    >
-                                        1.000
-                                    </span>
-
-                                    <span class="text-xs font-semibold">
-                                        poin
-                                    </span>
-
-                                </p>
-
                             </div>
 
+                            <div class="flex gap-2">
+                                <button type="button" class="rounded-xl bg-gray-100 px-4 py-2.5 text-xs font-bold text-gray-950 transition hover:bg-green-400">
+                                    + Keranjang
+                                </button>
 
-                            <button
-                                type="button"
-                                class="rounded-xl bg-green-500 px-4 py-2.5 text-xs font-bold text-gray-950 transition hover:bg-green-400"
-                            >
-                                Beli
-                            </button>
+
+                                <button
+                                    type="button"
+                                    class="rounded-xl bg-green-500 px-4 py-2.5 text-xs font-bold text-gray-950 transition hover:bg-green-400"
+                                >
+                                    Beli
+                                </button>
+                            </div>
 
                         </div>
 
@@ -989,8 +986,9 @@
 
         {{-- FORM --}}
         <form
-            action="#"
+            action="{{ route('siswa.produk.store') }}"
             method="POST"
+            enctype="multipart/form-data"
             class="p-6"
         >
 
@@ -1041,7 +1039,7 @@
                 {{-- HARGA --}}
                 <div>
                     <label
-                        for="harga"
+                        for="harga_poin"
                         class="mb-2 block text-sm font-semibold"
                     >
                         Harga Poin
@@ -1051,9 +1049,9 @@
 
                         <input
                             type="number"
-                            id="harga"
-                            name="harga"
-                            min="0"
+                            id="harga_poin"
+                            name="harga_poin"
+                            min="1"
                             placeholder="5000"
                             class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 pr-16 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
                         >
@@ -1094,36 +1092,26 @@
             <div class="mt-5">
 
                 <label
-                    for="kategori"
+                    for="kategori_produk_id"
                     class="mb-2 block text-sm font-semibold"
                 >
                     Kategori
                 </label>
 
                 <select
-                    id="kategori"
-                    name="kategori"
+                    id="kategori_produk_id"
+                    name="kategori_produk_id"
                     class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
                 >
                     <option value="">
                         Pilih kategori
                     </option>
 
-                    <option value="alat_tulis">
-                        Alat Tulis
-                    </option>
-
-                    <option value="minuman">
-                        Minuman
-                    </option>
-
-                    <option value="aksesoris">
-                        Aksesoris
-                    </option>
-
-                    <option value="lainnya">
-                        Lainnya
-                    </option>
+                    @foreach ($kategori as $item)
+                        <option value="{{ $item->id }}">
+                            {{ $item->nama_kategori }}
+                        </option>
+                    @endforeach
                 </select>
 
             </div>
@@ -1144,6 +1132,7 @@
                     id="gambar"
                     name="gambar"
                     accept="image/*"
+                    enctype="multipart/form-data"
                     class="block w-full cursor-pointer rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-500 file:mr-4 file:border-0 file:bg-green-500 file:px-4 file:py-3 file:font-semibold file:text-gray-950 hover:file:bg-green-400 dark:border-white/10 dark:bg-gray-950"
                 >
 

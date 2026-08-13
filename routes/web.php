@@ -4,6 +4,8 @@ use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminSiswaController;
 use App\Http\Controllers\SiswaController;
+use App\Http\Controllers\KategoriProdukController;
+use App\Http\Controllers\SiswaProdukController;
 
 Route::get('/', function () {
     return view('home');
@@ -18,7 +20,23 @@ Route::get('/forgot-password', function () {
     return view('auth.forgot-password');
 })->middleware('guest')->name('password.request');
 
+Route::middleware('auth')->group(function () {
+    Route::get('/siswa/produk', [SiswaProdukController::class, 'index'])
+        ->name('siswa.produk.index');
+
+    Route::post('/siswa/produk', [SiswaProdukController::class, 'store'])
+        ->name('siswa.produk.store');
+});
+
+Route::delete('/admin/kategori-produk', [KategoriProdukController::class, 'destroy'])->name('admin.kategori.destroy');
+
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+Route::get('/admin/kategori-produk', [KategoriProdukController::class, 'index'])->name('admin.kategori.index');
+
+Route::post('/admin/kategori-produk', [KategoriProdukController::class, 'store'])->name('admin.kategori.store');
+
+Route::delete('/admin/kategori-produk', [KategoriProdukController::class, 'destroy'])->name('admin.kategori.destroy');
 
 Route::get('/admin/siswa', [AdminSiswaController::class, 'index'])->name('admin.siswa.index');
 
@@ -45,10 +63,6 @@ Route::middleware(['auth', 'role:siswa'])->group(function () {
 
     Route::get('/siswa/tukar', function () {
         return view('siswa.tukar');
-    });
-
-    Route::get('/siswa/produk', function () {
-        return view('siswa.produk');
     });
 
     Route::get('/siswa/pesanan', function () {

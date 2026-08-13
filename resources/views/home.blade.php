@@ -177,14 +177,6 @@
                     Masuk
                 </a>
 
-
-                {{-- REGISTER --}}
-                <a
-                    href="/register"
-                    class="rounded-xl bg-green-500 px-5 py-2.5 text-sm font-bold text-gray-950 transition hover:bg-green-400"
-                >
-                    Daftar
-                </a>
             @endguest
 
             @auth
