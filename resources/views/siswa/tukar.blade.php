@@ -1269,7 +1269,6 @@
                 Batal
             </button>
 
-
             {{-- LOGOUT --}}
             <form
                 action="/logout"
@@ -1278,24 +1277,10 @@
                 @csrf
 
                 <button
-                    type="button"
-                    @click="logoutModal = true"
-                    class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition hover:bg-red-500/10 hover:text-red-500"
+                    type="submit"
+                    class="w-full rounded-xl bg-red-500 px-4 py-3 text-sm font-bold text-white transition hover:bg-red-600"
                 >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.8"
-                        stroke="currentColor"
-                        class="h-5 w-5"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M15 12H3m0 0 4-4m-4 4 4 4M15 4h3a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-3"
-                        />
-                    </svg>
+                    Logout
                 </button>
 
             </form>

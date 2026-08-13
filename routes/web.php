@@ -42,8 +42,6 @@ Route::get('/admin/siswa', [AdminSiswaController::class, 'index'])->name('admin.
 
 Route::post('/admin/siswa', [AdminSiswaController::class, 'store'])->name('admin.siswa.store');
 
-Route::get('/siswa/qr', [SiswaController::class, 'qr'])->middleware('auth')->name('siswa.qr');
-
 Route::middleware(['auth', 'role:siswa'])->group(function () {
     Route::get('/siswa/dashboard', function () {
         return view('siswa.dashboard');
