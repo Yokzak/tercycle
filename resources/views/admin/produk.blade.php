@@ -1121,7 +1121,6 @@
                 </div>
             </div>
         </div>
-        </div>
 
         {{-- PRODUCT GRID --}}
 
@@ -1639,6 +1638,9 @@
             </div>
 
         </div>
+        </div>
+
+        
 
 
 
