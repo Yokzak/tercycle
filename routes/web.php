@@ -68,6 +68,10 @@ Route::middleware(['auth', 'role:siswa'])->group(function () {
     Route::get('/siswa/pesanan', function () {
         return view('siswa.pesanan');
     });
+
+    Route::get('/siswa/keranjang', function () {
+        return view('siswa.keranjang');
+    });
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {

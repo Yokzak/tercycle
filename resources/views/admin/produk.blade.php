@@ -1125,7 +1125,7 @@
         {{-- PRODUCT GRID --}}
 
         <div
-            class="mx-auto mt-6 grid max-w-5xl gap-5 sm:grid-cols-2 xl:grid-cols-3"
+            class="mx-auto mt-6 grid max-w-6xl items-center gap-5 sm:grid-cols-2 xl:grid-cols-3"
         >
 
 

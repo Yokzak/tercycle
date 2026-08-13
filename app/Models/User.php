@@ -39,8 +39,6 @@ class User extends Authenticatable
     {
         return $this->hasOne(Siswa::class, 'user_id');
     }
-
-    // 1 Admin dapat memproses banyak penukaran
     public function penukaranBotoSebagaiAdmin(): HasMany
     {
         return $this->hasMany(

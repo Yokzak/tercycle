@@ -527,8 +527,8 @@
             <div class="flex items-center gap-2">
 
             {{-- KERANJANG --}}
-            <button
-                type="button"
+            <a
+                href="/siswa/keranjang"
                 class="relative flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
                 title="Keranjang"
             >
@@ -558,7 +558,7 @@
                 >
                     0
                 </span>
-            </button>
+            </a>
 
             {{-- THEME BUTTON --}}
             <button
