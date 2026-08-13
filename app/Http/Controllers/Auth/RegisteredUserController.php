@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Siswa;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -49,4 +50,39 @@ class RegisteredUserController extends Controller
 
         return redirect(route('dashboard', absolute: false));
     }
+    public function checkStudent(Request $request)
+{
+    $data = $request->validate([
+        'nama_lengkap' => ['required', 'string'],
+        'nis' => ['required', 'string'],
+        'kelas' => ['required', 'string'],
+        'jurusan_id' => ['required', 'string'],
+    ]);
+
+    $siswa = Siswa::where('nis', $data['nis'])
+        ->where('nama_lengkap', $data['nama_lengkap'])
+        ->where('kelas', $data['kelas'])
+        ->where('jurusan_id', $data['jurusan_id'])
+        ->first();
+
+    if (!$siswa) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Data siswa tidak ditemukan.'
+        ], 404);
+    }
+
+    if ($siswa->user_id !== null) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Siswa ini sudah memiliki akun.'
+        ], 422);
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Data siswa ditemukan.',
+        'siswa_id' => $siswa->id,
+    ]);
+}
 }
