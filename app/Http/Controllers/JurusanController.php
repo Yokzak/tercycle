@@ -58,18 +58,15 @@ class JurusanController extends Controller
         );
 
         if ($dipakai->isNotEmpty()) {
-            return response()->json([
-                'message' =>
-                    'Jurusan tidak dapat dihapus karena masih digunakan oleh siswa: ' .
-                    $dipakai->pluck('nama_jurusan')->implode(', '),
-            ], 422);
+            return redirect()
+                ->back()
+                ->with('error', 'Jurusan tidak dapat dihapus karena masih digunakan oleh siswa: ' . $dipakai->pluck('nama_jurusan')->implode(', '));
         }
 
         Jurusan::whereIn('id', $data['jurusan_ids'])->delete();
 
-        return response()->json([
-            'message' => 'Jurusan berhasil dihapus.',
-            'deleted_ids' => $data['jurusan_ids'],
-        ]);
+        return redirect()
+            ->back()
+            ->with('success', 'Jurusan berhasil dihapus.');
     }
 }

@@ -668,7 +668,7 @@
                         <label class="text-xs font-semibold text-gray-500">Jurusan</label>
 
                         <div class="mt-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm dark:border-white/10 dark:bg-gray-900">
-                            {{ $user->siswa->jurusan }}
+                            {{ $user->siswa->jurusan->kode_jurusan  ?? '-'}} - {{ $user->siswa->jurusan->nama_jurusan ?? '-' }}
                         </div>
                     </div>
 
