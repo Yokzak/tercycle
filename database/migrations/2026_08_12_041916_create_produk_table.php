@@ -19,7 +19,7 @@ return new class extends Migration
                 ->constrained('kategori_produk')
                 ->restrictOnDelete();
 
-            $table->string('nama_produk');
+            $table->string('nama_produk', 60);
             $table->text('deskripsi')->nullable();
             $table->unsignedInteger('harga_poin');
             $table->unsignedInteger('stok')->default(0);
