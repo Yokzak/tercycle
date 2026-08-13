@@ -20,7 +20,7 @@ class JurusanController extends Controller
             'kode_jurusan' => [
                 'required',
                 'string',
-                'max:20',
+                'max:255',
                 'unique:jurusan,kode_jurusan',
             ],
             'nama_jurusan' => [

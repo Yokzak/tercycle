@@ -7,6 +7,7 @@ use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\KategoriProdukController;
 use App\Http\Controllers\SiswaProdukController;
 use App\Http\Controllers\JurusanController;
+use App\Http\Controllers\KategoriBotolController;
 
 Route::get('/', function () {
     return view('home');
@@ -16,15 +17,6 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 });
-
-Route::get('/admin/jurusan', [JurusanController::class, 'index'])
-    ->name('admin.jurusan.index');
-
-Route::post('/admin/jurusan', [JurusanController::class, 'store'])
-    ->name('admin.jurusan.store');
-
-Route::delete('/admin/jurusan', [JurusanController::class, 'destroy'])
-    ->name('admin.jurusan.destroy');
 
 Route::get('/forgot-password', function () {
     return view('auth.forgot-password');
@@ -93,9 +85,23 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         return view('admin.penukaran');
     });
 
-    Route::get('/admin/botol', function () {
-        return view('admin.botol');
-    });
+    Route::get('/admin/jurusan', [JurusanController::class, 'index'])
+        ->name('admin.jurusan.index');
+
+    Route::post('/admin/jurusan', [JurusanController::class, 'store'])
+        ->name('admin.jurusan.store');
+
+    Route::delete('/admin/jurusan', [JurusanController::class, 'destroy'])
+        ->name('admin.jurusan.destroy');
+
+    Route::get('/admin/botol', [KategoriBotolController::class, 'index'])
+        ->name('admin.botol.index');
+
+    Route::post('/admin/botol', [KategoriBotolController::class, 'store'])
+        ->name('admin.botol.store');
+
+    Route::delete('/admin/botol/{kategoriBotol}', [KategoriBotolController::class, 'destroy'])
+        ->name('admin.botol.destroy');
 
     Route::get('/admin/siswa', [AdminSiswaController::class, 'index'])->name('admin.siswa.index');
 

@@ -57,7 +57,7 @@ class SiswaController extends Controller
 
         $data = $request->validate([
             'nama_lengkap' => ['required', 'string', 'max:255'],
-            'kelas' => ['required', 'string', 'max:20'],
+            'kelas' => ['required', 'string', 'max:255'],
             'jurusan_id' => ['required', 'exists:jurusan,id'],
             'email' => [
                 'required',

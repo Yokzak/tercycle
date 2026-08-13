@@ -594,28 +594,87 @@
                     </thead>
 
                     <tbody class="divide-y divide-gray-200 dark:divide-white/10">
-                        <tr class="transition hover:bg-gray-50 dark:hover:bg-white/[0.02]">
-                            <td class="px-6 py-5">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-green-500/10 text-xl">♻</div>
-                                    <div>
-                                        <p class="font-semibold">Botol Plastik</p>
-                                        <p class="mt-1 text-xs text-gray-500">PET</p>
+                        @forelse ($kategoriBotols as $kategori)
+                            <tr class="transition hover:bg-gray-50 dark:hover:bg-white/[0.02]">
+                                <td class="px-6 py-5">
+                                    <div class="flex items-center gap-3">
+
+                                        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-green-500/10 text-xl">
+                                            ♻
+                                        </div>
+
+                                        <div>
+                                            <p class="font-semibold">
+                                                {{ $kategori->nama_kategori }}
+                                            </p>
+
+                                            <p class="mt-1 text-xs text-gray-500">
+                                                {{ strtoupper($kategori->ukuran) }}
+                                            </p>
+                                        </div>
+
                                     </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-5 text-gray-500">600 ml</td>
-                            <td class="px-6 py-5">
-                                <span class="font-bold text-green-500">50 poin</span>
-                            </td>
-                            <td class="px-6 py-5 font-semibold">1.240</td>
-                            <td class="px-6 py-5">
-                                <div class="flex justify-end gap-2">
-                                    <button class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold transition hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5">Edit</button>
-                                    <button class="rounded-lg border border-red-500/20 px-3 py-2 text-xs font-semibold text-red-500 transition hover:bg-red-500/10">Hapus</button>
-                                </div>
-                            </td>
-                        </tr>
+                                </td>
+
+                                <td class="px-6 py-5 text-gray-500">
+                                    {{ $kategori->ukuran }}
+                                </td>
+
+                                <td class="px-6 py-5">
+                                    <span class="font-bold text-green-500">
+                                        {{ number_format($kategori->poin_satuan) }} poin
+                                    </span>
+                                </td>
+
+                                <td class="px-6 py-5 font-semibold">
+                                    0
+                                </td>
+
+                                <td class="px-6 py-5">
+
+                                    <div class="flex justify-end gap-2">
+
+                                        <button
+                                            type="button"
+                                            class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold transition hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
+                                        >
+                                            Edit
+                                        </button>
+
+                                        <form
+                                            action="{{ route('admin.botol.destroy', $kategori->id) }}"
+                                            method="POST"
+                                        >
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button
+                                                type="submit"
+                                                class="rounded-lg border border-red-500/20 px-3 py-2 text-xs font-semibold text-red-500 transition hover:bg-red-500/10"
+                                            >
+                                                Hapus
+                                            </button>
+                                        </form>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        @empty
+
+                            <tr>
+                                <td
+                                    colspan="5"
+                                    class="px-6 py-10 text-center text-sm text-gray-500"
+                                >
+                                    Belum ada kategori botol.
+                                </td>
+                            </tr>
+
+                        @endforelse
+
                     </tbody>
                 </table>
             </div>
@@ -825,7 +884,7 @@
         {{-- FORM --}}
 
         <form
-            action="#"
+            action="{{ route('admin.botol.store') }}"
             method="POST"
             class="p-6"
         >
@@ -846,8 +905,9 @@
 
                 <input
                     type="text"
-                    id="nama_botol"
-                    name="nama_botol"
+                    id="nama_kategori"
+                    name="nama_kategori"
+                    required
                     placeholder="Contoh: Botol Plastik 600ml"
                     class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
                 >
@@ -870,6 +930,7 @@
                     type="text"
                     id="ukuran"
                     name="ukuran"
+                    required
                     placeholder="Contoh: 600 ml"
                     class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
                 >
@@ -882,7 +943,7 @@
             <div class="mt-5">
 
                 <label
-                    for="poin"
+                    for="poin_satuan"
                     class="mb-2 block text-sm font-semibold"
                 >
                     Poin per Botol
@@ -892,9 +953,10 @@
 
                     <input
                         type="number"
-                        id="poin"
-                        name="poin"
+                        id="poin_satuan"
+                        name="poin_satuan"
                         min="0"
+                        required
                         placeholder="50"
                         class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 pr-16 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
                     >
