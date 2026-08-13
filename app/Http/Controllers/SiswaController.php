@@ -58,13 +58,8 @@ class SiswaController extends Controller
         $data = $request->validate([
             'nama_lengkap' => ['required', 'string', 'max:255'],
             'kelas' => ['required', 'string', 'max:20'],
-            'jurusan_id' => ['required', 'exists:jurusan,id'],
-            'email' => [
-                'required',
-                'email',
-                'max:255',
-                'unique:users,email,' . $user->id,
-            ],
+            'jurusan_id' => ['required', 'string', 'max:50'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
         ]);
 
         DB::transaction(function () use ($user, $siswa, $data) {
@@ -72,12 +67,11 @@ class SiswaController extends Controller
                 'email' => $data['email'],
             ]);
 
-            $siswa->update([
-                'nama_lengkap' => $data['nama_lengkap'],
-                'kelas' => $data['kelas'],
-                'jurusan_id' => $data['jurusan_id'],
-            ]);
-        });
+        $siswa->update([
+            'nama_lengkap' => $data['nama_lengkap'],
+            'kelas' => $data['kelas'],
+            'jurusan_id' => $data['jurusan_id'],
+        ]);
 
         return redirect()
             ->route('siswa.profil')

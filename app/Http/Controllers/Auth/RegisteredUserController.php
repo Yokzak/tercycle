@@ -56,13 +56,13 @@ class RegisteredUserController extends Controller
         'nama_lengkap' => ['required', 'string'],
         'nis' => ['required', 'string'],
         'kelas' => ['required', 'string'],
-        'jurusan' => ['required', 'string'],
+        'jurusan_id' => ['required', 'string'],
     ]);
 
     $siswa = Siswa::where('nis', $data['nis'])
         ->where('nama_lengkap', $data['nama_lengkap'])
         ->where('kelas', $data['kelas'])
-        ->where('jurusan', $data['jurusan'])
+        ->where('jurusan_id', $data['jurusan_id'])
         ->first();
 
     if (!$siswa) {
