@@ -1638,6 +1638,59 @@
             </div>
 
         </div>
+        </div>
+
+        
+
+
+
+        {{-- PAGINATION --}}
+
+        <div
+            class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+        >
+
+            <p class="text-xs text-gray-500">
+                Menampilkan 1-6 dari 24 produk
+            </p>
+
+
+            <div class="flex gap-2">
+
+                <button
+                    class="rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-400 dark:border-white/10"
+                >
+                    Sebelumnya
+                </button>
+
+                <button
+                    class="rounded-lg bg-green-500 px-3 py-2 text-xs font-bold text-gray-950"
+                >
+                    1
+                </button>
+
+                <button
+                    class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold dark:border-white/10"
+                >
+                    2
+                </button>
+
+                <button
+                    class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold dark:border-white/10"
+                >
+                    3
+                </button>
+
+                <button
+                    class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold dark:border-white/10"
+                >
+                    Selanjutnya
+                </button>
+
+            </div>
+
+        </div>
+
     </main>
 
 </div>
