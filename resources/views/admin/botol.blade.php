@@ -382,7 +382,7 @@
                     </p>
 
                     <h1 class="font-bold">
-                        Jenis Botol
+                        Kategori Botol
                     </h1>
 
                 </div>
@@ -451,11 +451,11 @@
             <div>
 
                 <h2 class="text-2xl font-black">
-                    Kelola Jenis Botol
+                    Kelola Kategori Botol
                 </h2>
 
                 <p class="mt-1 text-sm text-gray-500">
-                    Atur jenis botol dan jumlah poin yang diberikan.
+                    Atur kategori botol dan jumlah poin yang diberikan.
                 </p>
 
             </div>
@@ -468,7 +468,7 @@
                 @click="bottleModal = true"
                 class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950 transition hover:bg-green-400"
             >
-                + Tambah Jenis Botol
+                + Tambah Kategori Botol
             </button>
 
         </div>
@@ -485,7 +485,7 @@
             >
 
                 <p class="text-xs font-medium text-gray-500">
-                    Total Jenis
+                    Total Kategori
                 </p>
 
                 <p class="mt-2 text-3xl font-black">
@@ -500,7 +500,7 @@
             >
 
                 <p class="text-xs font-medium text-gray-500">
-                    Jenis Aktif
+                    Kategori Aktif
                 </p>
 
                 <p class="mt-2 text-3xl font-black text-green-500">
@@ -543,11 +543,11 @@
                 <div>
 
                     <h3 class="font-bold">
-                        Daftar Jenis Botol
+                        Daftar Kategori Botol
                     </h3>
 
                     <p class="mt-1 text-xs text-gray-500">
-                        Data jenis botol yang tersedia.
+                        Data kategori botol yang tersedia.
                     </p>
 
                 </div>
@@ -557,7 +557,7 @@
 
                     <input
                         type="text"
-                        placeholder="Cari jenis botol..."
+                        placeholder="Cari kategori botol..."
                         class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 pl-10 text-sm outline-none focus:border-green-500 sm:w-64 dark:border-white/10 dark:bg-gray-900"
                     >
 
@@ -582,536 +582,55 @@
 
 
             <div class="overflow-x-auto">
-
                 <table class="w-full text-left text-sm">
-
-                    <thead
-                        class="border-b border-gray-200 text-xs uppercase text-gray-500 dark:border-white/10"
-                    >
-
+                    <thead class="border-b border-gray-200 text-xs uppercase text-gray-500 dark:border-white/10">
                         <tr>
-
-                            <th class="px-6 py-4">
-                                Jenis Botol
-                            </th>
-
-                            <th class="px-6 py-4">
-                                Ukuran
-                            </th>
-
-                            <th class="px-6 py-4">
-                                Poin
-                            </th>
-
-                            <th class="px-6 py-4">
-                                Total Ditukar
-                            </th>
-
-                            <th class="px-6 py-4">
-                                Status
-                            </th>
-
-                            <th class="px-6 py-4 text-right">
-                                Aksi
-                            </th>
-
+                            <th class="px-6 py-4">Kategori Botol</th>
+                            <th class="px-6 py-4">Ukuran</th>
+                            <th class="px-6 py-4">Poin</th>
+                            <th class="px-6 py-4">Total Ditukar</th>
+                            <th class="px-6 py-4 text-right">Aksi</th>
                         </tr>
-
                     </thead>
 
-
-                    <tbody
-                        class="divide-y divide-gray-200 dark:divide-white/10"
-                    >
-
-
-                        {{-- ROW 1 --}}
-
-                        <tr
-                            class="transition hover:bg-gray-50 dark:hover:bg-white/[0.02]"
-                        >
-
+                    <tbody class="divide-y divide-gray-200 dark:divide-white/10">
+                        <tr class="transition hover:bg-gray-50 dark:hover:bg-white/[0.02]">
                             <td class="px-6 py-5">
-
                                 <div class="flex items-center gap-3">
-
-                                    <div
-                                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-green-500/10 text-xl"
-                                    >
-                                        ♻
-                                    </div>
-
+                                    <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-green-500/10 text-xl">♻</div>
                                     <div>
-
-                                        <p class="font-semibold">
-                                            Botol Plastik
-                                        </p>
-
-                                        <p class="mt-1 text-xs text-gray-500">
-                                            PET
-                                        </p>
-
+                                        <p class="font-semibold">Botol Plastik</p>
+                                        <p class="mt-1 text-xs text-gray-500">PET</p>
                                     </div>
-
                                 </div>
-
                             </td>
-
-
-                            <td class="px-6 py-5 text-gray-500">
-                                600 ml
-                            </td>
-
-
+                            <td class="px-6 py-5 text-gray-500">600 ml</td>
                             <td class="px-6 py-5">
-
-                                <span
-                                    class="font-bold text-green-500"
-                                >
-                                    50 poin
-                                </span>
-
+                                <span class="font-bold text-green-500">50 poin</span>
                             </td>
-
-
-                            <td class="px-6 py-5 font-semibold">
-                                1.240
-                            </td>
-
-
+                            <td class="px-6 py-5 font-semibold">1.240</td>
                             <td class="px-6 py-5">
-
-                                <span
-                                    class="rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-500"
-                                >
-                                    Aktif
-                                </span>
-
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
                                 <div class="flex justify-end gap-2">
-
-                                    <button
-                                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold transition hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
-                                    >
-                                        Edit
-                                    </button>
-
-                                    <button
-                                        class="rounded-lg border border-red-500/20 px-3 py-2 text-xs font-semibold text-red-500 transition hover:bg-red-500/10"
-                                    >
-                                        Hapus
-                                    </button>
-
+                                    <button class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold transition hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5">Edit</button>
+                                    <button class="rounded-lg border border-red-500/20 px-3 py-2 text-xs font-semibold text-red-500 transition hover:bg-red-500/10">Hapus</button>
                                 </div>
-
                             </td>
-
                         </tr>
-
-
-
-                        {{-- ROW 2 --}}
-
-                        <tr
-                            class="transition hover:bg-gray-50 dark:hover:bg-white/[0.02]"
-                        >
-
-                            <td class="px-6 py-5">
-
-                                <div class="flex items-center gap-3">
-
-                                    <div
-                                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-green-500/10 text-xl"
-                                    >
-                                        ♻
-                                    </div>
-
-                                    <div>
-
-                                        <p class="font-semibold">
-                                            Botol Plastik
-                                        </p>
-
-                                        <p class="mt-1 text-xs text-gray-500">
-                                            PET
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-                            </td>
-
-
-                            <td class="px-6 py-5 text-gray-500">
-                                1.5 Liter
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <span
-                                    class="font-bold text-green-500"
-                                >
-                                    100 poin
-                                </span>
-
-                            </td>
-
-
-                            <td class="px-6 py-5 font-semibold">
-                                782
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <span
-                                    class="rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-500"
-                                >
-                                    Aktif
-                                </span>
-
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <div class="flex justify-end gap-2">
-
-                                    <button
-                                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold transition hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
-                                    >
-                                        Edit
-                                    </button>
-
-                                    <button
-                                        class="rounded-lg border border-red-500/20 px-3 py-2 text-xs font-semibold text-red-500 transition hover:bg-red-500/10"
-                                    >
-                                        Hapus
-                                    </button>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-
-
-                        {{-- ROW 3 --}}
-
-                        <tr
-                            class="transition hover:bg-gray-50 dark:hover:bg-white/[0.02]"
-                        >
-
-                            <td class="px-6 py-5">
-
-                                <div class="flex items-center gap-3">
-
-                                    <div
-                                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-green-500/10 text-xl"
-                                    >
-                                        ♻
-                                    </div>
-
-                                    <div>
-
-                                        <p class="font-semibold">
-                                            Botol Plastik
-                                        </p>
-
-                                        <p class="mt-1 text-xs text-gray-500">
-                                            PET
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-                            </td>
-
-
-                            <td class="px-6 py-5 text-gray-500">
-                                2 Liter
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <span
-                                    class="font-bold text-green-500"
-                                >
-                                    150 poin
-                                </span>
-
-                            </td>
-
-
-                            <td class="px-6 py-5 font-semibold">
-                                459
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <span
-                                    class="rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-500"
-                                >
-                                    Aktif
-                                </span>
-
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <div class="flex justify-end gap-2">
-
-                                    <button
-                                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold transition hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
-                                    >
-                                        Edit
-                                    </button>
-
-                                    <button
-                                        class="rounded-lg border border-red-500/20 px-3 py-2 text-xs font-semibold text-red-500 transition hover:bg-red-500/10"
-                                    >
-                                        Hapus
-                                    </button>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-
-
-                        {{-- ROW 4 --}}
-
-                        <tr
-                            class="transition hover:bg-gray-50 dark:hover:bg-white/[0.02]"
-                        >
-
-                            <td class="px-6 py-5">
-
-                                <div class="flex items-center gap-3">
-
-                                    <div
-                                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-green-500/10 text-xl"
-                                    >
-                                        ♻
-                                    </div>
-
-                                    <div>
-
-                                        <p class="font-semibold">
-                                            Kaleng Aluminium
-                                        </p>
-
-                                        <p class="mt-1 text-xs text-gray-500">
-                                            Aluminium
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-                            </td>
-
-
-                            <td class="px-6 py-5 text-gray-500">
-                                330 ml
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <span
-                                    class="font-bold text-green-500"
-                                >
-                                    75 poin
-                                </span>
-
-                            </td>
-
-
-                            <td class="px-6 py-5 font-semibold">
-                                316
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <span
-                                    class="rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-500"
-                                >
-                                    Aktif
-                                </span>
-
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <div class="flex justify-end gap-2">
-
-                                    <button
-                                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold transition hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
-                                    >
-                                        Edit
-                                    </button>
-
-                                    <button
-                                        class="rounded-lg border border-red-500/20 px-3 py-2 text-xs font-semibold text-red-500 transition hover:bg-red-500/10"
-                                    >
-                                        Hapus
-                                    </button>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-
-
-                        {{-- ROW NONAKTIF --}}
-
-                        <tr
-                            class="opacity-60 transition hover:bg-gray-50 dark:hover:bg-white/[0.02]"
-                        >
-
-                            <td class="px-6 py-5">
-
-                                <div class="flex items-center gap-3">
-
-                                    <div
-                                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-gray-100 text-xl dark:bg-white/5"
-                                    >
-                                        ♻
-                                    </div>
-
-                                    <div>
-
-                                        <p class="font-semibold">
-                                            Botol Kaca
-                                        </p>
-
-                                        <p class="mt-1 text-xs text-gray-500">
-                                            Glass
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-                            </td>
-
-
-                            <td class="px-6 py-5 text-gray-500">
-                                500 ml
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <span class="font-bold">
-                                    100 poin
-                                </span>
-
-                            </td>
-
-
-                            <td class="px-6 py-5 font-semibold">
-                                84
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <span
-                                    class="rounded-full bg-gray-500/10 px-3 py-1 text-xs font-semibold text-gray-500"
-                                >
-                                    Nonaktif
-                                </span>
-
-                            </td>
-
-
-                            <td class="px-6 py-5">
-
-                                <div class="flex justify-end gap-2">
-
-                                    <button
-                                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold transition hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
-                                    >
-                                        Edit
-                                    </button>
-
-                                    <button
-                                        class="rounded-lg border border-red-500/20 px-3 py-2 text-xs font-semibold text-red-500 transition hover:bg-red-500/10"
-                                    >
-                                        Hapus
-                                    </button>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
                     </tbody>
-
                 </table>
-
             </div>
-
 
             {{-- PAGINATION --}}
-
-            <div
-                class="flex items-center justify-between border-t border-gray-200 px-6 py-4 dark:border-white/10"
-            >
-
-                <p class="text-xs text-gray-500">
-                    Menampilkan 1-5 dari 5 jenis botol
-                </p>
-
+            <div class="flex items-center justify-between border-t border-gray-200 px-6 py-4 dark:border-white/10">
+                <p class="text-xs text-gray-500">Menampilkan 1-5 dari 5 kategori botol</p>
                 <div class="flex gap-2">
-
-                    <button
-                        disabled
-                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-400 dark:border-white/10"
-                    >
-                        Sebelumnya
-                    </button>
-
-                    <button
-                        class="rounded-lg bg-green-500 px-3 py-2 text-xs font-bold text-gray-950"
-                    >
-                        1
-                    </button>
-
-                    <button
-                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-500 dark:border-white/10"
-                    >
-                        Selanjutnya
-                    </button>
-
+                    <button disabled class="rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-400 dark:border-white/10">Sebelumnya</button>
+                    <button class="rounded-lg bg-green-500 px-3 py-2 text-xs font-bold text-gray-950">1</button>
+                    <button class="rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-500 dark:border-white/10">Selanjutnya</button>
                 </div>
-
             </div>
-
         </div>
-
     </main>
-
 </div>
 
 {{-- ========================================================= --}}
@@ -1266,11 +785,11 @@
 
             <div>
                 <h2 class="text-lg font-bold">
-                    Tambah Jenis Botol
+                    Tambah Kategori Botol
                 </h2>
 
                 <p class="mt-1 text-xs text-gray-500">
-                    Masukkan informasi jenis botol baru.
+                    Masukkan informasi kategori botol baru.
                 </p>
             </div>
 
@@ -1322,7 +841,7 @@
                     for="nama_botol"
                     class="mb-2 block text-sm font-semibold"
                 >
-                    Nama Jenis Botol
+                    Nama Kategori Botol
                 </label>
 
                 <input
@@ -1389,37 +908,6 @@
                 </div>
 
             </div>
-
-
-            {{-- STATUS --}}
-
-            <div class="mt-5">
-
-                <label
-                    for="status"
-                    class="mb-2 block text-sm font-semibold"
-                >
-                    Status
-                </label>
-
-                <select
-                    id="status"
-                    name="status"
-                    class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                >
-
-                    <option value="aktif">
-                        Aktif
-                    </option>
-
-                    <option value="nonaktif">
-                        Nonaktif
-                    </option>
-
-                </select>
-
-            </div>
-
 
             {{-- BUTTON --}}
 
