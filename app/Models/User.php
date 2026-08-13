@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Siswa;
+use App\Models\PenukaranBotol;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -34,7 +36,7 @@ class User extends Authenticatable
 
     public function siswa(): HasOne
     {
-        return $this->hasOne(Siswa::class);
+        return $this->hasOne(Siswa::class, 'user_id');
     }
     public function penukaranBotoSebagaiAdmin(): HasMany
     {
