@@ -35,7 +35,7 @@ class SiswaController extends Controller
         $data = $request->validate([
             'nama_lengkap' => ['required', 'string', 'max:255'],
             'kelas' => ['required', 'string', 'max:20'],
-            'jurusan' => ['required', 'string', 'max:50'],
+            'jurusan_id' => ['required', 'string', 'max:50'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
         ]);
 
@@ -46,7 +46,7 @@ class SiswaController extends Controller
         $siswa->update([
             'nama_lengkap' => $data['nama_lengkap'],
             'kelas' => $data['kelas'],
-            'jurusan' => $data['jurusan'],
+            'jurusan_id' => $data['jurusan_id'],
         ]);
 
         return redirect()

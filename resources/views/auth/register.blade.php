@@ -268,7 +268,7 @@
                         </label>
 
                         <select
-                            id="jurusan"
+                            id="jurusan_id"
                             x-model="student.jurusan"
                             class="w-full rounded-xl border
                                    border-gray-200 bg-gray-50

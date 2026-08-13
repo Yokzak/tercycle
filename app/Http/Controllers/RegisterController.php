@@ -21,13 +21,13 @@ class RegisterController extends Controller
             'nama_lengkap' => ['required', 'string'],
             'nis' => ['required', 'string'],
             'kelas' => ['required', 'string'],
-            'jurusan' => ['required', 'string'],
+            'jurusan_id' => ['required', 'string'],
         ]);
 
         $siswa = Siswa::where('nis', $data['nis'])
             ->where('nama_lengkap', $data['nama_lengkap'])
             ->where('kelas', $data['kelas'])
-            ->where('jurusan', $data['jurusan'])
+            ->where('jurusan_id', $data['jurusan_id'])
             ->first();
 
         if (!$siswa) {
@@ -50,7 +50,7 @@ class RegisterController extends Controller
                 'nama_lengkap' => $siswa->nama_lengkap,
                 'nis' => $siswa->nis,
                 'kelas' => $siswa->kelas,
-                'jurusan' => $siswa->jurusan,
+                'jurusan_id' => $siswa->jurusan_id,
             ]
         ]);
     }
