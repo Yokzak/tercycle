@@ -20,7 +20,7 @@ class Siswa extends Model
         'nis',
         'kode_siswa',
         'kelas',
-        'jurusan',
+        'jurusan_id',
         'saldo_poin',
     ];
 

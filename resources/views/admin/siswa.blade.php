@@ -15,7 +15,7 @@
             nama_lengkap: '',
             nis: '',
             kelas: '',
-            jurusan: ''
+            jurusan_id: ''
         },
 
         async searchStudents() {
@@ -1024,30 +1024,21 @@
                         </label>
 
                         <select
-                            id="jurusan"
-                            name="jurusan"
+                            id="jurusan_id"
+                            name="jurusan_id"
                             class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                            x-model="student.jurusan"
+                            x-model="student.jurusan_id"
                         >
                             <option value="">
                                 Pilih jurusan
                             </option>
 
-                            <option value="RPL">
-                                RPL
-                            </option>
-
-                            <option value="TKJ">
-                                TKJ
-                            </option>
-
-                            <option value="DKV">
-                                DKV
-                            </option>
-
-                            <option value="AKL">
-                                AKL
-                            </option>
+                            @foreach ($jurusans as $jurusan)
+                                <option value="{{ $jurusan->id }}">
+                                    {{ $jurusan->kode_jurusan }} -
+                                    {{ $jurusan->nama_jurusan }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -1150,7 +1141,7 @@
                 <input type="hidden" name="nama_lengkap" :value="student.nama_lengkap">
                 <input type="hidden" name="nis" :value="student.nis">
                 <input type="hidden" name="kelas" :value="student.kelas">
-                <input type="hidden" name="jurusan" :value="student.jurusan">
+                <input type="hidden" name="jurusan_id" :value="student.jurusan_id">
 
                 {{-- EMAIL --}}
                 <div>
