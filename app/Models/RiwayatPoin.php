@@ -17,7 +17,6 @@ class RiwayatPoin extends Model
     protected $casts = [
         'jumlah_poin' => 'integer'
     ];
-    //Riwayat poin dimiliki satu siswa
     public function siswa(): BelongsTo
     {
         return $this->belongsTo(Siswa::class);

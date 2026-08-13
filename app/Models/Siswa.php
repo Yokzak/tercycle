@@ -28,13 +28,10 @@ class Siswa extends Model
         'saldo_poin' => 'integer',
     ];
 
-    // Siswa dimiliki oleh satu User
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
-
-    // Satu siswa dapat melakukan banyak penukaran
     public function penukaranBotol(): HasMany
     {
         return $this->hasMany(PenukaranBotol::class);

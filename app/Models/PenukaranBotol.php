@@ -22,19 +22,16 @@ class PenukaranBotol extends Model
         'tanggal' => 'datetime',
     ];
 
-    // Satu penukaran dimiliki oleh satu siswa
     public function siswa(): BelongsTo
     {
         return $this->belongsTo(Siswa::class);
     }
 
-    // Satu penukaran diproses oleh satu admin
     public function admin(): BelongsTo
     {
         return $this->belongsTo(User::class, 'admin_id');
     }
 
-    // Satu penukaran memiliki banyak detail penukaran
     public function detailPenukaran(): HasMany
     {
         return $this->hasMany(
