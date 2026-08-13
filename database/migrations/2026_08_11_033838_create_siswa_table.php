@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('nis')->unique();
             $table->string('kode_siswa')->unique();
             $table->string('kelas');
-            $table->string('jurusan');
+            $table->foreignId('jurusan_id')->constrained('jurusan')->cascadeOnDelete();
             $table->unsignedInteger('saldo_poin')->default(0);
             $table->timestamps();
         });

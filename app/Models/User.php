@@ -34,8 +34,7 @@ class User extends Authenticatable
         ];
     }
 
-    // 1 User memiliki 1 data siswa
-    public function siswa()
+    public function siswa(): HasOne
     {
         return $this->hasOne(Siswa::class, 'user_id');
     }

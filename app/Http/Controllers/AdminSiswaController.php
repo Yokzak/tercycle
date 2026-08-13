@@ -70,7 +70,7 @@ class AdminSiswaController extends Controller
                 'role' => 'siswa',
             ]);
 
-            $kode_siswa = 'SIS-' . $data['nis'];
+            $kode_siswa = 'SW-' . $data['nis'];
             $siswa = Siswa::create([
                 'user_id' => $user->id,
                 'nama_lengkap' => $data['nama_lengkap'],
