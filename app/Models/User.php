@@ -32,13 +32,10 @@ class User extends Authenticatable
         ];
     }
 
-    // 1 User memiliki 1 data siswa
     public function siswa(): HasOne
     {
         return $this->hasOne(Siswa::class);
     }
-
-    // 1 Admin dapat memproses banyak penukaran
     public function penukaranBotoSebagaiAdmin(): HasMany
     {
         return $this->hasMany(
