@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Str;
 use App\Models\Siswa;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Jurusan;
 
 class AdminSiswaController extends Controller
 {
@@ -30,6 +30,7 @@ class AdminSiswaController extends Controller
             ->get();
 
         $totalSiswa = Siswa::count();
+        $jurusans = Jurusan::orderBy('nama_jurusan')->get();
 
         if ($request->ajax()) {
             return response()->json(
@@ -40,50 +41,40 @@ class AdminSiswaController extends Controller
                         'nis' => $siswa->nis,
                         'kode_siswa' => $siswa->kode_siswa,
                         'kelas' => $siswa->kelas,
-                        'jurusan' => $siswa->jurusan,
+                        'jurusan' => $siswa->jurusan?->nama_jurusan,
+                        'no_telepon' => $siswa->no_telepon,
                         'saldo_poin' => $siswa->saldo_poin,
                     ];
                 })
             );
         }
 
-        return view('admin.siswa', compact('siswas', 'totalSiswa', 'siswaBulanIni'));
+        return view('admin.siswa', compact('siswas', 'totalSiswa', 'siswaBulanIni', 'jurusans'));
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
-            'nama_lengkap' => ['required', 'string', 'max:255'],
-            'nis' => ['required', 'string', 'max:50', 'unique:siswa,nis'],
-            'kelas' => ['required', 'string', 'max:20'],
-            'jurusan' => ['required', 'string', 'max:50'],
-
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'nama_lengkap' => ['required', 'string', 'max:61'],
+            'nis' => ['required', 'string', 'max:8', 'unique:siswa,nis'],
+            'kelas' => ['required', 'string', 'max:3'],
+            'jurusan_id' => ['required', 'exists:jurusan,id'],
+            'no_telepon' => ['required', 'string', 'max:13'],
         ]);
 
-        DB::transaction(function () use ($data) {
-            $user = User::create([
-                'name' => $data['nama_lengkap'],
-                'email' => $data['email'],
-                'password' => $data['password'],
-                'role' => 'siswa',
-            ]);
-
-            $kode_siswa = 'SW-' . $data['nis'];
-            $siswa = Siswa::create([
-                'user_id' => $user->id,
-                'nama_lengkap' => $data['nama_lengkap'],
-                'nis' => $data['nis'],
-                'kode_siswa' => $kode_siswa,
-                'kelas' => $data['kelas'],
-                'jurusan' => $data['jurusan'],
-                'saldo_poin' => 0,
-            ]);
-        });
+        Siswa::create([
+            'user_id' => null,
+            'nama_lengkap' => $data['nama_lengkap'],
+            'nis' => $data['nis'],
+            'kode_siswa' => 'SW-' . $data['nis'],
+            'kelas' => $data['kelas'],
+            'jurusan_id' => $data['jurusan_id'],
+            'no_telepon' => $data['no_telepon'],
+            'saldo_poin' => 0,
+        ]);
 
         return redirect()
             ->route('admin.siswa.index')
-            ->with('success', 'Akun siswa berhasil dibuat.');
+            ->with('success', 'Data siswa berhasil ditambahkan.');
     }
 }

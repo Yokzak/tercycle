@@ -311,11 +311,11 @@
                 <div class="min-w-0 flex-1">
 
                     <p class="truncate text-sm font-semibold">
-                        Kevin
+                        {{ Auth::user()->name }}
                     </p>
 
                     <p class="text-xs text-gray-500">
-                        Siswa
+                        Siswa • {{ Auth::user()->siswa->kelas }} {{ Auth::user()->siswa->jurusan->kode_jurusan ?? '-' }}
                     </p>
 
                 </div>
@@ -844,30 +844,7 @@
                     class="mx-auto mt-6 flex h-44 w-44 items-center justify-center rounded-2xl border border-gray-200 bg-white p-4 dark:border-white/10"
                 >
 
-                    <div
-                        class="grid h-full w-full grid-cols-8 grid-rows-8 gap-1 p-2"
-                    >
-
-                        @php
-                            $qrBlocks = [
-                                0,1,2,3,8,11,16,19,
-                                24,25,26,27,32,35,
-                                40,41,42,43,48,51,
-                                56,57,58,59,10,13,
-                                20,22,29,30,37,38,
-                                45,47,53,55
-                            ];
-                        @endphp
-
-                        @for ($i = 0; $i < 64; $i++)
-
-                            <div
-                                class="{{ in_array($i, $qrBlocks) ? 'bg-gray-950' : 'bg-white' }}"
-                            ></div>
-
-                        @endfor
-
-                    </div>
+                    {!! $qr !!}
 
                 </div>
 
@@ -881,7 +858,7 @@
                     <p
                         class="mt-1 font-mono text-sm font-black tracking-wider"
                     >
-                        ECO-2026-00125
+                        {{ $user->siswa->kode_siswa }}
                     </p>
 
                 </div>

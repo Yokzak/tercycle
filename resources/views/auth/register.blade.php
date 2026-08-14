@@ -270,6 +270,7 @@
                         <select
                             id="jurusan_id"
                             x-model="student.jurusan"
+                            required
                             class="w-full rounded-xl border
                                    border-gray-200 bg-gray-50
                                    px-4 py-3 text-sm
@@ -285,10 +286,11 @@
                                 Pilih jurusan
                             </option>
 
-                            <option value="RPL">RPL</option>
-                            <option value="DKV">DKV</option>
-                            <option value="TBSM">TBSM</option>
-                            <option value="TKR">TKR</option>
+                            @foreach ($jurusans as $jurusan)
+                                <option value="{{ $jurusan->id }}">
+                                    {{ $jurusan->kode_jurusan }} - {{ $jurusan->nama_jurusan }}
+                                </option>
+                            @endforeach
 
                         </select>
 
@@ -594,7 +596,7 @@ function registerPage() {
                             nis: this.student.nis,
                             nama_lengkap: this.student.nama_lengkap,
                             kelas: this.student.kelas,
-                            jurusan: this.student.jurusan
+                            jurusan_id: this.student.jurusan
                         })
                     }
                 );
@@ -604,36 +606,25 @@ function registerPage() {
 
 
                 if (response.ok) {
-
-                    this.siswaId = data.siswa_id;
-
+                    this.siswaId = data.siswa.id;
                     this.studentStep = false;
 
                 } else {
-
                     this.error =
                         data.message ??
                         'Data siswa tidak ditemukan.';
-
                 }
 
             } catch (error) {
-
                 console.error(error);
-
                 this.error =
                     'Terjadi kesalahan. Silakan coba lagi.';
 
             } finally {
-
                 this.loading = false;
-
             }
-
         }
-
     }
-
 }
 
 </script>

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Models\PenukaranBotol;
+use App\Models\Jurusan;
 use App\Models\RiwayatPoin;
 use App\Models\Jurusan;
 
@@ -20,10 +21,10 @@ class Siswa extends Model
         'user_id',
         'nama_lengkap',
         'nis',
-        'no_telepon',
         'kode_siswa',
         'kelas',
         'jurusan_id',
+        'no_telepon',
         'saldo_poin',
     ];
 

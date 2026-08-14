@@ -2,49 +2,98 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Jurusan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class SiswaController extends Controller
 {
     public function profil(Request $request)
     {
-        $user = $request->user()->load('siswa');
+        $user = $request->user()->load(['siswa.jurusan']);
+
+        $siswa = $user->siswa;
+
+        if (!$siswa) {
+            abort(404, 'Data siswa untuk akun ini belum tersedia.');
+        }
 
         $qr = QrCode::size(300)
-            ->generate($user->siswa->kode_siswa);
+            ->generate($siswa->kode_siswa);
 
-        return view('siswa.profil', compact('user', 'qr'));
+        $jurusans = Jurusan::orderBy('nama_jurusan')->get();
+
+        return view('siswa.profil', compact(
+            'user',
+            'siswa',
+            'qr',
+            'jurusans'
+        ));
     }
 
-    public function qr()
+    public function dashboard(Request $request)
     {
-        $siswa = auth()->user()->siswa;
+        $user = $request->user()->load(['siswa.jurusan']);
+
+        $siswa = $user->siswa;
+
+        if (!$siswa) {
+            abort(404, 'Data siswa untuk akun ini belum tersedia.');
+        }
+
+        $qr = QrCode::size(300)
+            ->generate($siswa->kode_siswa);
+
+        return view('siswa.dashboard', compact(
+            'user',
+            'siswa',
+            'qr'
+        ));
+    }
+
+    public function qr(Request $request)
+    {
+        $siswa = $request->user()->siswa;
+
+        if (!$siswa) {
+            abort(404, 'Data siswa untuk akun ini belum tersedia.');
+        }
 
         $qr = QrCode::size(300)
             ->generate($siswa->kode_siswa);
 
         return view('siswa.qr', compact('siswa', 'qr'));
     }
+    
 
     public function updateProfil(Request $request)
     {
         $user = $request->user();
         $siswa = $user->siswa;
 
+        if (!$siswa) {
+            abort(404, 'Data siswa untuk akun ini belum tersedia.');
+        }
+
         $data = $request->validate([
-            'nama_lengkap' => ['required', 'string', 'max:255'],
-            'kelas' => ['required', 'string', 'max:20'],
-            'jurusan_id' => ['required', 'string', 'max:50'],
+            'kelas' => ['required', 'string', 'max:3'],
+            'jurusan_id' => ['required', 'string', 'max:20'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
         ]);
 
-        $user->update([
-            'email' => $data['email'],
-        ]);
+        DB::transaction(function () use ($user, $siswa, $data) {
+            $user->update([
+                'email' => $data['email'],
+            ]);
+
+            $siswa->update([
+                'kelas' => $data['kelas'],
+                'jurusan_id' => $data['jurusan_id'],
+            ]);
+        });
 
         $siswa->update([
-            'nama_lengkap' => $data['nama_lengkap'],
             'kelas' => $data['kelas'],
             'jurusan_id' => $data['jurusan_id'],
         ]);
