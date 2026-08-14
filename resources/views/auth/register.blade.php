@@ -221,6 +221,34 @@
 
                 </div>
 
+                <div class="mt-5">
+
+                    <label
+                        for="no_telepon"
+                        class="mb-2 block text-sm font-semibold"
+                    >
+                        No Telepon
+                    </label>
+
+                    <input
+                        type="text"
+                        id="no_telepon"
+                        x-model="student.no_telepon"
+                        placeholder="Contoh: 202600125"
+                        class="w-full rounded-xl border
+                               border-gray-200 bg-gray-50
+                               px-4 py-3 text-sm
+                               outline-none transition
+                               placeholder:text-gray-400
+                               focus:border-green-500
+                               focus:ring-2
+                               focus:ring-green-500/20
+                               dark:border-white/10
+                               dark:bg-gray-950"
+                    >
+
+                </div>
+
                 <div class="mt-5 grid gap-4 sm:grid-cols-2">
 
                     <div>
@@ -551,6 +579,7 @@ function registerPage() {
         student: {
             nama_lengkap: '',
             nis: '',
+            no_telepon: '',
             kelas: '',
             jurusan: ''
         },
@@ -595,6 +624,7 @@ function registerPage() {
                         body: JSON.stringify({
                             nis: this.student.nis,
                             nama_lengkap: this.student.nama_lengkap,
+                            no_telepon: this.student.no_telepon,
                             kelas: this.student.kelas,
                             jurusan_id: this.student.jurusan
                         })

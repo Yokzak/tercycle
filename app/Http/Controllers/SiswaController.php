@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Jurusan;
 use Illuminate\Http\Request;
+use App\Models\Siswa;
 use Illuminate\Support\Facades\DB;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -101,5 +102,22 @@ class SiswaController extends Controller
         return redirect()
             ->route('siswa.profil')
             ->with('success', 'Profil berhasil diperbarui.');
+    }
+
+    public function update(Request $request, Siswa $siswa)
+    {
+        $validated = $request->validate([
+            'nama_lengkap' => 'required|string|max:255',
+            'nis' => 'required|string|max:50',
+            'no_telepon' => 'nullable|string|max:20',
+            'kelas' => 'required|in:X,XI,XII',
+            'jurusan_id' => 'required|exists:jurusans,id',
+        ]);
+
+        $siswa->update($validated);
+
+        return redirect()
+            ->route('admin.siswa.index')
+            ->with('success', 'Data siswa berhasil diperbarui.');
     }
 }

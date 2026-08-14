@@ -6,6 +6,54 @@
         sidebarOpen: false,
         logoutModal: false,
         studentModal: false,
+        detailModal: false,
+        selectedSiswa: null,
+        editModal: false,
+
+        editSiswa: {
+            id: null,
+            nama_lengkap: '',
+            nis: '',
+            no_telepon: '',
+            kelas: '',
+            jurusan_id: ''
+        },
+
+        openEdit(siswa) {
+            this.editSiswa = {
+                id: siswa.id,
+                nama_lengkap: siswa.nama_lengkap ?? '',
+                nis: siswa.nis ?? '',
+                no_telepon: siswa.no_telepon ?? '',
+                kelas: siswa.kelas ?? '',
+                jurusan_id: siswa.jurusan?.id ?? ''
+            };
+
+            this.editModal = true;
+        },
+
+        closeEdit() {
+            this.editModal = false;
+            this.editSiswa = {
+                id: null,
+                nama_lengkap: '',
+                nis: '',
+                no_telepon: '',
+                kelas: '',
+                jurusan_id: ''
+            };
+        },
+
+        openDetail(siswa) {
+            this.selectedSiswa = siswa;
+            this.detailModal = true;
+        },
+
+        closeDetail() {
+            this.detailModal = false;
+            this.selectedSiswa = null;
+        },
+
         accountModal: false,
         showJurusanOptions: false,
         showAddJurusanModal: false,
@@ -13,6 +61,58 @@
         search: '',
         siswas: @js($siswas),
         searching: false,
+
+        currentPage: 1,
+        perPage: 5,
+
+        get totalPages() {
+            return Math.ceil(this.siswas.length / this.perPage);
+        },
+
+        get paginatedSiswas() {
+            const start = (this.currentPage - 1) * this.perPage;
+
+            return this.siswas.slice(
+                start,
+                start + this.perPage
+            );
+        },
+
+        get startItem() {
+            if (this.siswas.length === 0) {
+                return 0;
+            }
+
+            return (this.currentPage - 1) * this.perPage + 1;
+        },
+
+        get endItem() {
+            return Math.min(
+                this.currentPage * this.perPage,
+                this.siswas.length
+            );
+        },
+
+        goToPage(page) {
+            if (page < 1 || page > this.totalPages) {
+                return;
+            }
+
+            this.currentPage = page;
+        },
+
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.currentPage++;
+            }
+        },
+
+        prevPage() {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+            }
+        },
+
         selectedJurusan: [],
 
         newJurusan: {
@@ -46,6 +146,9 @@
                 }
 
                 this.siswas = await response.json();
+                
+                // Kembali ke halaman pertama setelah search
+                this.currentPage = 1;
             } catch (error) {
                 console.error(error);
             } finally {
@@ -69,8 +172,7 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
+    <meta name="viewport"
         content="width=device-width, initial-scale=1.0"
     >
 
@@ -95,8 +197,7 @@
 {{-- SIDEBAR --}}
 {{-- ========================================================= --}}
 
-<aside
-    class="fixed inset-y-0 left-0 z-50 w-64 border-r border-gray-200 bg-white transition-transform duration-300 dark:border-white/10 dark:bg-gray-950 lg:translate-x-0"
+<aside class="fixed inset-y-0 left-0 z-50 w-64 border-r border-gray-200 bg-white transition-transform duration-300 dark:border-white/10 dark:bg-gray-950 lg:translate-x-0"
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
 >
 
@@ -538,26 +639,6 @@
 
             </div>
 
-
-            <div
-                class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-white/[0.03]"
-            >
-
-                <p class="text-xs font-medium text-gray-500">
-                    Siswa Aktif
-                </p>
-
-                <p class="mt-2 text-3xl font-black text-green-500">
-                    231
-                </p>
-
-                <p class="mt-2 text-xs text-gray-500">
-                    93,1% dari total
-                </p>
-
-            </div>
-
-
             <div
                 class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-white/[0.03]"
             >
@@ -567,7 +648,7 @@
                 </p>
 
                 <p class="mt-2 text-3xl font-black">
-                    1,2M
+                    {{ $totalPoin }}
                 </p>
 
                 <p class="mt-2 text-xs text-gray-500">
@@ -662,36 +743,11 @@
                         </form>
 
                     </div>
-
-
-                    {{-- FILTER STATUS --}}
-
-                    <select
-                        class="rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 dark:border-white/10 dark:bg-gray-900"
-                    >
-
-                        <option>
-                            Semua Status
-                        </option>
-
-                        <option>
-                            Aktif
-                        </option>
-
-                        <option>
-                            Nonaktif
-                        </option>
-
-                    </select>
-
                 </div>
-
             </div>
 
-
-
             {{-- TABLE --}}
-
+            
             <div class="overflow-x-auto">
 
                 <table class="w-full text-left text-sm">
@@ -718,11 +774,7 @@
                                 Botol Ditukar
                             </th>
 
-                            <th class="px-6 py-4">
-                                Status
-                            </th>
-
-                            <th class="px-6 py-4 text-right">
+                            <th class="px-6 py-4 text-center">
                                 Aksi
                             </th>
 
@@ -732,7 +784,7 @@
 
 
                     <tbody class="divide-y divide-gray-200 dark:divide-white/10">
-                        <template x-for="siswa in siswas" :key="siswa.id">
+                        <template x-for="siswa in paginatedSiswas" :key="siswa.id">
                         <tr class="transition hover:bg-gray-50 dark:hover:bg-white/[0.02]">
                             <td class="px-6 py-5">
                                 <div class="flex items-center gap-3">
@@ -743,7 +795,7 @@
 
                                     <div>
                                         <p class="font-semibold" x-text="siswa.nama_lengkap"></p>
-                                        <p class="mt-1 text-xs text-gray-500" x-text="siswa.kelas + ' ' + siswa.jurusan"></p>
+                                        <p class="mt-1 text-xs text-gray-500" x-text="siswa.kelas + ' ' + siswa.jurusan.kode_jurusan"></p>
                                     </div>
                                 </div>
                             </td>
@@ -759,28 +811,22 @@
 
                             <td class="px-6 py-5 font-semibold">0</td>
 
-                            <td class="px-6 py-5">
 
-                                <span
-                                    class="rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-500"
-                                >
-                                    Aktif
-                                </span>
-
-                            </td>
-
-
-                            <td class="px-6 py-5">
+                            <td class="px-6 py-5 ">
 
                                 <div class="flex justify-end gap-2">
 
                                     <button
+                                    type="button"
+                                    @click="openDetail(siswa)"
                                         class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
                                     >
                                         Detail
                                     </button>
 
                                     <button
+                                        type="button"
+                                        @click="openEdit(siswa)"
                                         class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
                                     >
                                         Edit
@@ -804,8 +850,8 @@
                                 Siswa tidak ditemukan.
                             </td>
                         </tr>
-
-                    </template>
+                        </template>
+                    </tbody>
 
                 </table>
 
@@ -819,39 +865,68 @@
                 class="flex flex-col gap-4 border-t border-gray-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/10"
             >
 
+                {{-- INFO --}}
                 <p class="text-xs text-gray-500">
-                    Menampilkan 1-5 dari 248 siswa
+
+                    Menampilkan
+                    <span x-text="startItem"></span>
+                    -
+                    <span x-text="endItem"></span>
+                    dari
+                    <span x-text="siswas.length"></span>
+                    siswa
+
                 </p>
 
 
-                <div class="flex gap-2">
+                {{-- BUTTON PAGINATION --}}
+                <div class="flex items-center gap-2">
 
+                    {{-- SEBELUMNYA --}}
                     <button
-                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-400 dark:border-white/10"
+                        type="button"
+                        @click="prevPage()"
+                        :disabled="currentPage === 1"
+                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold transition
+                            hover:bg-gray-100
+                            disabled:cursor-not-allowed
+                            disabled:opacity-40
+                            dark:border-white/10
+                            dark:hover:bg-white/5"
                     >
                         Sebelumnya
                     </button>
 
-                    <button
-                        class="rounded-lg bg-green-500 px-3 py-2 text-xs font-bold text-gray-950"
-                    >
-                        1
-                    </button>
 
-                    <button
-                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold dark:border-white/10"
-                    >
-                        2
-                    </button>
+                    {{-- NOMOR HALAMAN --}}
+                    <template x-for="page in totalPages" :key="page">
 
-                    <button
-                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold dark:border-white/10"
-                    >
-                        3
-                    </button>
+                        <button
+                            type="button"
+                            @click="goToPage(page)"
+                            x-text="page"
+                            :class="
+                                currentPage === page
+                                    ? 'bg-green-500 text-gray-950'
+                                    : 'border border-gray-200 dark:border-white/10 hover:bg-gray-100 dark:hover:bg-white/5'
+                            "
+                            class="rounded-lg px-3 py-2 text-xs font-semibold transition"
+                        ></button>
 
+                    </template>
+
+
+                    {{-- SELANJUTNYA --}}
                     <button
-                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold dark:border-white/10"
+                        type="button"
+                        @click="nextPage()"
+                        :disabled="currentPage === totalPages || totalPages === 0"
+                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold transition
+                            hover:bg-gray-100
+                            disabled:cursor-not-allowed
+                            disabled:opacity-40
+                            dark:border-white/10
+                            dark:hover:bg-white/5"
                     >
                         Selanjutnya
                     </button>
@@ -1337,6 +1412,313 @@
                         class="rounded-xl bg-red-500 px-5 py-3 text-sm font-bold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         Hapus
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- MODAL DETAIL SISWA --}}
+    <div
+        x-show="detailModal"
+        x-transition.opacity
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+        style="display: none;"
+    >
+        {{-- BACKDROP --}}
+        <div
+            class="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            @click="closeDetail()"
+        ></div>
+
+        {{-- MODAL --}}
+        <div
+            x-show="detailModal"
+            x-transition
+            @click.stop
+            class="relative w-full max-w-lg rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
+        >
+
+            {{-- HEADER --}}
+            <div class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10">
+                <div>
+                    <h2 class="text-lg font-bold">
+                        Detail Siswa
+                    </h2>
+
+                    <p class="mt-1 text-sm text-gray-500">
+                        Informasi lengkap siswa.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    @click="closeDetail()"
+                    class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white"
+                >
+                    ✕
+                </button>
+            </div>
+
+            {{-- CONTENT --}}
+            <div class="space-y-4 p-6">
+
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {{-- NAMA --}}
+                    <div >
+                        <p class="text-xs text-gray-500">Nama Lengkap</p>
+                        <p
+                            class="mt-1 font-semibold"
+                            x-text="selectedSiswa?.nama_lengkap ?? '-'"
+                        ></p>
+                    </div>
+
+                    {{-- NIS --}}
+                    <div>
+                        <p class="text-xs text-gray-500">NIS</p>
+                        <p
+                            class="mt-1 font-semibold"
+                            x-text="selectedSiswa?.nis ?? '-'"
+                        ></p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {{-- KODE SISWA --}}
+                    <div>
+                        <p class="text-xs text-gray-500">Kode Siswa</p>
+                        <p
+                            class="mt-1 font-mono font-semibold"
+                            x-text="selectedSiswa?.kode_siswa ?? '-'"
+                        ></p>
+                    </div>
+
+                    {{-- KELAS --}}
+                    <div>
+                        <p class="text-xs text-gray-500">Kelas</p>
+                        <p
+                            class="mt-1 font-semibold"
+                            x-text="selectedSiswa?.kelas ?? '-'"
+                        ></p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {{-- JURUSAN --}}
+                    <div>
+                        <p class="text-xs text-gray-500">Jurusan</p>
+                        <p
+                            class="mt-1 font-semibold"
+                            x-text="
+                                selectedSiswa?.jurusan
+                                    ? selectedSiswa.jurusan.kode_jurusan + ' - ' + selectedSiswa.jurusan.nama_jurusan
+                                    : '-'
+                            "
+                        ></p>
+                    </div>
+
+                    {{-- NO TELEPON --}}
+                    <div>
+                        <p class="text-xs text-gray-500">No. Telepon</p>
+                        <p
+                            class="mt-1 font-semibold"
+                            x-text="selectedSiswa?.no_telepon ?? '-'"
+                        ></p>
+                    </div>
+                </div>
+
+            </div>
+
+            {{-- FOOTER --}}
+            <div class="flex justify-end border-t border-gray-200 px-6 py-4 dark:border-white/10">
+                <button
+                    type="button"
+                    @click="closeDetail()"
+                    class="rounded-xl bg-gray-100 px-5 py-2.5 text-sm font-semibold hover:bg-gray-200 dark:bg-white/10 dark:hover:bg-white/20"
+                >
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- MODAL EDIT SISWA --}}
+    <div
+        x-show="editModal"
+        x-transition.opacity
+        x-effect="document.body.style.overflow = editModal ? 'hidden' : ''"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+        style="display: none;"
+    >
+        {{-- BACKDROP --}}
+        <div
+            class="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            @click="closeEdit()"
+        ></div>
+
+        {{-- MODAL --}}
+        <div
+            x-show="editModal"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+            @click.stop
+            class="relative w-full max-w-lg rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
+        >
+
+            {{-- HEADER --}}
+            <div
+                class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10"
+            >
+                <div>
+                    <h2 class="text-lg font-bold">
+                        Edit Siswa
+                    </h2>
+
+                    <p class="mt-1 text-sm text-gray-500">
+                        Edit informasi siswa.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    @click="closeEdit()"
+                    class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white"
+                >
+                    ✕
+                </button>
+            </div>
+
+
+            {{-- FORM --}}
+            <form
+                method="POST"
+                :action="'{{ url('/admin/siswa') }}/' + editSiswa.id"
+                class="p-6"
+            >
+
+                @csrf
+                @method('PUT')
+
+
+                {{-- NAMA --}}
+                <div>
+                    <label class="mb-2 block text-sm font-semibold">
+                        Nama Lengkap
+                    </label>
+
+                    <input
+                        type="text"
+                        name="nama_lengkap"
+                        x-model="editSiswa.nama_lengkap"
+                        required
+                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                    >
+                </div>
+
+
+                {{-- NIS --}}
+                <div class="mt-5">
+                    <label class="mb-2 block text-sm font-semibold">
+                        NIS
+                    </label>
+
+                    <input
+                        type="text"
+                        name="nis"
+                        x-model="editSiswa.nis"
+                        required
+                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                    >
+                </div>
+
+
+                {{-- NO TELEPON --}}
+                <div class="mt-5">
+                    <label class="mb-2 block text-sm font-semibold">
+                        No. Telepon
+                    </label>
+
+                    <input
+                        type="text"
+                        name="no_telepon"
+                        x-model="editSiswa.no_telepon"
+                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                    >
+                </div>
+
+
+                {{-- KELAS + JURUSAN --}}
+                <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
+
+                    {{-- KELAS --}}
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold">
+                            Kelas
+                        </label>
+
+                        <select
+                            name="kelas"
+                            x-model="editSiswa.kelas"
+                            required
+                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                        >
+                            <option value="">Pilih kelas</option>
+
+                            <option value="X">X</option>
+                            <option value="XI">XI</option>
+                            <option value="XII">XII</option>
+                        </select>
+                    </div>
+
+
+                    {{-- JURUSAN --}}
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold">
+                            Jurusan
+                        </label>
+
+                        <select
+                            name="jurusan_id"
+                            x-model="editSiswa.jurusan_id"
+                            required
+                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                        >
+                            <option value="">Pilih jurusan</option>
+
+                            @foreach ($jurusans as $jurusan)
+                                <option value="{{ $jurusan->id }}">
+                                    {{ $jurusan->kode_jurusan }} -
+                                    {{ $jurusan->nama_jurusan }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                </div>
+
+
+                {{-- FOOTER --}}
+                <div
+                    class="mt-7 flex justify-end gap-3 border-t border-gray-200 pt-5 dark:border-white/10"
+                >
+
+                    <button
+                        type="button"
+                        @click="closeEdit()"
+                        class="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+                    >
+                        Batal
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950 hover:bg-green-400"
+                    >
+                        Simpan
                     </button>
                 </div>
             </form>

@@ -7,13 +7,6 @@ use Illuminate\Http\Request;
 
 class JurusanController extends Controller
 {
-    public function index()
-    {
-        return response()->json(
-            Jurusan::orderBy('nama_jurusan')->get()
-        );
-    }
-
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -31,10 +24,10 @@ class JurusanController extends Controller
             ],
         ]);
 
-        $jurusan = Jurusan::create($data);
+        Jurusan::create($data);
 
         return redirect()
-            ->route('admin.jurusan.index')
+            ->route('admin.siswa.index')
             ->with('success', 'Jurusan berhasil ditambahkan.');
         }
 
