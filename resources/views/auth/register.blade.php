@@ -365,12 +365,42 @@
 
                 </div>
 
+                @if ($errors->any() && old('register_account'))
+
+                    <div class="mb-5 rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+
+                        <div class="flex gap-3">
+
+                            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-500">
+                                !
+                            </div>
+
+                            <div>
+                                <p class="text-sm font-semibold text-red-500">
+                                    Gagal membuat akun
+                                </p>
+
+                                <ul class="mt-1 space-y-1 text-xs text-red-500">
+                                    @foreach ($errors->all() as $error)
+                                        <li>• {{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                @endif
+
                 <form
                     action="{{ route('register.store') }}"
                     method="POST"
                 >
 
                     @csrf
+
+                    <input type="hidden" name="register_account" value="1">
 
                     <input
                         type="hidden"
@@ -567,14 +597,10 @@ function registerPage() {
     return {
 
         dark: localStorage.getItem('theme') !== 'light',
-
-        studentStep: true,
-
         loading: false,
-
         error: '',
-
-        siswaId: null,
+        studentStep: {{ old('register_account') ? 'false' : 'true' }},
+        siswaId: {{ old('siswa_id', 'null') }},
 
         student: {
             nama_lengkap: '',
@@ -642,7 +668,7 @@ function registerPage() {
                 } else {
                     this.error =
                         data.message ??
-                        'Data siswa tidak ditemukan.';
+                        'Datamu tidak ditemukan.';
                 }
 
             } catch (error) {

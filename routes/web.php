@@ -56,6 +56,9 @@ Route::middleware(['auth', 'role:siswa'])->group(function () {
 
         Route::put('/siswa/profil', [SiswaController::class, 'updateProfil'])
             ->name('siswa.profil.update');
+            
+        Route::get('/siswa/poin', [SiswaController::class, 'poin'])
+            ->name('siswa.poin');
     });
 
     Route::get('/siswa/poin', function () {
@@ -73,6 +76,10 @@ Route::middleware(['auth', 'role:siswa'])->group(function () {
     Route::get('/siswa/keranjang', function () {
         return view('siswa.keranjang');
     });
+
+    Route::get('/siswa/poin', [SiswaController::class, 'poin'])
+        ->middleware('auth')
+        ->name('siswa.poin');
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {

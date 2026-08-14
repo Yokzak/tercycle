@@ -36,7 +36,7 @@ class RegisterController extends Controller
 
         if (!$siswa) {
             return response()->json([
-                'message' => 'Data siswa tidak ditemukan. Pastikan data yang dimasukkan sesuai dengan data sekolah.'
+                'message' => 'Datamu tidak ditemukan.'
             ], 422);
         }
 
@@ -67,6 +67,13 @@ class RegisterController extends Controller
                 'exists:siswa,id',
             ],
 
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:users,name',
+            ],
+
             'email' => [
                 'required',
                 'email',
@@ -94,7 +101,7 @@ class RegisterController extends Controller
 
             // Buat akun User
             $user = User::create([
-                'name' => $siswa->nama_lengkap,
+                'name' => $data['name'],
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
                 'role' => 'siswa',
