@@ -9,6 +9,7 @@ use App\Http\Controllers\KategoriProdukController;
 use App\Http\Controllers\SiswaProdukController;
 use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\KategoriBotolController;
+use App\Http\Controllers\PenukaranBotolController;
 
 Route::get('/', function () {
     return view('home');
@@ -49,6 +50,9 @@ Route::get('/siswa/qr', [SiswaController::class, 'qr'])->middleware('auth')->nam
 
 Route::middleware(['auth', 'role:siswa'])->group(function () {
     Route::get('/siswa/dashboard', [SiswaController::class, 'dashboard'])->name('siswa.dashboard');
+    Route::get('/siswa/tukar',[PenukaranBotolController::class, 'create'])->name('siswa.tukar');
+    Route::post('/siswa/tukar',[PenukaranBotolController::class, 'store'])->name('siswa.tukar.store');
+
 
     Route::middleware('auth')->group(function () {
         Route::get('/siswa/profil', [SiswaController::class, 'profil'])
@@ -62,9 +66,7 @@ Route::middleware(['auth', 'role:siswa'])->group(function () {
         return view('siswa.poin');
     });
 
-    Route::get('/siswa/tukar', function () {
-        return view('siswa.tukar');
-    });
+    
 
     Route::get('/siswa/pesanan', function () {
         return view('siswa.pesanan');

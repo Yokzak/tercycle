@@ -547,39 +547,7 @@
 
         <main
             class="mx-auto max-w-6xl px-6 py-8 lg:px-8"
-            x-data="{
-                plastic: 0,
-                glass: 0,
-                can: 0,
-
-                get totalBottle() {
-                    return this.plastic + this.glass + this.can;
-                },
-
-                get totalPoint() {
-                    return (this.plastic * 50)
-                        + (this.glass * 75)
-                        + (this.can * 100);
-                },
-
-                formatPoint(value) {
-                    if (value >= 1000000) {
-                        return (value / 1000000)
-                            .toFixed(value % 1000000 === 0 ? 0 : 1)
-                            .replace('.', ',') + ' juta';
-                    }
-
-                    if (value >= 1000) {
-                        return (value / 1000)
-                            .toFixed(value % 1000 === 0 ? 0 : 1)
-                            .replace('.', ',') + ' ribu';
-                    }
-
-                    return value.toLocaleString('id-ID');
-                }
-            }"
         >
-
 
         {{-- HEADER --}}
 
@@ -633,239 +601,220 @@
 
 
 
-        {{-- ================================================= --}}
-        {{-- FORM --}}
-        {{-- ================================================= --}}
+       <div
+    x-data="{
+        items: [
+            @foreach ($kategoriBotol as $kategori)
+                {
+                    id: {{ $kategori->id }},
+                    nama: @js($kategori->nama_kategori),
+                    poin: {{ $kategori->poin_satuan }},
+                    jumlah: 0
+                },
+            @endforeach
+        ],
+
+        catatan: '',
+
+        get totalBotol() {
+            return this.items.reduce(
+                (total, item) => total + Number(item.jumlah),
+                0
+            );
+        },
+
+        get totalPoin() {
+            return this.items.reduce(
+                (total, item) =>
+                    total + (Number(item.jumlah) * Number(item.poin)),
+                0
+            );
+        },
+
+        tambah(index) {
+            this.items[index].jumlah++;
+        },
+
+        kurang(index) {
+            if (this.items[index].jumlah > 0) {
+                this.items[index].jumlah--;
+            }
+        }
+    }"
+>
+
+    <form
+        action="{{ route('siswa.tukar.store') }}"
+        method="POST"
+    >
+        @csrf
 
         <div class="grid gap-6 lg:grid-cols-3">
 
-
+            {{-- ============================================= --}}
             {{-- JENIS BOTOL --}}
+            {{-- ============================================= --}}
 
-            <div
-                class="space-y-4 lg:col-span-2"
-            >
+            <div class="space-y-4 lg:col-span-2">
 
                 <div
-                    class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/[0.03]"
+                    class="rounded-2xl border border-gray-200 bg-white p-6
+                    dark:border-white/10 dark:bg-white/[0.03]"
                 >
 
                     <div class="mb-6">
 
                         <h3 class="font-bold">
-                            Jenis Sampah
+                            Jenis Botol
                         </h3>
 
-                        <p class="mt-1 text-xs text-gray-500">
-                            Tentukan jumlah sampah yang kamu bawa.
-                        </p>
-
+                       
                     </div>
 
 
-                    {{-- PLASTIK --}}
+                    {{-- LOOP KATEGORI BOTOL --}}
 
-                    <div
-                        class="flex flex-col gap-4 border-b border-gray-200 py-5 dark:border-white/10 sm:flex-row sm:items-center sm:justify-between"
-                    >
+                    <template
+    x-for="(item, index) in items"
+    :key="item.id"
+>
+    <div
+        class="flex flex-col gap-4 border-b
+        border-gray-200 py-5 last:border-0
+        dark:border-white/10
+        sm:flex-row sm:items-center
+        sm:justify-between"
+    >
 
-                        <div class="flex items-center gap-4">
+        {{-- ID KATEGORI --}}
+        <input
+            type="hidden"
+            :name="'botol[' + index + '][kategori_botol_id]'"
+            :value="item.id"
+        >
 
-                            <div
-                                class="flex h-12 w-12 items-center justify-center rounded-xl bg-green-500/10 text-green-500"
-                            >
-                                ♻
-                            </div>
+        {{-- INFO BOTOL --}}
+        <div class="flex items-center gap-4">
 
-                            <div>
+            <div
+                class="flex h-12 w-12 shrink-0
+                items-center justify-center
+                rounded-xl bg-green-500/10
+                text-green-500"
+            >
+                ♻
+            </div>
 
-                                <p class="font-semibold">
-                                    Botol Plastik
-                                </p>
+            <div>
 
-                                <p class="mt-1 text-xs text-gray-500">
-                                    50 poin / botol
-                                </p>
+                <p
+                    class="font-semibold"
+                    x-text="item.nama"
+                ></p>
 
-                            </div>
+                <p class="mt-1 text-xs text-gray-500">
 
-                        </div>
+                    <span
+                        x-text="Number(item.poin).toLocaleString('id-ID')"
+                    ></span>
 
+                    poin / botol
 
-                        <div class="flex items-center gap-3">
+                </p>
 
-                            <button
-                                type="button"
-                                @click="if (plastic > 0) plastic--"
-                                class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-lg text-gray-500 transition hover:border-green-500 hover:text-green-500 dark:border-white/10"
-                            >
-                                -
-                            </button>
+            </div>
 
-                            <span>
-                                <input
-                                type="number"
-                                min="0"
-                                x-model.number="plastic"
-                                class="w-16 rounded-lg border border-gray-200 bg-white px-2 py-2 text-center font-bold outline-none focus:border-green-500 dark:border-white/10 dark:bg-white/5">
-                            </span>
-
-                            <button
-                                type="button"
-                                @click="plastic++"
-                                class="flex h-9 w-9 items-center justify-center rounded-lg bg-green-500 text-lg font-bold text-gray-950 transition hover:bg-green-400"
-                            >
-                                +
-                            </button>
-
-                        </div>
-
-                    </div>
+        </div>
 
 
+        {{-- JUMLAH --}}
+        <div class="flex items-center gap-3">
 
-                    {{-- KACA --}}
-
-                    <div
-                        class="flex flex-col gap-4 border-b border-gray-200 py-5 dark:border-white/10 sm:flex-row sm:items-center sm:justify-between"
-                    >
-
-                        <div class="flex items-center gap-4">
-
-                            <div
-                                class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500/10 text-blue-500"
-                            >
-                                ♢
-                            </div>
-
-                            <div>
-
-                                <p class="font-semibold">
-                                    Botol Kaca
-                                </p>
-
-                                <p class="mt-1 text-xs text-gray-500">
-                                    75 poin / botol
-                                </p>
-
-                            </div>
-
-                        </div>
+            {{-- MINUS --}}
+            <button
+                type="button"
+                @click="kurang(index)"
+                class="flex h-9 w-9 items-center
+                justify-center rounded-lg
+                border border-gray-200
+                text-lg text-gray-500
+                transition hover:border-green-500
+                hover:text-green-500
+                dark:border-white/10"
+            >
+                -
+            </button>
 
 
-                        <div class="flex items-center gap-3">
-
-                            <button
-                                type="button"
-                                @click="if (glass > 0) glass--"
-                                class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-lg text-gray-500 transition hover:border-green-500 hover:text-green-500 dark:border-white/10"
-                            >
-                                -
-                            </button>
-
-                            <span>
-                                <input
-                                type="number"
-                                min="0"
-                                x-model.number="glass"
-                                class="w-16 rounded-lg border border-gray-200 bg-white px-2 py-2 text-center font-bold outline-none focus:border-green-500 dark:border-white/10 dark:bg-white/5">
-                            </span>
-
-                            <button
-                                type="button"
-                                @click="glass++"
-                                class="flex h-9 w-9 items-center justify-center rounded-lg bg-green-500 text-lg font-bold text-gray-950 transition hover:bg-green-400"
-                            >
-                                +
-                            </button>
-
-                        </div>
-
-                    </div>
+            {{-- JUMLAH BOTOL --}}
+            <input
+                type="number"
+                min="0"
+                :name="'botol[' + index + '][jumlah_botol]'"
+                x-model.number="item.jumlah"
+                :disabled="item.jumlah === 0"
+                class="w-16 rounded-lg border
+                border-gray-200 bg-white px-2 py-2
+                text-center font-bold outline-none
+                focus:border-green-500
+                dark:border-white/10
+                dark:bg-white/5"
+            >
 
 
+            {{-- PLUS --}}
+            <button
+                type="button"
+                @click="tambah(index)"
+                class="flex h-9 w-9 items-center
+                justify-center rounded-lg
+                bg-green-500 text-lg font-bold
+                text-gray-950 transition
+                hover:bg-green-400"
+            >
+                +
+            </button>
 
-                    {{-- KALENG --}}
+        </div>
 
-                    <div
-                        class="flex flex-col gap-4 py-5 sm:flex-row sm:items-center sm:justify-between"
-                    >
-
-                        <div class="flex items-center gap-4">
-
-                            <div
-                                class="flex h-12 w-12 items-center justify-center rounded-xl bg-yellow-500/10 text-yellow-500"
-                            >
-                                ◇
-                            </div>
-
-                            <div>
-
-                                <p class="font-semibold">
-                                    Kaleng
-                                </p>
-
-                                <p class="mt-1 text-xs text-gray-500">
-                                    100 poin / kaleng
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="flex items-center gap-3">
-
-                            <button
-                                type="button"
-                                @click="if (can > 0) can--"
-                                class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-lg text-gray-500 transition hover:border-green-500 hover:text-green-500 dark:border-white/10"
-                            >
-                                -
-                            </button>
-
-                            <span>
-                                <input
-                                type="number"
-                                min="0"
-                                x-model.number="can"
-                                class="w-16 rounded-lg border border-gray-200 bg-white px-2 py-2 text-center font-bold outline-none focus:border-green-500 dark:border-white/10 dark:bg-white/5">
-                            </span>
-
-                            <button
-                                type="button"
-                                @click="can++"
-                                class="flex h-9 w-9 items-center justify-center rounded-lg bg-green-500 text-lg font-bold text-gray-950 transition hover:bg-green-400"
-                            >
-                                +
-                            </button>
-
-                        </div>
-
-                    </div>
-
+    </div>
+</template>
                 </div>
 
 
-
+                {{-- ============================================= --}}
                 {{-- CATATAN --}}
+                {{-- ============================================= --}}
 
                 <div
-                    class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/[0.03]"
+                    class="rounded-2xl border border-gray-200
+                    bg-white p-6
+                    dark:border-white/10
+                    dark:bg-white/[0.03]"
+                    hidden
                 >
 
-                    <h3 class="font-bold">
+                    <h3 class="font-bold" hidden>
                         Catatan
                     </h3>
 
-                    <p class="mt-1 text-xs text-gray-500">
+                    <p class="mt-1 text-xs text-gray-500" hidden>
                         Tambahkan catatan jika diperlukan.
                     </p>
 
-                    <textarea
+                    <textarea hidden
+                        name="catatan"
+                        x-model="catatan"
                         rows="4"
-                        placeholder="Contoh: Botol sudah dipisahkan berdasarkan jenis..."
-                        class="mt-5 w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/10 dark:border-white/10 dark:bg-white/5"
+                        placeholder="Contoh: Botol sudah dipisahkan berdasarkan ukuran..."
+                        class="mt-5 w-full resize-none rounded-xl
+                        border border-gray-200 bg-gray-50 px-4 py-3
+                        text-sm outline-none transition
+                        placeholder:text-gray-400
+                        focus:border-green-500
+                        focus:ring-2 focus:ring-green-500/10
+                        dark:border-white/10
+                        dark:bg-white/5"
                     ></textarea>
 
                 </div>
@@ -873,137 +822,138 @@
             </div>
 
 
-
-            {{-- ================================================= --}}
+            {{-- ============================================= --}}
             {{-- RINGKASAN --}}
-            {{-- ================================================= --}}
+            {{-- ============================================= --}}
 
             <div class="lg:col-span-1">
 
                 <div
-                    class="sticky top-28 rounded-2xl border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/[0.03]"
+                    class="sticky top-28 rounded-2xl
+                    border border-gray-200 bg-white p-6
+                    dark:border-white/10
+                    dark:bg-white/[0.03]"
                 >
 
                     <h3 class="font-bold">
-                        Ringkasan
+                        Ringkasan Pengajuan
                     </h3>
 
                     <p class="mt-1 text-xs text-gray-500">
-                        Estimasi penukaran kamu.
+                        Periksa kembali sebelum mengajukan.
                     </p>
 
 
                     <div class="mt-6 space-y-4">
 
 
-                        <div class="flex justify-between text-sm">
+                        {{-- TOTAL BOTOL --}}
 
-                            <span class="text-gray-500">
-                                Botol plastik
-                            </span>
-
-                            <span
-                                class="font-semibold"
-                                x-text="plastic + ' × 50'"
-                            >
-                                0 × 50
-                            </span>
-
+                        <div class="space-y-3">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                                Detail setoran
+                            </p>
+                            <template x-for="item in items" :key="item.id">
+                                <div x-show="Number(item.jumlah) > 0" class="flex justify-between text-sm">
+                                    <span class="text-gray-500"><span x-text="item.nama"></span></span>
+                                    <span class="font-semibold">
+                                        <span x-text="item.jumlah"></span>
+                                        x 
+                                        <span x-text="Number(item.poin).toLocaleString('id-ID')"></span>
+                                </span>
+                                </div>
+                            </template>
+                            <p x-show="totalBotol === 0" class="text-xs text-gray-400">Belum ada botol yang dipilih</p>
                         </div>
 
 
-                        <div class="flex justify-between text-sm">
-
-                            <span class="text-gray-500">
-                                Botol kaca
-                            </span>
-
-                            <span
-                                class="font-semibold"
-                                x-text="glass + ' × 75'"
-                            >
-                                0 × 75
-                            </span>
-
-                        </div>
-
-
-                        <div class="flex justify-between text-sm">
-
-                            <span class="text-gray-500">
-                                Kaleng
-                            </span>
-
-                            <span
-                                class="font-semibold"
-                                x-text="can + ' × 100'"
-                            >
-                                0 × 100
-                            </span>
-
-                        </div>
-
+                        {{-- TOTAL POIN --}}
 
                         <div
-                            class="border-t border-gray-200 pt-4 dark:border-white/10"
+                            class="border-t border-gray-200 pt-4
+                            dark:border-white/10"
                         >
 
-                            <div class="flex justify-between">
+                            <div
+                                class="rounded-xl bg-green-500/10 p-4"
+                            >
 
-                                <span class="text-sm text-gray-500">
-                                    Total sampah
-                                </span>
+                                <p class="text-xs text-gray-500">
+                                    Estimasi poin
+                                </p>
 
-                                <span
-                                    class="font-bold"
-                                    x-text="totalBottle + ' item'"
+                                <div
+                                    class="mt-1 flex items-end gap-2"
                                 >
-                                    0 item
-                                </span>
+
+                                    <span
+                                        class="text-3xl font-black
+                                        text-green-500"
+                                        x-text="
+                                            totalPoin.toLocaleString('id-ID')
+                                        "
+                                    >
+                                        0
+                                    </span>
+
+                                    <span
+                                        class="mb-1 text-sm font-semibold
+                                        text-green-500"
+                                    >
+                                        poin
+                                    </span>
+
+                                </div>
 
                             </div>
 
                         </div>
 
 
+                        {{-- INFORMASI WORKFLOW --}}
+
                         <div
-                            class="rounded-xl bg-green-500/10 p-4"
+                            class="rounded-xl border
+                            border-yellow-200 bg-yellow-50 p-4
+                            dark:border-yellow-500/20
+                            dark:bg-yellow-500/5"
                         >
 
-                            <p class="text-xs text-gray-500">
-                                Estimasi poin
+                            <p class="text-xs leading-5 text-gray-600
+                                dark:text-gray-300"
+                            >
+                                Setelah mengajukan, silakan serahkan
+                                botol kepada admin. Poin akan masuk
+                                setelah botol diverifikasi dan
+                                pengajuan dikonfirmasi.
                             </p>
 
-                            <div class="mt-1 flex items-end gap-2">
-
-                                <span
-                                    class="text-3xl font-black text-green-500"
-                                    x-text="totalPoint.toLocaleString('id-ID')"
-                                >
-                                    0
-                                </span>
-
-                                <span class="mb-1 text-sm font-semibold text-green-500">
-                                    poin
-                                </span>
-
-                            </div>
-
                         </div>
 
 
+                        {{-- SUBMIT --}}
+
                         <button
-                            type="button"
-                            class="w-full rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950 transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-50"
-                            :disabled="totalBottle === 0"
+                            type="submit"
+                            :disabled="totalBotol === 0"
+                            class="w-full rounded-xl
+                            bg-green-500 px-5 py-3
+                            text-sm font-bold text-gray-950
+                            transition hover:bg-green-400
+                            disabled:cursor-not-allowed
+                            disabled:opacity-50"
                         >
                             Ajukan Penukaran
                         </button>
 
 
-                        <p class="text-center text-[11px] leading-4 text-gray-400">
-                            Poin akan masuk setelah penukaran
-                            diverifikasi oleh admin.
+                        <p
+                            class="text-center text-[11px]
+                            leading-4 text-gray-400"
+                        >
+                            Pengajuan akan berstatus
+                            <strong>menunggu</strong>
+                            sampai diverifikasi admin.
                         </p>
 
                     </div>
@@ -1014,6 +964,9 @@
 
         </div>
 
+    </form>
+
+</div>
 
 
         {{-- ================================================= --}}
@@ -1035,9 +988,7 @@
             </div>
 
 
-            <div
-                class="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/10 dark:bg-white/[0.03]"
-            >
+            
 
                 <div
                     class="hidden border-b border-gray-200 px-6 py-4 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:border-white/10 sm:grid sm:grid-cols-12"
@@ -1063,91 +1014,72 @@
 
 
                 {{-- ITEM --}}
+                @if ($pengajuan->count()) 
+                    @foreach ($pengajuan as $item) 
+                        <div class="grid gap-3 border-b border-gray-200 px-6 py-5 dark:border-white/10 sm:grid-cols-12 sm:items-center">
 
-                <div
-                    class="grid gap-3 border-b border-gray-200 px-6 py-5 dark:border-white/10 sm:grid-cols-12 sm:items-center"
-                >
+                            <div class="sm:col-span-4"> 
+                                <p class="text-sm font-semibold">
+                                    #SETOR-{{ str_pad($item->id, 5,'0', STR_PAD_LEFT) }}
+                                </p>
+                                <p class="mt-1 text-xs text-gray-500">
+                                    @foreach ($item->detailPenukaran as $detail )
+                                    {{ $detail->kategoriBotol->nama_kategori }}
 
-                    <div class="sm:col-span-4">
+                                    @if(!$loop->last),
+                                    @endif
+                                        
+                                    @endforeach
+                                </p>
+                            </div>
 
-                        <p class="text-sm font-semibold">
-                            #SETOR-00125
+                            <div class="text-xs text-gray-500 sm:col-span-3">
+
+                                {{ \Carbon\Carbon::parse($item->tanggal)->format('d F Y') }}
+
+                            </div>
+
+                            <div class="text-sm font-semibold sm:col-span-2">
+                                {{ $item->detailPenukaran->sum('jumlah_botol') }} 
+                                item
+                            </div>
+                            
+                            <div class="sm:col-span-3 sm:text-right">
+                                @if($item->status === 'menunggu')
+
+                                <span class="rounded-full bg-yellow-500/10 px-3 py-1 text-[11px] font-semibold text-yellow-600 dark:text-yellow-400">
+                                Menunggu Verifikasi
+                            </span>
+                            @elseif($item->status === 'disetujui')
+                            <span class="rounded-full bg-green-500/10 px-3 py-1 text-[11px] font-semibold text-green-500">
+                                Berhasil
+                            </span>
+                            @elseif($item->status === "ditolak")
+                            <span class="rounded-full bg-red-500/10 px-3 py-1 text-[11px] font-semibold text-red-500">
+                            Ditolak
+                            </span>
+
+                            @endif
+
+                            </div>
+
+                        </div>
+                    
+                        
+                        
+                    @endforeach
+                @else
+                    <div class="px-6 py-10 text-center">
+                        <p class="text-sm text-gray-500">
+                            Belum ada pengajuan penukaran
                         </p>
-
-                        <p class="mt-1 text-xs text-gray-500">
-                            Plastik & kaca
-                        </p>
-
                     </div>
+                @endif
+                
+                    
 
-
-                    <div class="text-xs text-gray-500 sm:col-span-3">
-                        10 Agustus 2026
-                    </div>
-
-
-                    <div class="text-sm font-semibold sm:col-span-2">
-                        10 item
-                    </div>
-
-
-                    <div class="sm:col-span-3 sm:text-right">
-
-                        <span
-                            class="rounded-full bg-yellow-500/10 px-3 py-1 text-[11px] font-semibold text-yellow-600 dark:text-yellow-400"
-                        >
-                            Menunggu Verifikasi
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                {{-- ITEM --}}
-
-                <div
-                    class="grid gap-3 px-6 py-5 sm:grid-cols-12 sm:items-center"
-                >
-
-                    <div class="sm:col-span-4">
-
-                        <p class="text-sm font-semibold">
-                            #SETOR-00120
-                        </p>
-
-                        <p class="mt-1 text-xs text-gray-500">
-                            Plastik
-                        </p>
-
-                    </div>
-
-
-                    <div class="text-xs text-gray-500 sm:col-span-3">
-                        8 Agustus 2026
-                    </div>
-
-
-                    <div class="text-sm font-semibold sm:col-span-2">
-                        20 item
-                    </div>
-
-
-                    <div class="sm:col-span-3 sm:text-right">
-
-                        <span
-                            class="rounded-full bg-green-500/10 px-3 py-1 text-[11px] font-semibold text-green-500"
-                        >
-                            Berhasil
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
+                
+        
 
 
     </main>
