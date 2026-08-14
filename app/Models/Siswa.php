@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Models\PenukaranBotol;
 use App\Models\Jurusan;
 use App\Models\RiwayatPoin;
-use App\Models\Jurusan;
 
 
 class Siswa extends Model
