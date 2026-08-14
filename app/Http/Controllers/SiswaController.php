@@ -32,6 +32,26 @@ class SiswaController extends Controller
         ));
     }
 
+    public function dashboard(Request $request)
+    {
+        $user = $request->user()->load(['siswa.jurusan']);
+
+        $siswa = $user->siswa;
+
+        if (!$siswa) {
+            abort(404, 'Data siswa untuk akun ini belum tersedia.');
+        }
+
+        $qr = QrCode::size(300)
+            ->generate($siswa->kode_siswa);
+
+        return view('siswa.dashboard', compact(
+            'user',
+            'siswa',
+            'qr'
+        ));
+    }
+
     public function qr(Request $request)
     {
         $siswa = $request->user()->siswa;
@@ -45,6 +65,7 @@ class SiswaController extends Controller
 
         return view('siswa.qr', compact('siswa', 'qr'));
     }
+    
 
     public function updateProfil(Request $request)
     {
@@ -56,9 +77,8 @@ class SiswaController extends Controller
         }
 
         $data = $request->validate([
-            'nama_lengkap' => ['required', 'string', 'max:255'],
-            'kelas' => ['required', 'string', 'max:20'],
-            'jurusan_id' => ['required', 'string', 'max:50'],
+            'kelas' => ['required', 'string', 'max:3'],
+            'jurusan_id' => ['required', 'string', 'max:20'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
         ]);
 
@@ -66,10 +86,14 @@ class SiswaController extends Controller
             $user->update([
                 'email' => $data['email'],
             ]);
+
+            $siswa->update([
+                'kelas' => $data['kelas'],
+                'jurusan_id' => $data['jurusan_id'],
+            ]);
         });
 
         $siswa->update([
-            'nama_lengkap' => $data['nama_lengkap'],
             'kelas' => $data['kelas'],
             'jurusan_id' => $data['jurusan_id'],
         ]);

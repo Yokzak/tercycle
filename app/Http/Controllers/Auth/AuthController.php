@@ -85,6 +85,7 @@ class AuthController extends Controller
             'kode_siswa' => 'SIS-' . strtoupper(Str::random(6)),
             'kelas' => '-',
             'jurusan' => '-',
+            'no_telepon' => $request->no_telepon ?? '-',
             'saldo_poin' => 0,
         ]);
 

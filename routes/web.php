@@ -43,16 +43,12 @@ Route::post('/admin/kategori-produk', [KategoriProdukController::class, 'store']
 
 Route::delete('/admin/kategori-produk', [KategoriProdukController::class, 'destroy'])->name('admin.kategori.destroy');
 
-Route::get('/admin/siswa', [AdminSiswaController::class, 'index'])->name('admin.siswa.index');
-
 Route::post('/admin/siswa', [AdminSiswaController::class, 'store'])->name('admin.siswa.store');
 
 Route::get('/siswa/qr', [SiswaController::class, 'qr'])->middleware('auth')->name('siswa.qr');
 
 Route::middleware(['auth', 'role:siswa'])->group(function () {
-    Route::get('/siswa/dashboard', function () {
-        return view('siswa.dashboard');
-    });
+    Route::get('/siswa/dashboard', [SiswaController::class, 'dashboard'])->name('siswa.dashboard');
 
     Route::middleware('auth')->group(function () {
         Route::get('/siswa/profil', [SiswaController::class, 'profil'])
@@ -87,6 +83,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/penukaran', function () {
         return view('admin.penukaran');
     });
+
+    Route::put('/admin/botol/{id}', [KategoriBotolController::class, 'update'])
+    ->name('admin.botol.update');
 
     Route::get('/admin/jurusan', [JurusanController::class, 'index'])
         ->name('admin.jurusan.index');

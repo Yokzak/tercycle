@@ -10,8 +10,13 @@ class SiswaSeeder extends Seeder
 {
     public function run(): void
     {
-        $budi = User::where('email', 'budi@gmail.com')->firstOrFail();
-        $andi = User::where('email', 'andi@gmail.com')->firstOrFail();
+        $budi = User::create([
+            'name' => 'Budi Santoso',
+            'email' => 'budi@gmail.com',
+            'password' => bcrypt('password'),
+            'no_telepon' => '08123456789',
+            'jurusan_id' => 'RPL',
+        ]);
 
         Siswa::create([
             'user_id' => $budi->id,
@@ -22,6 +27,14 @@ class SiswaSeeder extends Seeder
             'kelas' => 'XI',
             'jurusan_id' => 'RPL',
             'saldo_poin' => 0,
+        ]);
+
+        $andi = User::create([
+            'name' => 'Andi Pratama',
+            'email' => 'andi@gmail.com',
+            'password' => bcrypt('password'),
+            'no_telepon' => '081234567890',
+            'jurusan_id' => 'TKR',
         ]);
 
         Siswa::create([
