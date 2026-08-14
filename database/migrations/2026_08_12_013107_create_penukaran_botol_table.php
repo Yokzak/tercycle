@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('penukaran_botol', function (Blueprint $table) {
             $table->id();
             $table->foreignId('siswa_id')->constrained('siswa')->cascadeOnDelete();
-            $table->foreignId('admin_id')->constrained('users')->restrictOnDelete();
+            $table->foreignId('admin_id')->nullable()->constrained('users')->nullOnDelete();
             $table->unsignedInteger('total_poin')->default(0);
+            $table->enum('status', ['menunggu','disetujui','ditolak']);
             $table->datetime('tanggal');
             $table->timestamps();
             

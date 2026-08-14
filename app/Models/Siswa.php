@@ -11,6 +11,7 @@ use App\Models\PenukaranBotol;
 use App\Models\Jurusan;
 use App\Models\RiwayatPoin;
 
+
 class Siswa extends Model
 {
     protected $table = 'siswa';

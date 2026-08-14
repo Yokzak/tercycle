@@ -14,6 +14,7 @@ class PenukaranBotol extends Model
         'siswa_id',
         'admin_id',
         'total_poin',
+        'status',
         'tanggal',
     ];
 
