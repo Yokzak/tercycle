@@ -680,7 +680,7 @@
                             <div>
 
                                 <p class="font-semibold">
-                                    Botol Plastik
+                                    Kecil
                                 </p>
 
                                 <p class="mt-1 text-xs text-gray-500">
@@ -741,7 +741,7 @@
                             <div>
 
                                 <p class="font-semibold">
-                                    Botol Kaca
+                                    Sedang
                                 </p>
 
                                 <p class="mt-1 text-xs text-gray-500">
@@ -802,7 +802,7 @@
                             <div>
 
                                 <p class="font-semibold">
-                                    Kaleng
+                                    Besar
                                 </p>
 
                                 <p class="mt-1 text-xs text-gray-500">
