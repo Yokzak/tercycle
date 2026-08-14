@@ -16,9 +16,17 @@ class PenukaranBotolController extends Controller
 
     public function create()
     {
-        $kategoriBotol = KategoriBotol::all();
+        $kategoriBotol = KategoriBotol::orderBy('id')->get();
+        $siswa = request()->user()->siswa;
 
-        return view('siswa.tukar', compact('kategoriBotol'));
+        $pengajuan = PenukaranBotol::with([
+            'detailPenukaran.kategoriBotol'
+        ])
+        ->where('siswa_id', $siswa->id)
+        ->latest()
+        ->get();
+
+        return view('siswa.tukar', compact('kategoriBotol','pengajuan'));
     }
 
     public function store(Request $request)
