@@ -59,6 +59,9 @@ Route::middleware(['auth', 'role:siswa'])->group(function () {
 
         Route::put('/siswa/profil', [SiswaController::class, 'updateProfil'])
             ->name('siswa.profil.update');
+            
+        Route::get('/siswa/poin', [SiswaController::class, 'poin'])
+            ->name('siswa.poin');
     });
 
     Route::get('/siswa/poin', function () {
@@ -76,6 +79,10 @@ Route::middleware(['auth', 'role:siswa'])->group(function () {
     Route::get('/siswa/keranjang', function () {
         return view('siswa.keranjang');
     });
+
+    Route::get('/siswa/poin', [SiswaController::class, 'poin'])
+        ->middleware('auth')
+        ->name('siswa.poin');
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -87,10 +94,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         return view('admin.penukaran');
     });
 
+    Route::put('/admin/siswa/{siswa}', [SiswaController::class, 'update'])
+    ->name('admin.siswa.update');
+
     Route::put('/admin/botol/{id}', [KategoriBotolController::class, 'update'])
     ->name('admin.botol.update');
 
-    Route::get('/admin/jurusan', [JurusanController::class, 'index'])
+    Route::get('/admin/jurusan', [AdminSiswaController::class, 'index'])
         ->name('admin.jurusan.index');
 
     Route::post('/admin/jurusan', [JurusanController::class, 'store'])

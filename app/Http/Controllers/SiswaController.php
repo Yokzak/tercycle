@@ -2,13 +2,41 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\RiwayatPoin;
 use App\Models\Jurusan;
 use Illuminate\Http\Request;
+use App\Models\Siswa;
 use Illuminate\Support\Facades\DB;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class SiswaController extends Controller
 {
+
+
+    public function index(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $siswa = $user->siswa;
+
+        if (!$siswa) {
+            abort(404, 'Data siswa untuk akun ini belum tersedia.');
+        }
+
+        $riwayatPoins = RiwayatPoin::where('siswa_id', $siswa->id)
+            ->latest()
+            ->get();
+
+        return view('siswa.dashboard', compact(
+            'siswa',
+            'riwayatPoins'
+        ));
+    }
+    
     public function profil(Request $request)
     {
         $user = $request->user()->load(['siswa.jurusan']);
@@ -29,6 +57,44 @@ class SiswaController extends Controller
             'siswa',
             'qr',
             'jurusans'
+        ));
+    }
+
+    public function poin(Request $request)
+    {
+        $siswa = $request->user()->siswa;
+
+        $query = RiwayatPoin::where('siswa_id', $siswa->id)
+            ->latest();
+
+        $totalDidapatBulanIni = RiwayatPoin::where('siswa_id', $siswa->id)
+            ->where('tipe', 'masuk')
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->sum('jumlah_poin');
+
+        // FILTER
+        if ($request->filter === 'masuk') {
+            $query->where('tipe', 'masuk');
+        }
+
+        if ($request->filter === 'keluar') {
+            $query->where('tipe', 'keluar');
+        }
+
+        // PAGINATION
+        $riwayatPoins = $query->paginate(5)->withQueryString();
+
+        // Statistik
+        $totalDidapat = RiwayatPoin::where('siswa_id', $siswa->id)
+            ->where('tipe', 'masuk')
+            ->sum('jumlah_poin');
+
+        return view('siswa.poin', compact(
+            'siswa',
+            'riwayatPoins',
+            'totalDidapat',
+            'totalDidapatBulanIni'
         ));
     }
 
@@ -93,13 +159,25 @@ class SiswaController extends Controller
             ]);
         });
 
-        $siswa->update([
-            'kelas' => $data['kelas'],
-            'jurusan_id' => $data['jurusan_id'],
-        ]);
-
         return redirect()
             ->route('siswa.profil')
             ->with('success', 'Profil berhasil diperbarui.');
+    }
+
+    public function update(Request $request, Siswa $siswa)
+    {
+        $validated = $request->validate([
+            'nama_lengkap' => 'required|string|max:255',
+            'nis' => 'required|string|max:50',
+            'no_telepon' => 'nullable|string|max:20',
+            'kelas' => 'required|in:X,XI,XII',
+            'jurusan_id' => 'required|exists:jurusans,id',
+        ]);
+
+        $siswa->update($validated);
+
+        return redirect()
+            ->route('admin.siswa.index')
+            ->with('success', 'Data siswa berhasil diperbarui.');
     }
 }

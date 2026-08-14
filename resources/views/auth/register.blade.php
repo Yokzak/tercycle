@@ -221,6 +221,34 @@
 
                 </div>
 
+                <div class="mt-5">
+
+                    <label
+                        for="no_telepon"
+                        class="mb-2 block text-sm font-semibold"
+                    >
+                        No Telepon
+                    </label>
+
+                    <input
+                        type="text"
+                        id="no_telepon"
+                        x-model="student.no_telepon"
+                        placeholder="Contoh: 202600125"
+                        class="w-full rounded-xl border
+                               border-gray-200 bg-gray-50
+                               px-4 py-3 text-sm
+                               outline-none transition
+                               placeholder:text-gray-400
+                               focus:border-green-500
+                               focus:ring-2
+                               focus:ring-green-500/20
+                               dark:border-white/10
+                               dark:bg-gray-950"
+                    >
+
+                </div>
+
                 <div class="mt-5 grid gap-4 sm:grid-cols-2">
 
                     <div>
@@ -337,12 +365,42 @@
 
                 </div>
 
+                @if ($errors->any() && old('register_account'))
+
+                    <div class="mb-5 rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+
+                        <div class="flex gap-3">
+
+                            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-500">
+                                !
+                            </div>
+
+                            <div>
+                                <p class="text-sm font-semibold text-red-500">
+                                    Gagal membuat akun
+                                </p>
+
+                                <ul class="mt-1 space-y-1 text-xs text-red-500">
+                                    @foreach ($errors->all() as $error)
+                                        <li>• {{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                @endif
+
                 <form
                     action="{{ route('register.store') }}"
                     method="POST"
                 >
 
                     @csrf
+
+                    <input type="hidden" name="register_account" value="1">
 
                     <input
                         type="hidden"
@@ -539,18 +597,15 @@ function registerPage() {
     return {
 
         dark: localStorage.getItem('theme') !== 'light',
-
-        studentStep: true,
-
         loading: false,
-
         error: '',
-
-        siswaId: null,
+        studentStep: {{ old('register_account') ? 'false' : 'true' }},
+        siswaId: {{ old('siswa_id', 'null') }},
 
         student: {
             nama_lengkap: '',
             nis: '',
+            no_telepon: '',
             kelas: '',
             jurusan: ''
         },
@@ -595,6 +650,7 @@ function registerPage() {
                         body: JSON.stringify({
                             nis: this.student.nis,
                             nama_lengkap: this.student.nama_lengkap,
+                            no_telepon: this.student.no_telepon,
                             kelas: this.student.kelas,
                             jurusan_id: this.student.jurusan
                         })
@@ -612,7 +668,7 @@ function registerPage() {
                 } else {
                     this.error =
                         data.message ??
-                        'Data siswa tidak ditemukan.';
+                        'Datamu tidak ditemukan.';
                 }
 
             } catch (error) {

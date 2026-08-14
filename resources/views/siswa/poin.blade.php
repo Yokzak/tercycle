@@ -5,6 +5,7 @@
         dark: localStorage.getItem('theme') !== 'light',
         sidebarOpen: false,
         logoutModal: false,
+        riwayatFilter: 'semua',
 
         toggleTheme() {
             this.dark = !this.dark;
@@ -613,7 +614,7 @@
                 <div class="relative mt-2 flex items-end gap-2">
 
                     <span class="text-4xl font-black">
-                        12.500
+                        {{ number_format($siswa->poin, 0, ',', '.') }}
                     </span>
 
                     <span class="mb-1 font-semibold">
@@ -632,24 +633,11 @@
 
             {{-- TOTAL DIDAPAT --}}
 
-            <div
-                class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/[0.03]"
-            >
-
-                <p class="text-xs font-semibold text-gray-500">
-                    Total Poin Didapat
-                </p>
-
-                <p class="mt-2 text-2xl font-black">
-                    15.500
-                </p>
-
-                <p class="mt-2 text-xs text-green-500">
-                    +500 poin bulan ini
-                </p>
-
+            <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/[0.03]">
+                <p class="text-xs font-semibold text-gray-500">Total Poin Didapat</p>
+                <p class="mt-2 text-2xl font-black">{{ number_format($totalDidapat, 0, ',', '.') }}</p>
+                <p class="mt-2 text-xs text-green-500">+ {{ number_format($totalDidapatBulanIni, 0, ',', '.') }} poin bulan ini</p>
             </div>
-
         </div>
 
 
@@ -677,23 +665,39 @@
 
             <div class="flex gap-2">
 
-                <button
-                    class="rounded-xl bg-green-500 px-4 py-2 text-xs font-semibold text-gray-950"
-                >
+            {{-- SEMUA --}}
+                <a href="{{ route('siswa.poin') }}" class="rounded-xl px-4 py-2 text-xs font-semibold {{ request('filter') === null
+                        ? 'bg-green-500 text-gray-950'
+                        : 'border border-gray-200 text-gray-500 hover:border-green-500 hover:text-green-500 dark:border-white/10'
+                    }}">
                     Semua
-                </button>
+                </a>
 
-                <button
-                    class="rounded-xl border border-gray-200 px-4 py-2 text-xs font-semibold text-gray-500 transition hover:border-green-500 hover:text-green-500 dark:border-white/10"
+
+                {{-- MASUK --}}
+                <a
+                    href="{{ route('siswa.poin', ['filter' => 'masuk']) }}"
+                    class="rounded-xl px-4 py-2 text-xs font-semibold
+                    {{ request('filter') === 'masuk'
+                        ? 'bg-green-500 text-gray-950'
+                        : 'border border-gray-200 text-gray-500 hover:border-green-500 hover:text-green-500 dark:border-white/10'
+                    }}"
                 >
                     Masuk
-                </button>
+                </a>
 
-                <button
-                    class="rounded-xl border border-gray-200 px-4 py-2 text-xs font-semibold text-gray-500 transition hover:border-green-500 hover:text-green-500 dark:border-white/10"
+
+                {{-- KELUAR --}}
+                <a
+                    href="{{ route('siswa.poin', ['filter' => 'keluar']) }}"
+                    class="rounded-xl px-4 py-2 text-xs font-semibold
+                    {{ request('filter') === 'keluar'
+                        ? 'bg-green-500 text-gray-950'
+                        : 'border border-gray-200 text-gray-500 hover:border-green-500 hover:text-green-500 dark:border-white/10'
+                    }}"
                 >
                     Keluar
-                </button>
+                </a>
 
             </div>
 
@@ -735,28 +739,37 @@
 
 
 
-            {{-- ITEM 1 --}}
+            @forelse ($riwayatPoins as $riwayat)
 
             <div
-                class="grid gap-3 border-b border-gray-200 px-6 py-5 dark:border-white/10 sm:grid-cols-12 sm:items-center"
+                class="grid gap-3 border-b border-gray-200 px-6 py-5 last:border-b-0 dark:border-white/10 sm:grid-cols-12 sm:items-center"
             >
 
+                {{-- AKTIVITAS --}}
                 <div class="flex items-center gap-4 sm:col-span-5">
 
                     <div
-                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-500/10 font-bold text-green-500"
+                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl
+                        {{ $riwayat->tipe === 'masuk'
+                            ? 'bg-green-500/10 text-green-500'
+                            : 'bg-red-500/10 text-red-500'
+                        }}
+                        font-bold"
                     >
-                        +
+                        {{ $riwayat->tipe === 'masuk' ? '+' : '-' }}
                     </div>
 
                     <div>
 
                         <p class="text-sm font-semibold">
-                            Penukaran Botol
+                            {{ $riwayat->tipe === 'masuk'
+                                ? 'Poin Masuk'
+                                : 'Poin Keluar'
+                            }}
                         </p>
 
                         <p class="mt-1 text-xs text-gray-500">
-                            10 botol plastik
+                            {{ $riwayat->keterangan ?? '-' }}
                         </p>
 
                     </div>
@@ -764,11 +777,13 @@
                 </div>
 
 
+                {{-- TANGGAL --}}
                 <div class="text-xs text-gray-500 sm:col-span-3">
-                    10 Agustus 2026
+                    {{ $riwayat->created_at->translatedFormat('d F Y') }}
                 </div>
 
 
+                {{-- STATUS --}}
                 <div class="sm:col-span-2">
 
                     <span
@@ -780,233 +795,115 @@
                 </div>
 
 
+                {{-- POIN --}}
                 <div
-                    class="text-sm font-bold text-green-500 sm:col-span-2 sm:text-right"
+                    class="text-sm font-bold sm:col-span-2 sm:text-right
+                    {{ $riwayat->tipe === 'masuk'
+                        ? 'text-green-500'
+                        : 'text-red-500'
+                    }}"
                 >
-                    +500
+                    {{ $riwayat->tipe === 'masuk' ? '+' : '-' }}
+                    {{ number_format($riwayat->jumlah_poin, 0, ',', '.') }}
+
                 </div>
 
             </div>
 
+        @empty
 
+            <div class="px-6 py-10 text-center">
 
-            {{-- ITEM 2 --}}
+                <p class="text-sm font-semibold text-gray-500">
+                    Belum ada riwayat poin.
+                </p>
+
+                <p class="mt-1 text-xs text-gray-400">
+                    Aktivitas poin kamu akan muncul di sini.
+                </p>
+
+            </div>
+
+        @endforelse
+
+        @if ($riwayatPoins->hasPages())
 
             <div
-                class="grid gap-3 border-b border-gray-200 px-6 py-5 dark:border-white/10 sm:grid-cols-12 sm:items-center"
+                class="flex flex-col gap-4 border-t border-gray-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/10"
             >
 
-                <div class="flex items-center gap-4 sm:col-span-5">
-
-                    <div
-                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-500/10 font-bold text-red-500"
-                    >
-                        -
-                    </div>
-
-                    <div>
-
-                        <p class="text-sm font-semibold">
-                            Pembelian Produk
-                        </p>
-
-                        <p class="mt-1 text-xs text-gray-500">
-                            Pulpen Eco
-                        </p>
-
-                    </div>
-
-                </div>
+                <p class="text-xs text-gray-500">
+                    Menampilkan
+                    {{ $riwayatPoins->firstItem() ?? 0 }}-{{ $riwayatPoins->lastItem() ?? 0 }}
+                    dari {{ $riwayatPoins->total() }} riwayat
+                </p>
 
 
-                <div class="text-xs text-gray-500 sm:col-span-3">
-                    9 Agustus 2026
-                </div>
+                <div class="flex gap-2">
+
+                    {{-- SEBELUMNYA --}}
+                    @if ($riwayatPoins->onFirstPage())
+
+                        <span
+                            class="rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-400 dark:border-white/10"
+                        >
+                            Sebelumnya
+                        </span>
+
+                    @else
+
+                        <a
+                            href="{{ $riwayatPoins->previousPageUrl() }}"
+                            class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold transition hover:border-green-500 hover:text-green-500 dark:border-white/10"
+                        >
+                            Sebelumnya
+                        </a>
+
+                    @endif
 
 
-                <div class="sm:col-span-2">
+                    {{-- NOMOR HALAMAN --}}
+                    @foreach ($riwayatPoins->getUrlRange(1, $riwayatPoins->lastPage()) as $page => $url)
 
-                    <span
-                        class="rounded-full bg-green-500/10 px-3 py-1 text-[11px] font-semibold text-green-500"
-                    >
-                        Berhasil
-                    </span>
+                        <a
+                            href="{{ $url }}"
+                            class="rounded-lg border px-3 py-2 text-xs font-semibold
+                            {{ $page == $riwayatPoins->currentPage()
+                                ? 'border-green-500 bg-green-500 text-gray-950'
+                                : 'border-gray-200 hover:border-green-500 hover:text-green-500 dark:border-white/10'
+                            }}"
+                        >
+                            {{ $page }}
+                        </a>
 
-                </div>
+                    @endforeach
 
 
-                <div
-                    class="text-sm font-bold text-red-500 sm:col-span-2 sm:text-right"
-                >
-                    -1.000
+                    {{-- SELANJUTNYA --}}
+                    @if ($riwayatPoins->hasMorePages())
+
+                        <a
+                            href="{{ $riwayatPoins->nextPageUrl() }}"
+                            class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold transition hover:border-green-500 hover:text-green-500 dark:border-white/10"
+                        >
+                            Selanjutnya
+                        </a>
+
+                    @else
+
+                        <span
+                            class="rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-400 dark:border-white/10"
+                        >
+                            Selanjutnya
+                        </span>
+
+                    @endif
+
                 </div>
 
             </div>
 
-
-
-            {{-- ITEM 3 --}}
-
-            <div
-                class="grid gap-3 border-b border-gray-200 px-6 py-5 dark:border-white/10 sm:grid-cols-12 sm:items-center"
-            >
-
-                <div class="flex items-center gap-4 sm:col-span-5">
-
-                    <div
-                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-500/10 font-bold text-green-500"
-                    >
-                        +
-                    </div>
-
-                    <div>
-
-                        <p class="text-sm font-semibold">
-                            Penukaran Botol
-                        </p>
-
-                        <p class="mt-1 text-xs text-gray-500">
-                            20 botol plastik
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <div class="text-xs text-gray-500 sm:col-span-3">
-                    8 Agustus 2026
-                </div>
-
-
-                <div class="sm:col-span-2">
-
-                    <span
-                        class="rounded-full bg-green-500/10 px-3 py-1 text-[11px] font-semibold text-green-500"
-                    >
-                        Berhasil
-                    </span>
-
-                </div>
-
-
-                <div
-                    class="text-sm font-bold text-green-500 sm:col-span-2 sm:text-right"
-                >
-                    +1.000
-                </div>
-
-            </div>
-
-
-
-            {{-- ITEM 4 --}}
-
-            <div
-                class="grid gap-3 border-b border-gray-200 px-6 py-5 dark:border-white/10 sm:grid-cols-12 sm:items-center"
-            >
-
-                <div class="flex items-center gap-4 sm:col-span-5">
-
-                    <div
-                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-500/10 font-bold text-red-500"
-                    >
-                        -
-                    </div>
-
-                    <div>
-
-                        <p class="text-sm font-semibold">
-                            Pembelian Produk
-                        </p>
-
-                        <p class="mt-1 text-xs text-gray-500">
-                            Tumbler Eco
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <div class="text-xs text-gray-500 sm:col-span-3">
-                    5 Agustus 2026
-                </div>
-
-
-                <div class="sm:col-span-2">
-
-                    <span
-                        class="rounded-full bg-green-500/10 px-3 py-1 text-[11px] font-semibold text-green-500"
-                    >
-                        Berhasil
-                    </span>
-
-                </div>
-
-
-                <div
-                    class="text-sm font-bold text-red-500 sm:col-span-2 sm:text-right"
-                >
-                    -5.000
-                </div>
-
-            </div>
-
-
-
-            {{-- ITEM 5 --}}
-
-            <div
-                class="grid gap-3 px-6 py-5 sm:grid-cols-12 sm:items-center"
-            >
-
-                <div class="flex items-center gap-4 sm:col-span-5">
-
-                    <div
-                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-500/10 font-bold text-green-500"
-                    >
-                        +
-                    </div>
-
-                    <div>
-
-                        <p class="text-sm font-semibold">
-                            Penukaran Botol
-                        </p>
-
-                        <p class="mt-1 text-xs text-gray-500">
-                            15 botol plastik
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <div class="text-xs text-gray-500 sm:col-span-3">
-                    2 Agustus 2026
-                </div>
-
-
-                <div class="sm:col-span-2">
-
-                    <span
-                        class="rounded-full bg-green-500/10 px-3 py-1 text-[11px] font-semibold text-green-500"
-                    >
-                        Berhasil
-                    </span>
-
-                </div>
-
-
-                <div
-                    class="text-sm font-bold text-green-500 sm:col-span-2 sm:text-right"
-                >
-                    +750
-                </div>
-
-            </div>
+        @endif
 
         </div>
 

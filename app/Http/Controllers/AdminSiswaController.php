@@ -17,8 +17,8 @@ class AdminSiswaController extends Controller
         $siswaBulanIni = Siswa::whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->count();
-
-        $siswas = Siswa::with('user')
+            
+        $siswas = Siswa::with('user', 'jurusan')
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('nama_lengkap', 'like', "%{$search}%")
@@ -28,7 +28,8 @@ class AdminSiswaController extends Controller
             })
             ->latest()
             ->get();
-
+        
+        $totalPoin = Siswa::sum('saldo_poin');
         $totalSiswa = Siswa::count();
         $jurusans = Jurusan::orderBy('nama_jurusan')->get();
 
@@ -41,7 +42,7 @@ class AdminSiswaController extends Controller
                         'nis' => $siswa->nis,
                         'kode_siswa' => $siswa->kode_siswa,
                         'kelas' => $siswa->kelas,
-                        'jurusan' => $siswa->jurusan?->nama_jurusan,
+                        'jurusan' => $siswa->jurusan,
                         'no_telepon' => $siswa->no_telepon,
                         'saldo_poin' => $siswa->saldo_poin,
                     ];
@@ -49,7 +50,7 @@ class AdminSiswaController extends Controller
             );
         }
 
-        return view('admin.siswa', compact('siswas', 'totalSiswa', 'siswaBulanIni', 'jurusans'));
+        return view('admin.siswa', compact('siswas', 'totalSiswa', 'siswaBulanIni', 'jurusans', 'totalPoin'));
     }
 
     public function store(Request $request)
