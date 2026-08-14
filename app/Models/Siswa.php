@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Models\PenukaranBotol;
 use App\Models\RiwayatPoin;
+use App\Models\Jurusan;
+
 
 class Siswa extends Model
 {
