@@ -8,6 +8,7 @@ use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\KategoriProdukController;
 use App\Http\Controllers\SiswaProdukController;
 use App\Http\Controllers\JurusanController;
+use App\Http\Controllers\KategoriBotolController;
 
 Route::get('/', function () {
     return view('home');
@@ -19,15 +20,6 @@ Route::middleware('guest')->group(function () {
     Route::post('/register/check-student', [RegisterController::class, 'checkStudent'])->name('register.check-student');
     Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
 });
-
-Route::get('/admin/jurusan', [JurusanController::class, 'index'])
-    ->name('admin.jurusan.index');
-
-Route::post('/admin/jurusan', [JurusanController::class, 'store'])
-    ->name('admin.jurusan.store');
-
-Route::delete('/admin/jurusan', [JurusanController::class, 'destroy'])
-    ->name('admin.jurusan.destroy');
 
 Route::get('/forgot-password', function () {
     return view('auth.forgot-password');
@@ -51,14 +43,10 @@ Route::post('/admin/kategori-produk', [KategoriProdukController::class, 'store']
 
 Route::delete('/admin/kategori-produk', [KategoriProdukController::class, 'destroy'])->name('admin.kategori.destroy');
 
-Route::get('/admin/siswa', [AdminSiswaController::class, 'index'])->name('admin.siswa.index');
-
 Route::post('/admin/siswa', [AdminSiswaController::class, 'store'])->name('admin.siswa.store');
 
 Route::middleware(['auth', 'role:siswa'])->group(function () {
-    Route::get('/siswa/dashboard', function () {
-        return view('siswa.dashboard');
-    });
+    Route::get('/siswa/dashboard', [SiswaController::class, 'dashboard'])->name('siswa.dashboard');
 
     Route::middleware('auth')->group(function () {
         Route::get('/siswa/profil', [SiswaController::class, 'profil'])
@@ -94,9 +82,26 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         return view('admin.penukaran');
     });
 
-    Route::get('/admin/botol', function () {
-        return view('admin.botol');
-    });
+    Route::put('/admin/botol/{id}', [KategoriBotolController::class, 'update'])
+    ->name('admin.botol.update');
+
+    Route::get('/admin/jurusan', [JurusanController::class, 'index'])
+        ->name('admin.jurusan.index');
+
+    Route::post('/admin/jurusan', [JurusanController::class, 'store'])
+        ->name('admin.jurusan.store');
+
+    Route::delete('/admin/jurusan', [JurusanController::class, 'destroy'])
+        ->name('admin.jurusan.destroy');
+
+    Route::get('/admin/botol', [KategoriBotolController::class, 'index'])
+        ->name('admin.botol.index');
+
+    Route::post('/admin/botol', [KategoriBotolController::class, 'store'])
+        ->name('admin.botol.store');
+
+    Route::delete('/admin/botol/{kategoriBotol}', [KategoriBotolController::class, 'destroy'])
+        ->name('admin.botol.destroy');
 
     Route::get('/admin/siswa', [AdminSiswaController::class, 'index'])->name('admin.siswa.index');
 

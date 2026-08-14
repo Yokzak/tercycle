@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Siswa;
 use App\Models\User;
+use App\Models\Jurusan;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -12,7 +14,9 @@ class RegisterController extends Controller
 {
     public function showRegister()
     {
-        return view('auth.register');
+        $jurusans = Jurusan::orderBy('nama_jurusan')->get();
+
+        return view('auth.register', compact('jurusans'));
     }
 
     public function checkStudent(Request $request)
@@ -92,7 +96,7 @@ class RegisterController extends Controller
             $user = User::create([
                 'name' => $siswa->nama_lengkap,
                 'email' => $data['email'],
-                'password' => $data['password'],
+                'password' => Hash::make($data['password']),
                 'role' => 'siswa',
             ]);
 

@@ -6,6 +6,7 @@
         sidebarOpen: false,
         logoutModal: false,
         bottleModal: false,
+        search: '',
 
         toggleTheme() {
             this.dark = !this.dark;
@@ -179,7 +180,7 @@
                     />
                 </svg>
 
-                Jenis Botol
+                Kategori Botol
             </a>
 
 
@@ -489,26 +490,10 @@
                 </p>
 
                 <p class="mt-2 text-3xl font-black">
-                    5
+                    {{ $kategoriBotols->count() }}
                 </p>
 
             </div>
-
-
-            <div
-                class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-white/[0.03]"
-            >
-
-                <p class="text-xs font-medium text-gray-500">
-                    Kategori Aktif
-                </p>
-
-                <p class="mt-2 text-3xl font-black text-green-500">
-                    4
-                </p>
-
-            </div>
-
 
             <div
                 class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-white/[0.03]"
@@ -531,6 +516,66 @@
         {{-- TABLE --}}
 
         <div
+            x-data="{
+                search: '',
+                page: 1,
+                perPage: 5,
+                data: @js($kategoriBotols->map(fn ($kategori) => [
+                    'id' => $kategori->id,
+                    'nama_kategori' => $kategori->nama_kategori,
+                    'ukuran' => $kategori->ukuran,
+                    'poin_satuan' => $kategori->poin_satuan,
+                ])),
+
+                get filteredData() {
+                    return this.data.filter(item => {
+                        const keyword = this.search.toLowerCase();
+
+                        return item.nama_kategori.toLowerCase().includes(keyword)
+                            || item.ukuran.toLowerCase().includes(keyword);
+                    });
+                },
+
+                get totalPages() {
+                    return Math.max(
+                        1,
+                        Math.ceil(this.filteredData.length / this.perPage)
+                    );
+                },
+
+                get paginatedData() {
+                    const start = (this.page - 1) * this.perPage;
+
+                    return this.filteredData.slice(
+                        start,
+                        start + this.perPage
+                    );
+                },
+
+                get startItem() {
+                    if (this.filteredData.length === 0) {
+                        return 0;
+                    }
+
+                    return (this.page - 1) * this.perPage + 1;
+                },
+
+                get endItem() {
+                    return Math.min(
+                        this.page * this.perPage,
+                        this.filteredData.length
+                    );
+                },
+
+                resetPage() {
+                    this.page = 1;
+                }
+            }"
+            x-effect="
+                if (page > totalPages) {
+                    page = totalPages;
+                }
+            "
             class="mt-8 overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/10 dark:bg-white/[0.03]"
         >
 
@@ -557,6 +602,8 @@
 
                     <input
                         type="text"
+                        x-model="search"
+                        @input="resetPage()"
                         placeholder="Cari kategori botol..."
                         class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 pl-10 text-sm outline-none focus:border-green-500 sm:w-64 dark:border-white/10 dark:bg-gray-900"
                     >
@@ -594,39 +641,251 @@
                     </thead>
 
                     <tbody class="divide-y divide-gray-200 dark:divide-white/10">
-                        <tr class="transition hover:bg-gray-50 dark:hover:bg-white/[0.02]">
-                            <td class="px-6 py-5">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-green-500/10 text-xl">♻</div>
-                                    <div>
-                                        <p class="font-semibold">Botol Plastik</p>
-                                        <p class="mt-1 text-xs text-gray-500">PET</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-5 text-gray-500">600 ml</td>
-                            <td class="px-6 py-5">
-                                <span class="font-bold text-green-500">50 poin</span>
-                            </td>
-                            <td class="px-6 py-5 font-semibold">1.240</td>
-                            <td class="px-6 py-5">
-                                <div class="flex justify-end gap-2">
-                                    <button class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold transition hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5">Edit</button>
-                                    <button class="rounded-lg border border-red-500/20 px-3 py-2 text-xs font-semibold text-red-500 transition hover:bg-red-500/10">Hapus</button>
-                                </div>
-                            </td>
-                        </tr>
+                        @forelse ($kategoriBotols as $kategori)
+
+                            <template x-if="
+                                '{{ strtolower($kategori->nama_kategori) }}'.includes(search.toLowerCase()) ||
+                                '{{ strtolower($kategori->ukuran) }}'.includes(search.toLowerCase())">
+
+                                <tr
+                                    x-data="{
+                                        edit: false,
+                                        ukuran: @js($kategori->ukuran),
+                                        poin: @js($kategori->poin_satuan)
+                                    }"
+                                    class="transition hover:bg-gray-50 dark:hover:bg-white/[0.02]"
+                                >
+
+                                    {{-- KATEGORI --}}
+                                    <td class="px-6 py-5">
+                                        <div class="flex items-center gap-3">
+
+                                            <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-green-500/10 text-xl">
+                                                ♻
+                                            </div>
+
+                                            <div>
+                                                <p class="font-semibold">
+                                                    {{ $kategori->nama_kategori }}
+                                                </p>
+
+                                                <p class="mt-1 text-xs text-gray-500">
+                                                    {{ strtoupper($kategori->ukuran) }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </td>
+
+
+                                    {{-- UKURAN --}}
+                                    <td class="px-6 py-5 text-gray-500">
+
+                                        {{-- Mode normal --}}
+                                        <span x-show="!edit" x-text="ukuran">
+                                        </span>
+
+                                        {{-- Mode edit --}}
+                                        <input
+                                            x-show="edit"
+                                            x-model="ukuran"
+                                            type="text"
+                                            class="w-32 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                                        >
+
+                                    </td>
+
+
+                                    {{-- POIN --}}
+                                    <td class="px-6 py-5">
+
+                                        {{-- Mode normal --}}
+                                        <span
+                                            x-show="!edit"
+                                            class="font-bold text-green-500"
+                                        >
+                                            {{ number_format($kategori->poin_satuan) }} poin
+                                        </span>
+
+                                        {{-- Mode edit --}}
+                                        <input
+                                            x-show="edit"
+                                            x-model="poin"
+                                            type="number"
+                                            min="0"
+                                            class="w-32 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                                        >
+
+                                    </td>
+
+
+                                    {{-- TOTAL DITUKAR --}}
+                                    <td class="px-6 py-5 font-semibold">
+                                        0
+                                    </td>
+
+
+                                    {{-- AKSI --}}
+                                    <td class="px-6 py-5">
+
+                                        <div class="flex justify-end gap-2">
+
+                                            {{-- FORM UPDATE --}}
+                                            <form
+                                                x-show="edit"
+                                                action="{{ route('admin.botol.update', $kategori->id) }}"
+                                                method="POST"
+                                            >
+                                                @csrf
+                                                @method('PUT')
+
+                                                <input
+                                                    type="hidden"
+                                                    name="ukuran"
+                                                    :value="ukuran"
+                                                >
+
+                                                <input
+                                                    type="hidden"
+                                                    name="poin_satuan"
+                                                    :value="poin"
+                                                >
+
+                                                <button
+                                                    type="submit"
+                                                    class="rounded-lg bg-green-500 px-3 py-2 text-xs font-bold text-gray-950 transition hover:bg-green-400"
+                                                >
+                                                    Simpan
+                                                </button>
+                                            </form>
+
+
+                                            {{-- TOMBOL EDIT --}}
+                                            <button
+                                                x-show="!edit"
+                                                @click="edit = true"
+                                                type="button"
+                                                class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold transition hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
+                                            >
+                                                Edit
+                                            </button>
+
+
+                                            {{-- TOMBOL BATAL --}}
+                                            <button
+                                                x-show="edit"
+                                                @click="
+                                                    edit = false;
+                                                    ukuran = @js($kategori->ukuran);
+                                                    poin = @js($kategori->poin_satuan);
+                                                "
+                                                type="button"
+                                                class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold transition hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
+                                            >
+                                                Batal
+                                            </button>
+
+
+                                            {{-- HAPUS --}}
+                                            <form
+                                                x-show="!edit"
+                                                action="{{ route('admin.botol.destroy', $kategori->id) }}"
+                                                method="POST"
+                                            >
+                                                @csrf
+                                                @method('DELETE')
+
+                                                <button
+                                                    type="submit"
+                                                    class="rounded-lg border border-red-500/20 px-3 py-2 text-xs font-semibold text-red-500 transition hover:bg-red-500/10"
+                                                >
+                                                    Hapus
+                                                </button>
+                                            </form>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+                            </template>
+
+                        @empty
+
+                            <tr>
+                                <td
+                                    colspan="5"
+                                    class="px-6 py-10 text-center text-sm text-gray-500"
+                                >
+                                    Belum ada kategori botol.
+                                </td>
+                            </tr>
+
+                        @endforelse
                     </tbody>
                 </table>
             </div>
 
             {{-- PAGINATION --}}
             <div class="flex items-center justify-between border-t border-gray-200 px-6 py-4 dark:border-white/10">
-                <p class="text-xs text-gray-500">Menampilkan 1-5 dari 5 kategori botol</p>
-                <div class="flex gap-2">
-                    <button disabled class="rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-400 dark:border-white/10">Sebelumnya</button>
-                    <button class="rounded-lg bg-green-500 px-3 py-2 text-xs font-bold text-gray-950">1</button>
-                    <button class="rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-500 dark:border-white/10">Selanjutnya</button>
+
+                {{-- INFO --}}
+                <p class="text-xs text-gray-500">
+                    Menampilkan
+                    <span x-text="startItem"></span>
+                    -
+                    <span x-text="endItem"></span>
+                    dari
+                    <span x-text="filteredData.length"></span>
+                    kategori botol
+                </p>
+
+
+                {{-- BUTTON --}}
+                <div class="flex items-center gap-2">
+
+                    {{-- SEBELUMNYA --}}
+                    <button
+                        type="button"
+                        @click="page--"
+                        :disabled="page === 1"
+                        :class="page === 1
+                            ? 'cursor-not-allowed text-gray-300'
+                            : 'text-gray-500 hover:bg-gray-100'"
+                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs dark:border-white/10"
+                    >
+                        Sebelumnya
+                    </button>
+
+
+                    {{-- NOMOR HALAMAN --}}
+                    <template x-for="number in totalPages" :key="number">
+
+                        <button
+                            type="button"
+                            @click="page = number"
+                            x-text="number"
+                            :class="page === number
+                                ? 'bg-green-500 font-bold text-gray-950'
+                                : 'border border-gray-200 text-gray-500 dark:border-white/10'"
+                            class="rounded-lg px-3 py-2 text-xs"
+                        ></button>
+
+                    </template>
+
+
+                    {{-- SELANJUTNYA --}}
+                    <button
+                        type="button"
+                        @click="page++"
+                        :disabled="page === totalPages"
+                        :class="page === totalPages
+                            ? 'cursor-not-allowed text-gray-300'
+                            : 'text-gray-500 hover:bg-gray-100'"
+                        class="rounded-lg border border-gray-200 px-3 py-2 text-xs dark:border-white/10"
+                    >
+                        Selanjutnya
+                    </button>
+
                 </div>
             </div>
         </div>
@@ -825,7 +1084,7 @@
         {{-- FORM --}}
 
         <form
-            action="#"
+            action="{{ route('admin.botol.store') }}"
             method="POST"
             class="p-6"
         >
@@ -846,8 +1105,9 @@
 
                 <input
                     type="text"
-                    id="nama_botol"
-                    name="nama_botol"
+                    id="nama_kategori"
+                    name="nama_kategori"
+                    required
                     placeholder="Contoh: Botol Plastik 600ml"
                     class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
                 >
@@ -870,6 +1130,7 @@
                     type="text"
                     id="ukuran"
                     name="ukuran"
+                    required
                     placeholder="Contoh: 600 ml"
                     class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
                 >
@@ -882,7 +1143,7 @@
             <div class="mt-5">
 
                 <label
-                    for="poin"
+                    for="poin_satuan"
                     class="mb-2 block text-sm font-semibold"
                 >
                     Poin per Botol
@@ -892,9 +1153,10 @@
 
                     <input
                         type="number"
-                        id="poin"
-                        name="poin"
+                        id="poin_satuan"
+                        name="poin_satuan"
                         min="0"
+                        required
                         placeholder="50"
                         class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 pr-16 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
                     >

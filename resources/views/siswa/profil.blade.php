@@ -276,11 +276,11 @@
                 <div class="min-w-0 flex-1">
 
                     <p class="truncate text-sm font-semibold">
-                        Kevin
+                        {{ Auth::user()->name }}
                     </p>
 
                     <p class="text-xs text-gray-500">
-                        Siswa
+                        Siswa • {{ Auth::user()->siswa->kelas }} {{ Auth::user()->siswa->jurusan->kode_jurusan ?? '-' }}
                     </p>
 
                 </div>
@@ -584,11 +584,11 @@
                         <div class="pb-1">
 
                             <h3 class="text-xl font-black">
-                                Kevin
+                                {{ Auth::user()->name }}
                             </h3>
 
                             <p class="text-sm text-gray-500">
-                                Siswa • XI RPL
+                                Siswa • {{ Auth::user()->siswa->kelas }} {{ Auth::user()->siswa->jurusan->kode_jurusan ?? '-' }}
                             </p>
 
                         </div>
@@ -631,7 +631,7 @@
                     <div>
                         <label class="text-xs font-semibold text-gray-500">Nama Lengkap</label>
                         <div class="mt-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm dark:border-white/10 dark:bg-gray-900">
-                            {{ $user->siswa->nama_lengkap }}
+                            {{ $user->siswa->nama_lengkap }} 
                         </div>
                     </div>
 
@@ -640,7 +640,7 @@
                         <label class="text-xs font-semibold text-gray-500">NIS</label>
 
                         <div class="mt-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm dark:border-white/10 dark:bg-gray-900">
-                            {{ $user->siswa->nis }}
+                            {{ $user->siswa->nis }} 
                         </div>
                     </div>
 
@@ -973,10 +973,9 @@
                 <input
                     type="text"
                     id="edit_nama_lengkap"
-                    name="nama_lengkap"
-                    value="{{ old('nama_lengkap', $user->siswa->nama_lengkap) }}"
-                    required
-                    class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                    value="{{ $user->siswa->nama_lengkap }}"
+                    readonly
+                    class="w-full cursor-not-allowed rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-sm text-gray-500 dark:border-white/10 dark:bg-gray-800 dark:text-gray-400"
                 >
             </div>
 
@@ -1045,8 +1044,8 @@
                     id="edit_email"
                     name="email"
                     value="{{ old('email', $user->email) }}"
-                    required
-                    class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                    readonly
+                    class="w-full cursor-not-allowed rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-sm text-gray-500 dark:border-white/10 dark:bg-gray-800 dark:text-gray-400"
                 >
             </div>
 
@@ -1061,25 +1060,18 @@
 
                 <select
                     id="edit_jurusan"
-                    name="jurusan"
+                    name="jurusan_id"
                     required
                     class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
                 >
-                    <option value="RPL" @selected($user->siswa->jurusan === 'RPL')>
-                        RPL
-                    </option>
-
-                    <option value="TKJ" @selected($user->siswa->jurusan === 'TKJ')>
-                        TKJ
-                    </option>
-
-                    <option value="DKV" @selected($user->siswa->jurusan === 'DKV')>
-                        DKV
-                    </option>
-
-                    <option value="AKL" @selected($user->siswa->jurusan === 'AKL')>
-                        AKL
-                    </option>
+                    @foreach ($jurusans as $jurusan)
+                        <option
+                            value="{{ $jurusan->id }}"
+                            @selected($user->siswa->jurusan_id == $jurusan->id)
+                        >
+                            {{ $jurusan->kode_jurusan }} - {{ $jurusan->nama_jurusan }}
+                        </option>
+                    @endforeach
                 </select>
             </div>
 

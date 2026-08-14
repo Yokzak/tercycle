@@ -20,24 +20,23 @@ class JurusanController extends Controller
             'kode_jurusan' => [
                 'required',
                 'string',
-                'max:20',
+                'max:4',
                 'unique:jurusan,kode_jurusan',
             ],
             'nama_jurusan' => [
                 'required',
                 'string',
-                'max:255',
+                'max:60',
                 'unique:jurusan,nama_jurusan',
             ],
         ]);
 
         $jurusan = Jurusan::create($data);
 
-        return response()->json([
-            'message' => 'Jurusan berhasil ditambahkan.',
-            'jurusan' => $jurusan,
-        ], 201);
-    }
+        return redirect()
+            ->route('admin.jurusan.index')
+            ->with('success', 'Jurusan berhasil ditambahkan.');
+        }
 
     public function destroy(Request $request)
     {

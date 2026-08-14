@@ -937,11 +937,7 @@
 
 
             {{-- FORM --}}
-            <form
-                action="#"
-                method="POST"
-                class="p-6"
-            >
+            <form action="{{ route('admin.siswa.store') }}" method="POST" class="p-6">
 
                 @csrf
 
@@ -982,6 +978,26 @@
                         placeholder="Contoh: 202600125"
                         class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
                         x-model="student.nis"
+                    >
+                </div>
+
+                {{-- NO. TELEPON --}}
+                <div class="mt-5">
+                    <label
+                        for="no_telepon"
+                        class="mb-2 block text-sm font-semibold"
+                    >
+                        No. Telepon
+                    </label>
+
+                    <input
+                        type="text"
+                        id="no_telepon"
+                        name="no_telepon"
+                        value="{{ old('no_telepon') }}"
+                        placeholder="Contoh: 081234567890"
+                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                        x-model="student.no_telepon"
                     >
                 </div>
 
@@ -1127,11 +1143,10 @@
 
 
                     <button
-                        type="button"
-                        @click="studentModal = false; accountModal = true"
+                        type="submit"
                         class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950 transition hover:bg-green-400"
                     >
-                        Lanjut
+                        Simpan
                     </button>
 
                 </div>
@@ -1325,152 +1340,6 @@
                     </button>
                 </div>
             </form>
-        </div>
-    </div>
-
-    {{-- ========================================================= --}}
-    {{-- MODAL BUAT AKUN --}}
-    {{-- ========================================================= --}}
-
-    <div
-        x-show="accountModal"
-        x-transition.opacity
-        x-effect="document.body.style.overflow = accountModal ? 'hidden' : ''"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-        style="display: none;"
-    >
-        {{-- BACKDROP --}}
-        <div
-            class="absolute inset-0 bg-black/50 backdrop-blur-md"
-            @click="accountModal = false"
-        ></div>
-
-        {{-- MODAL --}}
-        <div
-            x-show="accountModal"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 scale-95"
-            x-transition:enter-end="opacity-100 scale-100"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100 scale-100"
-            x-transition:leave-end="opacity-0 scale-95"
-            @click.stop
-            class="no-scrollbar relative max-h-[85vh] w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
-        >
-
-            {{-- HEADER --}}
-            <div
-                class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10"
-            >
-                <div>
-                    <h2 class="text-lg font-bold">
-                        Buat Akun
-                    </h2>
-
-                    <p class="mt-1 text-xs text-gray-500">
-                        Masukkan informasi akun siswa.
-                    </p>
-                </div>
-
-                {{-- CLOSE --}}
-                <button
-                    type="button"
-                    @click="accountModal = false"
-                    class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white"
-                >
-                    ✕
-                </button>
-            </div>
-
-            {{-- FORM --}}
-            <form
-                action="{{ route('admin.siswa.store') }}"
-                method="POST"
-                class="p-6"
-            >
-                @csrf
-
-                {{-- Data dari popup pertama --}}
-                <input type="hidden" name="nama_lengkap" :value="student.nama_lengkap">
-                <input type="hidden" name="nis" :value="student.nis">
-                <input type="hidden" name="kelas" :value="student.kelas">
-                <input type="hidden" name="jurusan_id" :value="student.jurusan_id">
-
-                {{-- EMAIL --}}
-                <div>
-                    <label
-                        for="email"
-                        class="mb-2 block text-sm font-semibold"
-                    >
-                        Email
-                    </label>
-
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="Contoh: siswa@gmail.com"
-                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                    >
-                </div>
-
-                {{-- PASSWORD --}}
-                <div class="mt-5">
-                    <label
-                        for="password"
-                        class="mb-2 block text-sm font-semibold"
-                    >
-                        Password
-                    </label>
-
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="Minimal 8 karakter"
-                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                    >
-                </div>
-
-                {{-- KONFIRMASI PASSWORD --}}
-                <div class="mt-5">
-                    <label
-                        for="password_confirmation"
-                        class="mb-2 block text-sm font-semibold"
-                    >
-                        Konfirmasi Password
-                    </label>
-
-                    <input
-                        type="password"
-                        id="password_confirmation"
-                        name="password_confirmation"
-                        placeholder="Masukkan ulang password"
-                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                    >
-                </div>
-
-                {{-- BUTTON --}}
-                <div class="mt-7 flex justify-end gap-3 border-t border-gray-200 pt-5 dark:border-white/10">
-
-                    <button
-                        type="button"
-                        @click="accountModal = false; studentModal = true"
-                        class="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
-                    >
-                        Kembali
-                    </button>
-
-                    <button
-                        type="submit"
-                        class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950 transition hover:bg-green-400"
-                    >
-                        Simpan
-                    </button>
-
-                </div>
-            </form>
-
         </div>
     </div>
 
