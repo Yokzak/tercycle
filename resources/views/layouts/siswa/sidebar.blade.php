@@ -206,6 +206,44 @@
                 Pesanan
             </a>
 
+            {{-- PENCARIAN UANG --}}
+
+            <a
+                href="{{ route('siswa.pencairan.uang') }}"
+                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition
+                    {{ request()->routeIs('siswa.pencairan.uang')
+                        ? 'bg-green-500/10 text-green-500'
+                        : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white'
+                    }}"
+            >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.8"
+                stroke="currentColor"
+                class="h-5 w-5"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M3 7.5A2.5 2.5 0 0 1 5.5 5h13A2.5 2.5 0 0 1 21 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 16.5v-9Z"
+                />
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"
+                />
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M7 9h.01M17 15h.01"
+                />
+            </svg>
+
+                Pencairan Uang
+            </a>
+
             <p
                 class="mb-3 mt-8 px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400"
             >

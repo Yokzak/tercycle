@@ -63,6 +63,9 @@ Route::middleware(['auth', 'role:siswa', 'no-cache'])->prefix('siswa')->name('si
         Route::post('/pesanan', [SiswaPesananController::class, 'store'])->name('pesanan.store');
         Route::patch('/pesanan/{pesanan}/proses',[SiswaPesananController::class, 'process'])->name('pesanan.process');
         Route::patch('/pesanan/{pesanan}/selesai', [SiswaPesananController::class, 'selesai'])->name('pesanan.selesai');
+        Route::get('/pencairan-uang', function () {
+            return view('siswa.pencairan-uang');
+        })->name('pencairan.uang');
 
         // PRODUK
         Route::get('/produk', [SiswaProdukController::class, 'index'])->name('produk.index');
