@@ -6,6 +6,8 @@ use App\Models\RiwayatPoin;
 use App\Models\Jurusan;
 use Illuminate\Http\Request;
 use App\Models\Siswa;
+use App\Models\Pesanan;
+use App\Models\PenukaranBotol;
 use Illuminate\Support\Facades\DB;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -108,14 +110,70 @@ class SiswaController extends Controller
             abort(404, 'Data siswa untuk akun ini belum tersedia.');
         }
 
+        $saldoPoin = $siswa->saldo_poin;
+
+        $totalBotol = DB::table('detail_penukaran')
+            ->join(
+                'penukaran_botol',
+                'detail_penukaran.penukaran_id',
+                '=',
+                'penukaran_botol.id'
+            )
+            ->where('penukaran_botol.siswa_id', $siswa->id)
+            ->where('penukaran_botol.status', 'disetujui')
+            ->sum('detail_penukaran.jumlah_botol');
+
+        $poinDidapat = RiwayatPoin::where('siswa_id', $siswa->id)
+            ->where('tipe', 'masuk')
+            ->sum('jumlah_poin');
+
+        $totalPesanan = Pesanan::where('pembeli_id', $siswa->id)
+            ->count();
+
+        // qr siswa
         $qr = QrCode::size(300)
             ->generate($siswa->kode_siswa);
+
+        // Aktivitas poin terbaru
+        $riwayatPoins = RiwayatPoin::where('siswa_id', $siswa->id)
+            ->latest()
+            ->take(3)
+            ->get();
+
+        // Pesanan terbaru
+        $pesananTerbaru = Pesanan::where('pembeli_id', $siswa->id)
+            ->with('detailPesanan')
+            ->latest('tanggal')
+            ->take(3)
+            ->get();
 
         return view('siswa.dashboard', compact(
             'user',
             'siswa',
-            'qr'
+            'qr',
+            'riwayatPoins',
+            'pesananTerbaru',
+            'saldoPoin',
+            'totalBotol',
+            'poinDidapat',
+            'totalPesanan'
         ));
+    }
+
+    public function pesanan(Request $request)
+    {
+        $siswa = $request->user()->siswa;
+
+        if (!$siswa) {
+            abort(404, 'Data siswa untuk akun ini belum tersedia.');
+        }
+
+        $pesanans = Pesanan::with('detailPesanan')
+            ->where('pembeli_id', $siswa->id)
+            ->latest('tanggal')
+            ->get();
+
+        return view('siswa.pesanan', compact('siswa', 'pesanans'));
     }
 
     public function qr(Request $request)

@@ -1,589 +1,16 @@
-<!DOCTYPE html>
-<html
-    lang="id"
-    x-data="{
-        dark: localStorage.getItem('theme') !== 'light',
-        sidebarOpen: false,
-        logoutModal: false,
-        studentModal: false,
-        detailModal: false,
-        selectedSiswa: null,
-        editModal: false,
+@extends('layouts.admin.app')
 
-        editSiswa: {
-            id: null,
-            nama_lengkap: '',
-            nis: '',
-            no_telepon: '',
-            kelas: '',
-            jurusan_id: ''
-        },
+@section('title', 'Kelola Siswa')
 
-        openEdit(siswa) {
-            this.editSiswa = {
-                id: siswa.id,
-                nama_lengkap: siswa.nama_lengkap ?? '',
-                nis: siswa.nis ?? '',
-                no_telepon: siswa.no_telepon ?? '',
-                kelas: siswa.kelas ?? '',
-                jurusan_id: siswa.jurusan?.id ?? ''
-            };
+@section('topbar-subtitle', 'Siswa')
 
-            this.editModal = true;
-        },
+@section('topbar-title', 'Kelola Siswa')
 
-        closeEdit() {
-            this.editModal = false;
-            this.editSiswa = {
-                id: null,
-                nama_lengkap: '',
-                nis: '',
-                no_telepon: '',
-                kelas: '',
-                jurusan_id: ''
-            };
-        },
-
-        openDetail(siswa) {
-            this.selectedSiswa = siswa;
-            this.detailModal = true;
-        },
-
-        closeDetail() {
-            this.detailModal = false;
-            this.selectedSiswa = null;
-        },
-
-        accountModal: false,
-        showJurusanOptions: false,
-        showAddJurusanModal: false,
-        showDeleteJurusanModal: false,
-        search: '',
-        siswas: @js($siswas),
-        searching: false,
-
-        currentPage: 1,
-        perPage: 5,
-
-        get totalPages() {
-            return Math.ceil(this.siswas.length / this.perPage);
-        },
-
-        get paginatedSiswas() {
-            const start = (this.currentPage - 1) * this.perPage;
-
-            return this.siswas.slice(
-                start,
-                start + this.perPage
-            );
-        },
-
-        get startItem() {
-            if (this.siswas.length === 0) {
-                return 0;
-            }
-
-            return (this.currentPage - 1) * this.perPage + 1;
-        },
-
-        get endItem() {
-            return Math.min(
-                this.currentPage * this.perPage,
-                this.siswas.length
-            );
-        },
-
-        goToPage(page) {
-            if (page < 1 || page > this.totalPages) {
-                return;
-            }
-
-            this.currentPage = page;
-        },
-
-        nextPage() {
-            if (this.currentPage < this.totalPages) {
-                this.currentPage++;
-            }
-        },
-
-        prevPage() {
-            if (this.currentPage > 1) {
-                this.currentPage--;
-            }
-        },
-
-        selectedJurusan: [],
-
-        newJurusan: {
-            kode_jurusan: '',
-            nama_jurusan: ''
-        },
-        
-        student: {
-            nama_lengkap: '',
-            nis: '',
-            kelas: '',
-            jurusan_id: ''
-        },
-
-        async searchStudents() {
-            this.searching = true;
-
-            try {
-                const response = await fetch(
-                    `{{ route('admin.siswa.index') }}?search=${encodeURIComponent(this.search)}`,
-                    {
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json'
-                        }
-                    }
-                );
-
-                if (!response.ok) {
-                    throw new Error('Gagal mengambil data siswa.');
-                }
-
-                this.siswas = await response.json();
-                
-                // Kembali ke halaman pertama setelah search
-                this.currentPage = 1;
-            } catch (error) {
-                console.error(error);
-            } finally {
-                this.searching = false;
-            }
-        },
-
-        toggleTheme() {
-            this.dark = !this.dark;
-            localStorage.setItem('theme', this.dark ? 'dark' : 'light');
-            document.documentElement.classList.toggle('dark', this.dark);
-        }
-    }"
-    x-init="
-        document.documentElement.classList.toggle('dark', dark)
-    "
-    :class="{ 'dark': dark }"
->
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0"
+@section('content')
+    <div
+        x-data="adminSiswa()"
+        x-init="siswas = @js($siswas)"
     >
-
-    <title>Siswa - Admin Tercycle</title>
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <script
-        defer
-        src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
-    ></script>
-
-</head>
-
-
-<body
-    class="min-h-screen bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-950 dark:text-white"
->
-
-
-{{-- ========================================================= --}}
-{{-- SIDEBAR --}}
-{{-- ========================================================= --}}
-
-<aside class="fixed inset-y-0 left-0 z-50 w-64 border-r border-gray-200 bg-white transition-transform duration-300 dark:border-white/10 dark:bg-gray-950 lg:translate-x-0"
-    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
->
-
-    <div class="flex h-full flex-col">
-
-        {{-- LOGO --}}
-
-        <div
-            class="flex h-20 items-center border-b border-gray-200 px-6 dark:border-white/10"
-        >
-
-            <a
-                href="/admin/dashboard"
-                class="flex items-center gap-3"
-            >
-
-                <div
-                    class="flex h-10 w-10 items-center justify-center rounded-xl bg-green-500 font-black text-gray-950"
-                >
-                    T
-                </div>
-
-                <span class="text-xl font-bold">
-                    Ter<span class="text-green-500">cycle</span>
-                </span>
-
-            </a>
-
-        </div>
-
-
-        {{-- MENU --}}
-
-        <nav class="flex-1 space-y-1 px-4 py-6 overflow-y-auto">
-
-            <p
-                class="mb-3 px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400"
-            >
-                Overview
-            </p>
-
-
-            {{-- DASHBOARD --}}
-
-            <a
-                href="/admin/dashboard"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5M9 21v-6h6v6"
-                    />
-                </svg>
-
-                Dashboard
-            </a>
-
-
-            {{-- PENUKARAN --}}
-
-            <a
-                href="/admin/penukaran"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M7 7h10M7 12h10M7 17h10M5 7h.01M5 12h.01M5 17h.01"
-                    />
-                </svg>
-
-                Penukaran Botol
-            </a>
-
-
-            <p
-                class="mb-3 mt-8 px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400"
-            >
-                Management
-            </p>
-
-
-            {{-- BOTOL --}}
-
-            <a
-                href="/admin/botol"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M8 3h8M9 3v4l-2 3v8a3 3 0 0 0 3 3h4a3 3 0 0 0 3-3v-8l-2-3V3"
-                    />
-                </svg>
-
-                Jenis Botol
-            </a>
-
-
-            {{-- SISWA --}}
-
-            <a
-                href="/admin/siswa"
-                class="flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500
-                transition hover:bg-green-500/20 hover:text-green-600 dark:bg-green-500/20 dark:text-green-400 dark:hover:bg-green-500/30 dark:hover:text-green-300"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M15 19a6 6 0 0 0-12 0m6-8a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM18 8v6m3-3h-6"
-                    />
-                </svg>
-
-                Siswa
-            </a>
-
-
-            {{-- PRODUK --}}
-
-            <a
-                href="/admin/produk"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M20 7 12 3 4 7m16 0-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                    />
-                </svg>
-
-                Produk
-            </a>
-
-
-            {{-- TRANSAKSI --}}
-
-            <a
-                href="/admin/transaksi"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M4 6h16M4 12h16M4 18h16"
-                    />
-                </svg>
-
-                Transaksi
-            </a>
-
-            {{-- Profil --}}
-
-            <a
-                href="/admin/profil"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
-            >
-                <span class="text-lg">⚙</span>
-                Profil
-            </a>    
-
-
-        </nav>
-
-
-        {{-- ADMIN PROFILE SIDEBAR --}}
-
-        <div
-            class="border-t border-gray-200 p-4 dark:border-white/10"
-        >
-
-            <div class="flex items-center gap-3">
-
-                <div
-                    class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-900 font-bold text-white dark:bg-white dark:text-gray-950"
-                >
-                    A
-                </div>
-
-                <div class="min-w-0 flex-1">
-
-                    <p class="truncate text-sm font-semibold">
-                        Administrator
-                    </p>
-
-                    <p class="text-xs text-gray-500">
-                        Admin
-                    </p>
-
-                </div>
-
-                {{-- LOGOUT --}}
-
-                {{-- LOGOUT --}}
-
-                <button
-                    type="button"
-                    @click="logoutModal = true"
-                    class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition hover:bg-red-500/10 hover:text-red-500"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.8"
-                        stroke="currentColor"
-                        class="h-5 w-5"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M15 12H3m0 0 4-4m-4 4 4 4M15 4h3a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-3"
-                        />
-                    </svg>
-                </button>
-            </div>
-
-        </div>
-
-    </div>
-
-</aside>
-
-
-<div
-    x-show="sidebarOpen"
-    x-transition.opacity
-    @click="sidebarOpen = false"
-    class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
-    style="display: none;"
-></div>
-
-{{-- ========================================================= --}}
-{{-- MAIN --}}
-{{-- ========================================================= --}}
-
-<div class="lg:pl-64">
-
-
-    {{-- TOPBAR --}}
-
-    <header
-        class="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-gray-200 bg-white/90 px-6 backdrop-blur-xl dark:border-white/10 dark:bg-gray-950/90 lg:px-8"
-    >
-
-        <div class="flex items-center gap-3">
-
-            <button
-                type="button"
-                @click="sidebarOpen = true"
-                class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 lg:hidden"
-            >
-
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M4 6h16M4 12h16M4 18h16"
-                    />
-                </svg>
-
-            </button>
-
-                <div>
-
-                    <p class="text-sm font-medium text-gray-500">
-                        Management
-                    </p>
-
-                    <h1 class="font-bold">
-                        Data Siswa
-                    </h1>
-
-                </div>
-
-        </div>        
-        {{-- THEME --}}
-
-        <button
-            type="button"
-            @click="toggleTheme()"
-            class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
-        >
-
-            <svg
-                x-show="dark"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.8"
-                stroke="currentColor"
-                class="h-5 w-5"
-            >
-
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M12 3v2m0 14v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M3 12h2m14 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"
-                />
-
-            </svg>
-
-
-            <svg
-                x-show="!dark"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.8"
-                stroke="currentColor"
-                class="h-5 w-5"
-            >
-
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"
-                />
-
-            </svg>
-
-        </button>
-
-    </header>
-
-
-
-    {{-- CONTENT --}}
-
-    <main class="mx-auto max-w-7xl px-6 py-8 lg:px-8">
-
 
         {{-- HEADER --}}
 
@@ -934,909 +361,794 @@
                 </div>
 
             </div>
-
         </div>
+    
 
-    </main>
+        {{-- ========================================================= --}}
+        {{-- MODAL TAMBAH SISWA --}}
+        {{-- ========================================================= --}}
 
-    {{-- ========================================================= --}}
-    {{-- MODAL TAMBAH SISWA --}}
-    {{-- ========================================================= --}}
-
-    <div
-        x-show="studentModal"
-        x-transition.opacity
-        x-effect="document.body.style.overflow = studentModal ? 'hidden' : ''"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-        style="display: none;"
-    >
-        {{-- BACKDROP --}}
-        <div
-            class="absolute inset-0 bg-black/50 backdrop-blur-md"
-            @click="studentModal = false"
-        ></div>
-
-
-        {{-- MODAL --}}
         <div
             x-show="studentModal"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 scale-95"
-            x-transition:enter-end="opacity-100 scale-100"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100 scale-100"
-            x-transition:leave-end="opacity-0 scale-95"
-            @click.stop
-            class="no-scrollbar relative max-h-[85vh] w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
+            x-transition.opacity
+            x-effect="document.body.style.overflow = studentModal ? 'hidden' : ''"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            style="display: none;"
         >
-
-            {{-- HEADER --}}
+            {{-- BACKDROP --}}
             <div
-                class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10"
+                class="absolute inset-0 bg-black/50 backdrop-blur-md"
+                @click="studentModal = false"
+            ></div>
+
+
+            {{-- MODAL --}}
+            <div
+                x-show="studentModal"
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95"
+                @click.stop
+                class="no-scrollbar relative max-h-[85vh] w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
             >
 
-                <div>
-                    <h2 class="text-lg font-bold">
-                        Tambah Siswa
-                    </h2>
-
-                    <p class="mt-1 text-xs text-gray-500">
-                        Masukkan informasi siswa baru.
-                    </p>
-                </div>
-
-
-                {{-- CLOSE --}}
-                <button
-                    type="button"
-                    @click="studentModal = false"
-                    class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.8"
-                        stroke="currentColor"
-                        class="h-5 w-5"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M6 18 18 6M6 6l12 12"
-                        />
-                    </svg>
-                </button>
-
-            </div>
-
-
-            {{-- FORM --}}
-            <form action="{{ route('admin.siswa.store') }}" method="POST" class="p-6">
-
-                @csrf
-
-
-                {{-- NAMA LENGKAP --}}
-                <div>
-                    <label
-                        for="nama_lengkap"
-                        class="mb-2 block text-sm font-semibold"
-                    >
-                        Nama Lengkap
-                    </label>
-
-                    <input
-                        type="text"
-                        id="nama_lengkap"
-                        name="nama_lengkap"
-                        placeholder="Contoh: Kevin Agna Pratama"
-                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                        x-model="student.nama_lengkap"
-                    >
-                </div>
-
-
-                {{-- NIS --}}
-                <div class="mt-5">
-                    <label
-                        for="nis"
-                        class="mb-2 block text-sm font-semibold"
-                    >
-                        NIS
-                    </label>
-
-                    <input
-                        type="text"
-                        id="nis"
-                        name="nis"
-                        placeholder="Contoh: 202600125"
-                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                        x-model="student.nis"
-                    >
-                </div>
-
-                {{-- NO. TELEPON --}}
-                <div class="mt-5">
-                    <label
-                        for="no_telepon"
-                        class="mb-2 block text-sm font-semibold"
-                    >
-                        No. Telepon
-                    </label>
-
-                    <input
-                        type="text"
-                        id="no_telepon"
-                        name="no_telepon"
-                        value="{{ old('no_telepon') }}"
-                        placeholder="Contoh: 081234567890"
-                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                        x-model="student.no_telepon"
-                    >
-                </div>
-
-
-                {{-- KELAS + JURUSAN --}}
-                <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
-
-                    {{-- KELAS --}}
-                    <div>
-                        <label
-                            for="kelas"
-                            class="mb-2 block text-sm font-semibold"
-                        >
-                            Kelas
-                        </label>
-
-                        <select
-                            id="kelas"
-                            name="kelas"
-                            required
-                            x-model="student.kelas"
-                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                        >
-                            <option value="">
-                                Pilih kelas
-                            </option>
-
-                            <option value="X">
-                                X
-                            </option>
-
-                            <option value="XI">
-                                XI
-                            </option>
-
-                            <option value="XII">
-                                XII
-                            </option>
-                        </select>
-                    </div>
-
-
-                    {{-- JURUSAN --}}
-                    <div>
-                        <div class="mb-2 flex items-center justify-between">
-                            <label
-                                for="jurusan_id"
-                                class="block text-sm font-semibold"
-                            >
-                                Jurusan
-                            </label>
-
-                            {{-- ATUR JURUSAN --}}
-                            <div class="relative">
-                                <button
-                                    type="button"
-                                    @click="showJurusanOptions = !showJurusanOptions"
-                                    class="rounded-lg border border-gray-200 px-2.5 py-1 text-[11px] font-semibold text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:border-white/10 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"
-                                >
-                                    Atur
-                                </button>
-
-                                {{-- DROPDOWN --}}
-                                <div
-                                    x-show="showJurusanOptions"
-                                    x-transition
-                                    @click.outside="showJurusanOptions = false"
-                                    class="absolute right-0 top-full z-50 mt-2 w-44 rounded-xl border border-gray-200 bg-white p-2 shadow-xl dark:border-white/10 dark:bg-gray-900"
-                                    style="display: none;"
-                                >
-                                    <button
-                                        type="button"
-                                        @click="
-                                            showJurusanOptions = false;
-                                            showAddJurusanModal = true;
-                                        "
-                                        class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition hover:bg-gray-100 dark:hover:bg-white/5"
-                                    >
-                                        <span class="text-lg leading-none text-green-500">
-                                            +
-                                        </span>
-
-                                        <span>
-                                            Tambah Jurusan
-                                        </span>
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        @click="
-                                            showJurusanOptions = false;
-                                            showDeleteJurusanModal = true;
-                                        "
-                                        class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-red-500 transition hover:bg-red-500/10"
-                                    >
-                                        <span class="text-base leading-none">
-                                            🗑
-                                        </span>
-
-                                        <span>
-                                            Hapus Jurusan
-                                        </span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <select
-                            id="jurusan_id"
-                            name="jurusan_id"
-                            required
-                            x-model="student.jurusan_id"
-                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                        >
-                            <option value="">
-                                Pilih jurusan
-                            </option>
-
-                            @foreach ($jurusans as $jurusan)
-                                <option value="{{ $jurusan->id }}">
-                                    {{ $jurusan->kode_jurusan }} -
-                                    {{ $jurusan->nama_jurusan }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                </div>
-
-
-                {{-- BUTTON --}}
+                {{-- HEADER --}}
                 <div
-                    class="mt-7 flex justify-end gap-3 border-t border-gray-200 pt-5 dark:border-white/10"
+                    class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10"
                 >
 
+                    <div>
+                        <h2 class="text-lg font-bold">
+                            Tambah Siswa
+                        </h2>
+
+                        <p class="mt-1 text-xs text-gray-500">
+                            Masukkan informasi siswa baru.
+                        </p>
+                    </div>
+
+
+                    {{-- CLOSE --}}
                     <button
                         type="button"
                         @click="studentModal = false"
-                        class="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+                        class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white"
                     >
-                        Batal
-                    </button>
-
-
-                    <button
-                        type="submit"
-                        class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950 transition hover:bg-green-400"
-                    >
-                        Simpan
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.8"
+                            stroke="currentColor"
+                            class="h-5 w-5"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M6 18 18 6M6 6l12 12"
+                            />
+                        </svg>
                     </button>
 
                 </div>
 
-            </form>
+
+                {{-- FORM --}}
+                <form action="{{ route('admin.siswa.store') }}" method="POST" class="p-6">
+
+                    @csrf
+
+
+                    {{-- NAMA LENGKAP --}}
+                    <div>
+                        <label
+                            for="nama_lengkap"
+                            class="mb-2 block text-sm font-semibold"
+                        >
+                            Nama Lengkap
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nama_lengkap"
+                            name="nama_lengkap"
+                            placeholder="Contoh: Kevin Agna Pratama"
+                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                            x-model="student.nama_lengkap"
+                        >
+                    </div>
+
+
+                    {{-- NIS --}}
+                    <div class="mt-5">
+                        <label
+                            for="nis"
+                            class="mb-2 block text-sm font-semibold"
+                        >
+                            NIS
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nis"
+                            name="nis"
+                            placeholder="Contoh: 202600125"
+                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                            x-model="student.nis"
+                        >
+                    </div>
+
+                    {{-- NO. TELEPON --}}
+                    <div class="mt-5">
+                        <label
+                            for="no_telepon"
+                            class="mb-2 block text-sm font-semibold"
+                        >
+                            No. Telepon
+                        </label>
+
+                        <input
+                            type="text"
+                            id="no_telepon"
+                            name="no_telepon"
+                            value="{{ old('no_telepon') }}"
+                            placeholder="Contoh: 081234567890"
+                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                            x-model="student.no_telepon"
+                        >
+                    </div>
+
+
+                    {{-- KELAS + JURUSAN --}}
+                    <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
+
+                        {{-- KELAS --}}
+                        <div>
+                            <label
+                                for="kelas"
+                                class="mb-2 block text-sm font-semibold"
+                            >
+                                Kelas
+                            </label>
+
+                            <select
+                                id="kelas"
+                                name="kelas"
+                                required
+                                x-model="student.kelas"
+                                class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                            >
+                                <option value="">
+                                    Pilih kelas
+                                </option>
+
+                                <option value="X">
+                                    X
+                                </option>
+
+                                <option value="XI">
+                                    XI
+                                </option>
+
+                                <option value="XII">
+                                    XII
+                                </option>
+                            </select>
+                        </div>
+
+
+                        {{-- JURUSAN --}}
+                        <div>
+                            <div class="mb-2 flex items-center justify-between">
+                                <label
+                                    for="jurusan_id"
+                                    class="block text-sm font-semibold"
+                                >
+                                    Jurusan
+                                </label>
+
+                                {{-- ATUR JURUSAN --}}
+                                <div class="relative">
+                                    <button
+                                        type="button"
+                                        @click="showJurusanOptions = !showJurusanOptions"
+                                        class="rounded-lg border border-gray-200 px-2.5 py-1 text-[11px] font-semibold text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:border-white/10 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"
+                                    >
+                                        Atur
+                                    </button>
+
+                                    {{-- DROPDOWN --}}
+                                    <div
+                                        x-show="showJurusanOptions"
+                                        x-transition
+                                        @click.outside="showJurusanOptions = false"
+                                        class="absolute right-0 top-full z-50 mt-2 w-44 rounded-xl border border-gray-200 bg-white p-2 shadow-xl dark:border-white/10 dark:bg-gray-900"
+                                        style="display: none;"
+                                    >
+                                        <button
+                                            type="button"
+                                            @click="
+                                                showJurusanOptions = false;
+                                                showAddJurusanModal = true;
+                                            "
+                                            class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition hover:bg-gray-100 dark:hover:bg-white/5"
+                                        >
+                                            <span class="text-lg leading-none text-green-500">
+                                                +
+                                            </span>
+
+                                            <span>
+                                                Tambah Jurusan
+                                            </span>
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            @click="
+                                                showJurusanOptions = false;
+                                                showDeleteJurusanModal = true;
+                                            "
+                                            class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-red-500 transition hover:bg-red-500/10"
+                                        >
+                                            <span class="text-base leading-none">
+                                                🗑
+                                            </span>
+
+                                            <span>
+                                                Hapus Jurusan
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <select
+                                id="jurusan_id"
+                                name="jurusan_id"
+                                required
+                                x-model="student.jurusan_id"
+                                class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                            >
+                                <option value="">
+                                    Pilih jurusan
+                                </option>
+
+                                @foreach ($jurusans as $jurusan)
+                                    <option value="{{ $jurusan->id }}">
+                                        {{ $jurusan->kode_jurusan }} -
+                                        {{ $jurusan->nama_jurusan }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                    </div>
+
+
+                    {{-- BUTTON --}}
+                    <div
+                        class="mt-7 flex justify-end gap-3 border-t border-gray-200 pt-5 dark:border-white/10"
+                    >
+
+                        <button
+                            type="button"
+                            @click="studentModal = false"
+                            class="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+                        >
+                            Batal
+                        </button>
+
+
+                        <button
+                            type="submit"
+                            class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950 transition hover:bg-green-400"
+                        >
+                            Simpan
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
 
         </div>
 
-    </div>
-
-    {{-- MODAL TAMBAH JURUSAN --}}
-    <div
-        x-show="showAddJurusanModal"
-        x-transition.opacity
-        class="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 p-4"
-        style="display: none;"
-    >
+        {{-- MODAL TAMBAH JURUSAN --}}
         <div
-            class="absolute inset-0 bg-black/50 backdrop-blur-md"
-            @click="showAddJurusanModal = false"
-        ></div>
-
-        <div
-            @click.stop
-            class="relative w-full max-w-md rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
+            x-show="showAddJurusanModal"
+            x-transition.opacity
+            class="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 p-4"
+            style="display: none;"
         >
-            <div class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10">
-                <div>
-                    <h2 class="text-lg font-bold">
-                        Tambah Jurusan
-                    </h2>
+            <div
+                class="absolute inset-0 bg-black/50 backdrop-blur-md"
+                @click="showAddJurusanModal = false"
+            ></div>
 
-                    <p class="mt-1 text-xs text-gray-500">
-                        Tambahkan jurusan baru.
-                    </p>
-                </div>
-
-                <button
-                    type="button"
-                    @click="showAddJurusanModal = false"
-                    class="text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                >
-                    ✕
-                </button>
-            </div>
-
-            <form
-                action="{{ route('admin.jurusan.store') }}"
-                method="POST"
-                class="p-6"
+            <div
+                @click.stop
+                class="relative w-full max-w-md rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
             >
-                @csrf
+                <div class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10">
+                    <div>
+                        <h2 class="text-lg font-bold">
+                            Tambah Jurusan
+                        </h2>
 
-                <div>
-                    <label
-                        for="kode_jurusan"
-                        class="mb-2 block text-sm font-semibold"
-                    >
-                        Kode Jurusan
-                    </label>
+                        <p class="mt-1 text-xs text-gray-500">
+                            Tambahkan jurusan baru.
+                        </p>
+                    </div>
 
-                    <input
-                        type="text"
-                        id="kode_jurusan"
-                        name="kode_jurusan"
-                        x-model="newJurusan.kode_jurusan"
-                        placeholder="Contoh: RPL"
-                        required
-                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm uppercase outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                    >
-                </div>
-
-                <div class="mt-5">
-                    <label
-                        for="nama_jurusan"
-                        class="mb-2 block text-sm font-semibold"
-                    >
-                        Nama Jurusan
-                    </label>
-
-                    <input
-                        type="text"
-                        id="nama_jurusan"
-                        name="nama_jurusan"
-                        x-model="newJurusan.nama_jurusan"
-                        placeholder="Contoh: Rekayasa Perangkat Lunak"
-                        required
-                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                    >
-                </div>
-
-                <div class="mt-6 flex justify-end gap-3 border-t border-gray-200 pt-5 dark:border-white/10">
                     <button
                         type="button"
                         @click="showAddJurusanModal = false"
-                        class="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold dark:border-white/10"
+                        class="text-gray-400 hover:text-gray-900 dark:hover:text-white"
                     >
-                        Batal
-                    </button>
-
-                    <button
-                        type="submit"
-                        class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950"
-                    >
-                        Simpan
+                        ✕
                     </button>
                 </div>
-            </form>
-        </div>
-    </div>
 
-    {{-- MODAL HAPUS JURUSAN --}}
-    <div
-        x-show="showDeleteJurusanModal"
-        x-transition.opacity
-        class="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 p-4"
-        style="display: none;"
-    >
-        <div
-            class="absolute inset-0 bg-black/50 backdrop-blur-md"
-            @click="showDeleteJurusanModal = false"
-        ></div>
-
-        <div
-            @click.stop
-            class="relative w-full max-w-md rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
-        >
-            <div class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10">
-                <div>
-                    <h2 class="text-lg font-bold">
-                        Hapus Jurusan
-                    </h2>
-
-                    <p class="mt-1 text-xs text-gray-500">
-                        Pilih satu atau lebih jurusan.
-                    </p>
-                </div>
-
-                <button
-                    type="button"
-                    @click="showDeleteJurusanModal = false"
-                    class="text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                <form
+                    action="{{ route('admin.jurusan.store') }}"
+                    method="POST"
+                    class="p-6"
                 >
-                    ✕
-                </button>
-            </div>
+                    @csrf
 
-            <form
-                action="{{ route('admin.jurusan.destroy') }}"
-                method="POST"
-                class="p-6"
-            >
-                @csrf
-                @method('DELETE')
-
-                <div class="max-h-72 space-y-3 overflow-y-auto">
-
-                    @foreach ($jurusans as $jurusan)
+                    <div>
                         <label
-                            class="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 transition hover:bg-gray-50 dark:border-white/10 dark:hover:bg-white/5"
+                            for="kode_jurusan"
+                            class="mb-2 block text-sm font-semibold"
                         >
-                            <input
-                                type="checkbox"
-                                name="jurusan_ids[]"
-                                value="{{ $jurusan->id }}"
-                                x-model="selectedJurusan"
-                                class="h-4 w-4 rounded border-gray-300 text-green-500 focus:ring-green-500"
-                            >
-
-                            <div>
-                                <p class="text-sm font-semibold">
-                                    {{ $jurusan->kode_jurusan }}
-                                </p>
-
-                                <p class="text-xs text-gray-500">
-                                    {{ $jurusan->nama_jurusan }}
-                                </p>
-                            </div>
+                            Kode Jurusan
                         </label>
-                    @endforeach
 
-                </div>
+                        <input
+                            type="text"
+                            id="kode_jurusan"
+                            name="kode_jurusan"
+                            x-model="newJurusan.kode_jurusan"
+                            placeholder="Contoh: RPL"
+                            required
+                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm uppercase outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                        >
+                    </div>
 
-                <div class="mt-6 flex justify-end border-t border-gray-200 pt-5 dark:border-white/10">
+                    <div class="mt-5">
+                        <label
+                            for="nama_jurusan"
+                            class="mb-2 block text-sm font-semibold"
+                        >
+                            Nama Jurusan
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nama_jurusan"
+                            name="nama_jurusan"
+                            x-model="newJurusan.nama_jurusan"
+                            placeholder="Contoh: Rekayasa Perangkat Lunak"
+                            required
+                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                        >
+                    </div>
+
+                    <div class="mt-6 flex justify-end gap-3 border-t border-gray-200 pt-5 dark:border-white/10">
+                        <button
+                            type="button"
+                            @click="showAddJurusanModal = false"
+                            class="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold dark:border-white/10"
+                        >
+                            Batal
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950"
+                        >
+                            Simpan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {{-- MODAL HAPUS JURUSAN --}}
+        <div
+            x-show="showDeleteJurusanModal"
+            x-transition.opacity
+            class="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 p-4"
+            style="display: none;"
+        >
+            <div
+                class="absolute inset-0 bg-black/50 backdrop-blur-md"
+                @click="showDeleteJurusanModal = false"
+            ></div>
+
+            <div
+                @click.stop
+                class="relative w-full max-w-md rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
+            >
+                <div class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10">
+                    <div>
+                        <h2 class="text-lg font-bold">
+                            Hapus Jurusan
+                        </h2>
+
+                        <p class="mt-1 text-xs text-gray-500">
+                            Pilih satu atau lebih jurusan.
+                        </p>
+                    </div>
+
                     <button
-                        type="submit"
-                        :disabled="selectedJurusan.length === 0"
-                        class="rounded-xl bg-red-500 px-5 py-3 text-sm font-bold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                        type="button"
+                        @click="showDeleteJurusanModal = false"
+                        class="text-gray-400 hover:text-gray-900 dark:hover:text-white"
                     >
-                        Hapus
+                        ✕
                     </button>
                 </div>
-            </form>
+
+                <form
+                    action="{{ route('admin.jurusan.destroy') }}"
+                    method="POST"
+                    class="p-6"
+                >
+                    @csrf
+                    @method('DELETE')
+
+                    <div class="max-h-72 space-y-3 overflow-y-auto">
+
+                        @foreach ($jurusans as $jurusan)
+                            <label
+                                class="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 transition hover:bg-gray-50 dark:border-white/10 dark:hover:bg-white/5"
+                            >
+                                <input
+                                    type="checkbox"
+                                    name="jurusan_ids[]"
+                                    value="{{ $jurusan->id }}"
+                                    x-model="selectedJurusan"
+                                    class="h-4 w-4 rounded border-gray-300 text-green-500 focus:ring-green-500"
+                                >
+
+                                <div>
+                                    <p class="text-sm font-semibold">
+                                        {{ $jurusan->kode_jurusan }}
+                                    </p>
+
+                                    <p class="text-xs text-gray-500">
+                                        {{ $jurusan->nama_jurusan }}
+                                    </p>
+                                </div>
+                            </label>
+                        @endforeach
+
+                    </div>
+
+                    <div class="mt-6 flex justify-end border-t border-gray-200 pt-5 dark:border-white/10">
+                        <button
+                            type="submit"
+                            :disabled="selectedJurusan.length === 0"
+                            class="rounded-xl bg-red-500 px-5 py-3 text-sm font-bold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            Hapus
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
 
-    {{-- MODAL DETAIL SISWA --}}
-    <div
-        x-show="detailModal"
-        x-transition.opacity
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-        style="display: none;"
-    >
-        {{-- BACKDROP --}}
-        <div
-            class="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            @click="closeDetail()"
-        ></div>
-
-        {{-- MODAL --}}
+        {{-- MODAL DETAIL SISWA --}}
         <div
             x-show="detailModal"
-            x-transition
-            @click.stop
-            class="relative w-full max-w-lg rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
+            x-transition.opacity
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            style="display: none;"
         >
-
-            {{-- HEADER --}}
-            <div class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10">
-                <div>
-                    <h2 class="text-lg font-bold">
-                        Detail Siswa
-                    </h2>
-
-                    <p class="mt-1 text-sm text-gray-500">
-                        Informasi lengkap siswa.
-                    </p>
-                </div>
-
-                <button
-                    type="button"
-                    @click="closeDetail()"
-                    class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white"
-                >
-                    ✕
-                </button>
-            </div>
-
-            {{-- CONTENT --}}
-            <div class="space-y-4 p-6">
-
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    {{-- NAMA --}}
-                    <div >
-                        <p class="text-xs text-gray-500">Nama Lengkap</p>
-                        <p
-                            class="mt-1 font-semibold"
-                            x-text="selectedSiswa?.nama_lengkap ?? '-'"
-                        ></p>
-                    </div>
-
-                    {{-- NIS --}}
-                    <div>
-                        <p class="text-xs text-gray-500">NIS</p>
-                        <p
-                            class="mt-1 font-semibold"
-                            x-text="selectedSiswa?.nis ?? '-'"
-                        ></p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    {{-- KODE SISWA --}}
-                    <div>
-                        <p class="text-xs text-gray-500">Kode Siswa</p>
-                        <p
-                            class="mt-1 font-mono font-semibold"
-                            x-text="selectedSiswa?.kode_siswa ?? '-'"
-                        ></p>
-                    </div>
-
-                    {{-- KELAS --}}
-                    <div>
-                        <p class="text-xs text-gray-500">Kelas</p>
-                        <p
-                            class="mt-1 font-semibold"
-                            x-text="selectedSiswa?.kelas ?? '-'"
-                        ></p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    {{-- JURUSAN --}}
-                    <div>
-                        <p class="text-xs text-gray-500">Jurusan</p>
-                        <p
-                            class="mt-1 font-semibold"
-                            x-text="
-                                selectedSiswa?.jurusan
-                                    ? selectedSiswa.jurusan.kode_jurusan + ' - ' + selectedSiswa.jurusan.nama_jurusan
-                                    : '-'
-                            "
-                        ></p>
-                    </div>
-
-                    {{-- NO TELEPON --}}
-                    <div>
-                        <p class="text-xs text-gray-500">No. Telepon</p>
-                        <p
-                            class="mt-1 font-semibold"
-                            x-text="selectedSiswa?.no_telepon ?? '-'"
-                        ></p>
-                    </div>
-                </div>
-
-            </div>
-
-            {{-- FOOTER --}}
-            <div class="flex justify-end border-t border-gray-200 px-6 py-4 dark:border-white/10">
-                <button
-                    type="button"
-                    @click="closeDetail()"
-                    class="rounded-xl bg-gray-100 px-5 py-2.5 text-sm font-semibold hover:bg-gray-200 dark:bg-white/10 dark:hover:bg-white/20"
-                >
-                    Tutup
-                </button>
-            </div>
-        </div>
-    </div>
-
-    {{-- MODAL EDIT SISWA --}}
-    <div
-        x-show="editModal"
-        x-transition.opacity
-        x-effect="document.body.style.overflow = editModal ? 'hidden' : ''"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-        style="display: none;"
-    >
-        {{-- BACKDROP --}}
-        <div
-            class="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            @click="closeEdit()"
-        ></div>
-
-        {{-- MODAL --}}
-        <div
-            x-show="editModal"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 scale-95"
-            x-transition:enter-end="opacity-100 scale-100"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100 scale-100"
-            x-transition:leave-end="opacity-0 scale-95"
-            @click.stop
-            class="relative w-full max-w-lg rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
-        >
-
-            {{-- HEADER --}}
+            {{-- BACKDROP --}}
             <div
-                class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10"
-            >
-                <div>
-                    <h2 class="text-lg font-bold">
-                        Edit Siswa
-                    </h2>
+                class="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                @click="closeDetail()"
+            ></div>
 
-                    <p class="mt-1 text-sm text-gray-500">
-                        Edit informasi siswa.
-                    </p>
-                </div>
-
-                <button
-                    type="button"
-                    @click="closeEdit()"
-                    class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white"
-                >
-                    ✕
-                </button>
-            </div>
-
-
-            {{-- FORM --}}
-            <form
-                method="POST"
-                :action="'{{ url('/admin/siswa') }}/' + editSiswa.id"
-                class="p-6"
+            {{-- MODAL --}}
+            <div
+                x-show="detailModal"
+                x-transition
+                @click.stop
+                class="relative w-full max-w-lg rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
             >
 
-                @csrf
-                @method('PUT')
-
-
-                {{-- NAMA --}}
-                <div>
-                    <label class="mb-2 block text-sm font-semibold">
-                        Nama Lengkap
-                    </label>
-
-                    <input
-                        type="text"
-                        name="nama_lengkap"
-                        x-model="editSiswa.nama_lengkap"
-                        required
-                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                    >
-                </div>
-
-
-                {{-- NIS --}}
-                <div class="mt-5">
-                    <label class="mb-2 block text-sm font-semibold">
-                        NIS
-                    </label>
-
-                    <input
-                        type="text"
-                        name="nis"
-                        x-model="editSiswa.nis"
-                        required
-                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                    >
-                </div>
-
-
-                {{-- NO TELEPON --}}
-                <div class="mt-5">
-                    <label class="mb-2 block text-sm font-semibold">
-                        No. Telepon
-                    </label>
-
-                    <input
-                        type="text"
-                        name="no_telepon"
-                        x-model="editSiswa.no_telepon"
-                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                    >
-                </div>
-
-
-                {{-- KELAS + JURUSAN --}}
-                <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
-
-                    {{-- KELAS --}}
+                {{-- HEADER --}}
+                <div class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10">
                     <div>
-                        <label class="mb-2 block text-sm font-semibold">
-                            Kelas
-                        </label>
+                        <h2 class="text-lg font-bold">
+                            Detail Siswa
+                        </h2>
 
-                        <select
-                            name="kelas"
-                            x-model="editSiswa.kelas"
-                            required
-                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                        >
-                            <option value="">Pilih kelas</option>
-
-                            <option value="X">X</option>
-                            <option value="XI">XI</option>
-                            <option value="XII">XII</option>
-                        </select>
+                        <p class="mt-1 text-sm text-gray-500">
+                            Informasi lengkap siswa.
+                        </p>
                     </div>
 
+                    <button
+                        type="button"
+                        @click="closeDetail()"
+                        class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white"
+                    >
+                        ✕
+                    </button>
+                </div>
 
-                    {{-- JURUSAN --}}
-                    <div>
-                        <label class="mb-2 block text-sm font-semibold">
-                            Jurusan
-                        </label>
+                {{-- CONTENT --}}
+                <div class="space-y-4 p-6">
 
-                        <select
-                            name="jurusan_id"
-                            x-model="editSiswa.jurusan_id"
-                            required
-                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                        >
-                            <option value="">Pilih jurusan</option>
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        {{-- NAMA --}}
+                        <div >
+                            <p class="text-xs text-gray-500">Nama Lengkap</p>
+                            <p
+                                class="mt-1 font-semibold"
+                                x-text="selectedSiswa?.nama_lengkap ?? '-'"
+                            ></p>
+                        </div>
 
-                            @foreach ($jurusans as $jurusan)
-                                <option value="{{ $jurusan->id }}">
-                                    {{ $jurusan->kode_jurusan }} -
-                                    {{ $jurusan->nama_jurusan }}
-                                </option>
-                            @endforeach
-                        </select>
+                        {{-- NIS --}}
+                        <div>
+                            <p class="text-xs text-gray-500">NIS</p>
+                            <p
+                                class="mt-1 font-semibold"
+                                x-text="selectedSiswa?.nis ?? '-'"
+                            ></p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        {{-- KODE SISWA --}}
+                        <div>
+                            <p class="text-xs text-gray-500">Kode Siswa</p>
+                            <p
+                                class="mt-1 font-mono font-semibold"
+                                x-text="selectedSiswa?.kode_siswa ?? '-'"
+                            ></p>
+                        </div>
+
+                        {{-- KELAS --}}
+                        <div>
+                            <p class="text-xs text-gray-500">Kelas</p>
+                            <p
+                                class="mt-1 font-semibold"
+                                x-text="selectedSiswa?.kelas ?? '-'"
+                            ></p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        {{-- JURUSAN --}}
+                        <div>
+                            <p class="text-xs text-gray-500">Jurusan</p>
+                            <p
+                                class="mt-1 font-semibold"
+                                x-text="
+                                    selectedSiswa?.jurusan
+                                        ? selectedSiswa.jurusan.kode_jurusan + ' - ' + selectedSiswa.jurusan.nama_jurusan
+                                        : '-'
+                                "
+                            ></p>
+                        </div>
+
+                        {{-- NO TELEPON --}}
+                        <div>
+                            <p class="text-xs text-gray-500">No. Telepon</p>
+                            <p
+                                class="mt-1 font-semibold"
+                                x-text="selectedSiswa?.no_telepon ?? '-'"
+                            ></p>
+                        </div>
                     </div>
 
                 </div>
-
 
                 {{-- FOOTER --}}
+                <div class="flex justify-end border-t border-gray-200 px-6 py-4 dark:border-white/10">
+                    <button
+                        type="button"
+                        @click="closeDetail()"
+                        class="rounded-xl bg-gray-100 px-5 py-2.5 text-sm font-semibold hover:bg-gray-200 dark:bg-white/10 dark:hover:bg-white/20"
+                    >
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {{-- MODAL EDIT SISWA --}}
+        <div
+            x-show="editModal"
+            x-transition.opacity
+            x-effect="document.body.style.overflow = editModal ? 'hidden' : ''"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            style="display: none;"
+        >
+            {{-- BACKDROP --}}
+            <div
+                class="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                @click="closeEdit()"
+            ></div>
+
+            {{-- MODAL --}}
+            <div
+                x-show="editModal"
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95"
+                @click.stop
+                class="relative w-full max-w-lg rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
+            >
+
+                {{-- HEADER --}}
                 <div
-                    class="mt-7 flex justify-end gap-3 border-t border-gray-200 pt-5 dark:border-white/10"
+                    class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10"
                 >
+                    <div>
+                        <h2 class="text-lg font-bold">
+                            Edit Siswa
+                        </h2>
+
+                        <p class="mt-1 text-sm text-gray-500">
+                            Edit informasi siswa.
+                        </p>
+                    </div>
 
                     <button
                         type="button"
                         @click="closeEdit()"
-                        class="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+                        class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white"
                     >
-                        Batal
-                    </button>
-
-                    <button
-                        type="submit"
-                        class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950 hover:bg-green-400"
-                    >
-                        Simpan
+                        ✕
                     </button>
                 </div>
-            </form>
-        </div>
-    </div>
-
-</div>
 
 
-</body>
-{{-- ========================================================= --}}
-{{-- MODAL KONFIRMASI LOGOUT --}}
-{{-- ========================================================= --}}
-
-<div
-    x-show="logoutModal"
-    x-transition.opacity
-    x-effect="document.body.style.overflow = logoutModal ? 'hidden' : ''"
-    class="fixed inset-0 z-100 flex items-center justify-center bg-black/50 p-4"
-    style="display: none;"
->
-    {{-- BACKDROP --}}
-    <div
-        class="absolute inset-0 bg-black/50 backdrop-blur-md"
-        @click="logoutModal = false"
-    ></div>
-
-
-    {{-- MODAL --}}
-    <div
-        x-show="logoutModal"
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0 scale-95"
-        x-transition:enter-end="opacity-100 scale-100"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100 scale-100"
-        x-transition:leave-end="opacity-0 scale-95"
-        @click.stop
-        class="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900"
-    >
-
-        {{-- ICON --}}
-        <div class="flex justify-center">
-
-            <div
-                class="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 text-red-500"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-6 w-6"
+                {{-- FORM --}}
+                <form
+                    method="POST"
+                    :action="'{{ url('/admin/siswa') }}/' + editSiswa.id"
+                    class="p-6"
                 >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"
-                    />
 
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="m10 17 5-5-5-5m5 5H3"
-                    />
-                </svg>
+                    @csrf
+                    @method('PUT')
+
+
+                    {{-- NAMA --}}
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold">
+                            Nama Lengkap
+                        </label>
+
+                        <input
+                            type="text"
+                            name="nama_lengkap"
+                            x-model="editSiswa.nama_lengkap"
+                            required
+                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                        >
+                    </div>
+
+
+                    {{-- NIS --}}
+                    <div class="mt-5">
+                        <label class="mb-2 block text-sm font-semibold">
+                            NIS
+                        </label>
+
+                        <input
+                            type="text"
+                            name="nis"
+                            x-model="editSiswa.nis"
+                            required
+                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                        >
+                    </div>
+
+
+                    {{-- NO TELEPON --}}
+                    <div class="mt-5">
+                        <label class="mb-2 block text-sm font-semibold">
+                            No. Telepon
+                        </label>
+
+                        <input
+                            type="text"
+                            name="no_telepon"
+                            x-model="editSiswa.no_telepon"
+                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                        >
+                    </div>
+
+
+                    {{-- KELAS + JURUSAN --}}
+                    <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
+
+                        {{-- KELAS --}}
+                        <div>
+                            <label class="mb-2 block text-sm font-semibold">
+                                Kelas
+                            </label>
+
+                            <select
+                                name="kelas"
+                                x-model="editSiswa.kelas"
+                                required
+                                class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                            >
+                                <option value="">Pilih kelas</option>
+
+                                <option value="X">X</option>
+                                <option value="XI">XI</option>
+                                <option value="XII">XII</option>
+                            </select>
+                        </div>
+
+
+                        {{-- JURUSAN --}}
+                        <div>
+                            <label class="mb-2 block text-sm font-semibold">
+                                Jurusan
+                            </label>
+
+                            <select
+                                name="jurusan_id"
+                                x-model="editSiswa.jurusan_id"
+                                required
+                                class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                            >
+                                <option value="">Pilih jurusan</option>
+
+                                @foreach ($jurusans as $jurusan)
+                                    <option value="{{ $jurusan->id }}">
+                                        {{ $jurusan->kode_jurusan }} -
+                                        {{ $jurusan->nama_jurusan }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                    </div>
+
+
+                    {{-- FOOTER --}}
+                    <div
+                        class="mt-7 flex justify-end gap-3 border-t border-gray-200 pt-5 dark:border-white/10"
+                    >
+
+                        <button
+                            type="button"
+                            @click="closeEdit()"
+                            class="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+                        >
+                            Batal
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950 hover:bg-green-400"
+                        >
+                            Simpan
+                        </button>
+                    </div>
+                </form>
             </div>
-
         </div>
-
-
-        {{-- TEXT --}}
-        <div class="mt-4 text-center">
-
-            <h2 class="text-lg font-bold">
-                Yakin mau logout?
-            </h2>
-
-            <p class="mt-2 text-sm text-gray-500">
-                Kamu akan keluar dari akun dan harus login kembali.
-            </p>
-
-        </div>
-
-
-        {{-- BUTTON --}}
-        <div class="mt-6 grid grid-cols-2 gap-3">
-
-            {{-- BATAL --}}
-            <button
-                type="button"
-                @click="logoutModal = false"
-                class="rounded-xl border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
-            >
-                Batal
-            </button>
-
-
-            {{-- LOGOUT --}}
-            <form
-                action="/logout"
-                method="POST"
-            >
-                @csrf
-
-                <button
-                    type="submit"
-                    class="w-full rounded-xl bg-red-500 px-4 py-3 text-sm font-bold text-white transition hover:bg-red-600"
-                >
-                    Logout
-                </button>
-
-            </form>
-
-        </div>
-
     </div>
 
-</div>
-</html>
+@endsection

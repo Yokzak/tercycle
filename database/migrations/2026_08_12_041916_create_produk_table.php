@@ -30,6 +30,12 @@ return new class extends Migration
                 'tidak tersedia',
             ])->default('tersedia');
 
+            $table->enum('status_approval', [
+                'menunggu',
+                'disetujui',
+                'ditolak',
+            ])->default('menunggu');
+
             $table->timestamps();
         });
     }

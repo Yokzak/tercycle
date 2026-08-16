@@ -1,1072 +1,433 @@
-<!DOCTYPE html>
-<html
-    lang="id"
-    x-data="{
-        dark: localStorage.getItem('theme') !== 'light',
-        filter: 'Semua',
-        sidebarOpen: false,
-        logoutModal: false,
+@extends('layouts.siswa.app')
 
-        toggleTheme() {
-            this.dark = !this.dark;
+@section('title', 'Pesanan')
 
-            localStorage.setItem(
-                'theme',
-                this.dark ? 'dark' : 'light'
-            );
+@section('topbar-subtitle', 'Marketplace')
 
-            document.documentElement.classList.toggle(
-                'dark',
-                this.dark
-            );
-        },
+@section('topbar-title', 'Pesanan Saya')
 
-        orders: [
-            {
-                id: '#TRC-00125',
-                product: 'Pulpen Eco',
-                qty: 2,
-                total: 2000,
-                date: '10 Agustus 2026',
-                status: 'Diproses'
-            },
-            {
-                id: '#TRC-00120',
-                product: 'Tumbler Eco',
-                qty: 1,
-                total: 5000,
-                date: '9 Agustus 2026',
-                status: 'Selesai'
-            },
-            {
-                id: '#TRC-00115',
-                product: 'Totebag Daur Ulang',
-                qty: 1,
-                total: 3500,
-                date: '7 Agustus 2026',
-                status: 'Selesai'
-            },
-            {
-                id: '#TRC-00108',
-                product: 'Notebook Daur Ulang',
-                qty: 2,
-                total: 5000,
-                date: '5 Agustus 2026',
-                status: 'Dibatalkan'
-            }
-        ],
+@section('content')
 
-        get filteredOrders() {
-            if (this.filter === 'Semua') {
-                return this.orders;
-            }
+<div class="mb-8">
 
-            return this.orders.filter(
-                order => order.status === this.filter
-            );
-        }
-    }"
+    <p class="text-sm font-medium text-green-500">
+        Pesanan
+    </p>
 
-    x-init="
-        document.documentElement.classList.toggle('dark', dark)
-    "
+    <h1 class="mt-2 text-3xl font-black">
+        Pesanan Saya
+    </h1>
 
-    :class="{ 'dark': dark }"
->
+    <p class="mt-1 text-sm text-gray-500">
+        Kelola pesanan yang kamu beli dan pesanan dari pembeli.
+    </p>
 
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Pesanan - Tercycle</title>
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <script
-        defer
-        src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
-    ></script>
-
-</head>
-
-
-<body
-    class="min-h-screen bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-950 dark:text-white"
->
+</div>
 
 
 {{-- ========================================================= --}}
-{{-- SIDEBAR --}}
+{{-- SEBAGAI PEMBELI --}}
 {{-- ========================================================= --}}
 
-<aside
-    class="fixed inset-y-0 left-0 z-50 w-64 border-r border-gray-200 bg-white transition-transform duration-300 dark:border-white/10 dark:bg-gray-950 lg:block"
-    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
->
+<div class="mb-8 overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/10 dark:bg-white/[0.03]">
 
-    <div class="flex h-full flex-col">
+    <div class="border-b border-gray-200 px-6 py-5 dark:border-white/10">
 
-        {{-- LOGO --}}
+        <h2 class="font-bold">
+            Pesanan Saya
+        </h2>
 
-        <div
-            class="flex h-20 items-center border-b border-gray-200 px-6 dark:border-white/10"
-        >
-            <a
-                href="/siswa/dashboard"
-                class="flex items-center gap-3"
-            >
-                <div
-                    class="flex h-10 w-10 items-center justify-center rounded-xl bg-green-500 font-black text-gray-950"
-                >
-                    T
-                </div>
+        <p class="mt-1 text-xs text-gray-500">
+            Produk yang kamu beli menggunakan poin.
+        </p>
 
-                <span class="text-xl font-bold">
-                    Ter<span class="text-green-500">cycle</span>
-                </span>
-            </a>
-        </div>
-
-
-        {{-- MENU --}}
-
-        <nav class="flex-1 space-y-1 px-4 py-6">
-
-            <p
-                class="mb-3 px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400"
-            >
-                Menu
-            </p>
-
-
-            {{-- DASHBOARD --}}
-
-            <a
-                href="/siswa/dashboard"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
-            >
-
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M3 13h8V3H3v10Zm10 8h8V11h-8v10ZM3 21h8v-6H3v6Zm10-18v6h8V3h-8Z"
-                    />
-                </svg>
-
-                Dashboard
-
-            </a>
-
-
-            {{-- POIN --}}
-
-            <a
-                href="/siswa/poin"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
-            >
-
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <circle
-                        cx="12"
-                        cy="12"
-                        r="9"
-                    />
-
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M12 7v5l3 2"
-                    />
-                </svg>
-
-                Riwayat Poin
-
-            </a>
-
-
-            {{-- SETOR BOTOL --}}
-
-            <a
-                href="/siswa/tukar"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
-            >
-
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M7 3h10M8 3v4l-2 3v8a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3v-8l-2-3V3"
-                    />
-                </svg>
-
-                Setor Botol
-
-            </a>
-
-
-            {{-- PRODUK --}}
-
-            <a
-                href="/siswa/produk"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
-            >
-
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M20 7 12 3 4 7m16 0-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                    />
-                </svg>
-
-                Produk
-
-            </a>
-
-
-            {{-- PESANAN ACTIVE --}}
-
-            <a
-                href="/siswa/pesanan"
-                class="flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500"
-            >
-
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M3 7h18M5 7v12h14V7M8 7V5a4 4 0 0 1 8 0v2"
-                    />
-                </svg>
-
-                Pesanan
-
-            </a>
-
-
-            <p
-                class="mb-3 mt-8 px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400"
-            >
-                Account
-            </p>
-
-
-            {{-- PROFIL --}}
-
-            <a
-                href="/siswa/profil"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
-            >
-
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M15 19a6 6 0 0 0-12 0m6-8a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"
-                    />
-                </svg>
-
-                Profil
-
-            </a>
-
-        </nav>
-
-
-        {{-- USER --}}
-
-        <div
-            class="border-t border-gray-200 p-4 dark:border-white/10"
-        >
-            <div class="flex items-center gap-3">
-
-                {{-- AVATAR --}}
-                <div
-                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-500 font-bold text-gray-950"
-                >
-                    K
-                </div>
-
-                {{-- NAMA --}}
-                <div class="min-w-0 flex-1">
-
-                    <p class="truncate text-sm font-semibold">
-                        Kevin
-                    </p>
-
-                    <p class="text-xs text-gray-500">
-                        Siswa
-                    </p>
-
-                </div>
-
-                {{-- LOGOUT ICON --}}
-                <form
-                    action="/logout"
-                    method="POST"
-                >
-                    @csrf
-
-                    <button
-                        type="button"
-                        @click="logoutModal = true"
-                        class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition hover:bg-red-500/10 hover:text-red-500"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke-width="1.8"
-                            stroke="currentColor"
-                            class="h-5 w-5"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M15 12H3m0 0 4-4m-4 4 4 4M15 4h3a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-3"
-                            />
-                        </svg>
-                    </button>
-
-                </form>
-
-            </div>
-        </div>
     </div>
 
-</aside>
-
-<div
-    x-show="sidebarOpen"
-    x-transition.opacity
-    @click="sidebarOpen = false"
-    class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
-    style="display: none;"
-></div>
-
-
-
-<!-- MOBILE HEADER -->
-<header
-    class="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-5 dark:border-white/10 dark:bg-gray-950 lg:hidden"
->
-
-    <!-- HAMBURGER -->
-    <button
-        type="button"
-        @click="sidebarOpen = true"
-        class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:border-green-500 hover:text-green-500 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
-        aria-label="Buka menu"
-    >
-
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.8"
-            stroke="currentColor"
-            class="h-5 w-5"
-        >
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M4 6h16M4 12h16M4 18h16"
-            />
-        </svg>
-
-    </button>
-
-
-    <!-- LOGO -->
-
-    <a
-        href="/siswa/dashboard"
-        class="flex items-center gap-2"
-    >
-
-        <div
-            class="flex h-9 w-9 items-center justify-center rounded-lg bg-green-500 font-black text-gray-950"
-        >
-            T
-        </div>
 
-        <span class="font-bold">
-            Ter<span class="text-green-500">cycle</span>
-        </span>
-
-    </a>
-
-
-    <!-- THEME -->
-
-    <button
-        type="button"
-        @click="toggleTheme()"
-        class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
-    >
-
-        <svg
-            x-show="dark"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.8"
-            stroke="currentColor"
-            class="h-5 w-5"
-        >
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M12 3v2m0 14v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M3 12h2m14 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"
-            />
-        </svg>
-
-        <svg
-            x-show="!dark"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.8"
-            stroke="currentColor"
-            class="h-5 w-5"
-        >
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"
-            />
-        </svg>
-
-    </button>
-
-</header>
-
-
-{{-- ========================================================= --}}
-{{-- MAIN --}}
-{{-- ========================================================= --}}
-
-<div class="lg:pl-64">
-
-
-    {{-- TOPBAR --}}
-
-    <header
-        class="sticky top-0 z-30 hidden h-20 items-center justify-between border-b border-gray-200 bg-white/90 px-6 backdrop-blur-xl dark:border-white/10 dark:bg-gray-950/90 lg:flex lg:px-8"
-    >
-
-        <div>
-
-            <p class="text-sm font-medium text-gray-500">
-                Transaksi
-            </p>
-
-            <h1 class="font-bold">
-                Pesanan Saya
-            </h1>
-
-        </div>
-
-
-        <div class="flex items-center gap-4">
-
-            <div
-                class="rounded-xl bg-green-500/10 px-4 py-2"
-            >
-
-                <p class="text-[10px] uppercase tracking-wide text-gray-500">
-                    Saldo
-                </p>
+    <div class="overflow-x-auto">
 
-                <p class="text-sm font-bold text-green-500">
-                    12.500 poin
-                </p>
+        <table class="w-full text-left text-sm">
 
-            </div>
+            <thead class="border-b border-gray-200 text-xs uppercase text-gray-500 dark:border-white/10">
 
+                <tr>
 
-            <div class="flex items-center gap-2">
+                    <th class="px-6 py-4">
+                        Pesanan
+                    </th>
 
-            {{-- KERANJANG --}}
-            <a
-                href="/siswa/keranjang"
-                class="relative flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
-                title="Keranjang"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M2.25 3h1.386a1.5 1.5 0 0 1 1.46 1.15L5.42 6m0 0h14.33a1.5 1.5 0 0 1 1.46 1.85l-1.05 4.5a1.5 1.5 0 0 1-1.46 1.15H8.25a1.5 1.5 0 0 1-1.46-1.15L5.42 6Z"
-                    />
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M8.25 18.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm9 0a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"
-                    />
-                </svg>
+                    <th class="px-6 py-4">
+                        Produk
+                    </th>
 
-                {{-- BADGE JUMLAH --}}
-                <span
-                    class="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white"
-                >
-                    0
-                </span>
-            </a>
+                    <th class="px-6 py-4">
+                        Total
+                    </th>
 
-            {{-- THEME BUTTON --}}
-            <button
-                type="button"
-                @click="toggleTheme()"
-                class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
-            >
+                    <th class="px-6 py-4">
+                        Tanggal
+                    </th>
 
-                <svg
-                    x-show="dark"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M12 3v2m0 14v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M3 12h2m14 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"
-                    />
-                </svg>
+                    <th class="px-6 py-4">
+                        Status
+                    </th>
 
-                <svg
-                    x-show="!dark"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"
-                    />
-                </svg>
+                </tr>
 
-            </button>
+            </thead>
 
-        </div>
 
-        </div>
+            <tbody class="divide-y divide-gray-200 dark:divide-white/10">
 
-    </header>
+                @forelse ($pesanansPembeli as $pesanan)
 
+                    <tr>
 
+                        {{-- ID --}}
+                        <td class="px-6 py-5 font-semibold">
+                            #{{ $pesanan->id }}
+                        </td>
 
-    {{-- CONTENT --}}
 
-    <main class="mx-auto max-w-7xl px-6 py-8 lg:px-8">
+                        {{-- PRODUK --}}
+                        <td class="px-6 py-5">
 
+                            @foreach ($pesanan->detailPesanan as $detail)
 
-        {{-- PAGE HEADER --}}
+                                <div>
 
-        <div class="mb-8">
+                                    {{ $detail->nama_produk }}
 
-            <p class="text-sm font-medium text-green-500">
-                Riwayat Transaksi
-            </p>
-
-            <h2 class="mt-2 text-3xl font-black">
-                Pesanan Saya
-            </h2>
-
-            <p class="mt-1 text-sm text-gray-500">
-                Pantau semua pembelian produk yang kamu lakukan.
-            </p>
-
-        </div>
-
-
-
-        {{-- ================================================= --}}
-        {{-- SUMMARY --}}
-        {{-- ================================================= --}}
-
-        <div
-            class="grid gap-4 sm:grid-cols-3"
-        >
-
-            <div
-                class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-white/[0.03]"
-            >
-
-                <p class="text-xs text-gray-500">
-                    Total Pesanan
-                </p>
-
-                <p class="mt-2 text-2xl font-black">
-                    4
-                </p>
-
-            </div>
-
-
-            <div
-                class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-white/[0.03]"
-            >
-
-                <p class="text-xs text-gray-500">
-                    Sedang Diproses
-                </p>
-
-                <p class="mt-2 text-2xl font-black text-yellow-500">
-                    1
-                </p>
-
-            </div>
-
-
-            <div
-                class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-white/[0.03]"
-            >
-
-                <p class="text-xs text-gray-500">
-                    Selesai
-                </p>
-
-                <p class="mt-2 text-2xl font-black text-green-500">
-                    2
-                </p>
-
-            </div>
-
-        </div>
-
-
-
-        {{-- ================================================= --}}
-        {{-- FILTER --}}
-        {{-- ================================================= --}}
-
-        <div class="mt-8 flex flex-wrap gap-2">
-
-            <template
-                x-for="item in ['Semua', 'Diproses', 'Selesai', 'Dibatalkan']"
-                :key="item"
-            >
-
-                <button
-                    type="button"
-                    @click="filter = item"
-                    class="rounded-xl px-4 py-2.5 text-xs font-semibold transition"
-                    :class="
-                        filter === item
-                            ? 'bg-green-500 text-gray-950'
-                            : 'border border-gray-200 bg-white text-gray-500 hover:border-green-500 hover:text-green-500 dark:border-white/10 dark:bg-white/[0.03]'
-                    "
-                    x-text="item"
-                ></button>
-
-            </template>
-
-        </div>
-
-
-
-        {{-- ================================================= --}}
-        {{-- ORDER LIST --}}
-        {{-- ================================================= --}}
-
-        <div class="mt-5 space-y-4">
-
-
-            <template
-                x-for="order in filteredOrders"
-                :key="order.id"
-            >
-
-                <div
-                    class="rounded-2xl border border-gray-200 bg-white p-6 transition hover:border-green-500/30 dark:border-white/10 dark:bg-white/[0.03]"
-                >
-
-                    <div
-                        class="flex flex-col gap-5 md:flex-row md:items-center md:justify-between"
-                    >
-
-
-                        {{-- LEFT --}}
-
-                        <div class="flex items-center gap-4">
-
-                            <div
-                                class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-green-500/10 text-xl font-bold text-green-500"
-                            >
-                                T
-                            </div>
-
-
-                            <div>
-
-                                <div
-                                    class="flex flex-wrap items-center gap-2"
-                                >
-
-                                    <p
-                                        class="font-bold"
-                                        x-text="order.id"
-                                    >
-                                        #TRC-00125
-                                    </p>
-
-                                    <span
-                                        class="rounded-full bg-gray-100 px-2 py-1 text-[10px] font-semibold text-gray-500 dark:bg-white/5"
-                                        x-text="order.date"
-                                    >
-                                        10 Agustus 2026
+                                    <span class="text-gray-500">
+                                        × {{ $detail->jumlah_produk }}
                                     </span>
 
                                 </div>
 
+                            @endforeach
 
-                                <p
-                                    class="mt-1 text-sm text-gray-500"
-                                >
+                        </td>
 
-                                    <span x-text="order.product">
-                                        Pulpen Eco
+
+                        {{-- TOTAL --}}
+                        <td class="px-6 py-5 font-semibold">
+
+                            {{ number_format(
+                                $pesanan->total_poin,
+                                0,
+                                ',',
+                                '.'
+                            ) }}
+
+                            poin
+
+                        </td>
+
+
+                        {{-- TANGGAL --}}
+                        <td class="px-6 py-5 text-gray-500">
+
+                            {{ $pesanan->tanggal->format('d M Y') }}
+
+                        </td>
+
+
+                        {{-- STATUS --}}
+                        <td class="px-6 py-5">
+
+                            @if ($pesanan->status === 'menunggu')
+
+                                <span class="rounded-full bg-yellow-500/10 px-3 py-1 text-xs font-semibold text-yellow-600 dark:text-yellow-400">
+                                    Menunggu
+                                </span>
+
+                            @elseif ($pesanan->status === 'diproses')
+
+                                <div class="flex flex-col gap-2">
+
+                                    <span class="w-fit rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-600 dark:text-blue-400">
+                                        Diproses
                                     </span>
 
-                                    <span>
-                                        ·
-                                    </span>
+                                    @if ($pesanan->pembeli_id === auth()->user()->siswa->id)
 
-                                    <span>
-                                        Qty
-                                    </span>
+                                        <form
+                                            action="{{ route('siswa.pesanan.selesai', $pesanan) }}"
+                                            method="POST"
+                                        >
+                                            @csrf
+                                            @method('PATCH')
 
-                                    <span x-text="order.qty">
-                                        2
-                                    </span>
+                                            <button
+                                                type="submit"
+                                                class="rounded-lg bg-green-500 px-3 py-2 text-xs font-bold text-gray-950 transition hover:bg-green-400"
+                                                onclick="return confirm('Yakin pesanan ini sudah diterima?')"
+                                            >
+                                                Pesanan Diterima
+                                            </button>
+                                        </form>
 
-                                </p>
+                                    @endif
 
-                            </div>
+                                </div>
 
-                        </div>
+                            @elseif ($pesanan->status === 'selesai')
 
+                                <span class="rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-600 dark:text-green-400">
+                                    Selesai
+                                </span>
 
+                            @endif
 
-                        {{-- RIGHT --}}
+                        </td>
 
-                        <div
-                            class="flex items-center justify-between gap-6 md:justify-end"
+                    </tr>
+
+                @empty
+
+                    <tr>
+
+                        <td
+                            colspan="5"
+                            class="px-6 py-12 text-center text-sm text-gray-500"
                         >
+                            Belum ada pesanan sebagai pembeli.
+                        </td>
 
-                            <div class="text-left md:text-right">
+                    </tr>
 
-                                <p class="text-[10px] uppercase tracking-wider text-gray-400">
-                                    Total
-                                </p>
+                @endforelse
 
-                                <p
-                                    class="font-bold text-green-500"
-                                >
+            </tbody>
 
-                                    <span
-                                        x-text="order.total.toLocaleString('id-ID')"
-                                    >
-                                        2.000
-                                    </span>
-
-                                    poin
-
-                                </p>
-
-                            </div>
-
-
-                            {{-- STATUS --}}
-
-                            <span
-                                class="rounded-full px-3 py-1.5 text-xs font-semibold"
-                                :class="{
-                                    'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400':
-                                        order.status === 'Diproses',
-
-                                    'bg-green-500/10 text-green-600 dark:text-green-400':
-                                        order.status === 'Selesai',
-
-                                    'bg-red-500/10 text-red-600 dark:text-red-400':
-                                        order.status === 'Dibatalkan'
-                                }"
-                                x-text="order.status"
-                            >
-                                Diproses
-                            </span>
-
-
-                            <button
-                                type="button"
-                                class="rounded-xl border border-gray-200 px-4 py-2 text-xs font-semibold text-gray-600 transition hover:border-green-500 hover:text-green-500 dark:border-white/10 dark:text-gray-300"
-                            >
-                                Detail
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </template>
-
-
-            {{-- EMPTY --}}
-
-            <div
-                x-show="filteredOrders.length === 0"
-                class="rounded-2xl border border-dashed border-gray-300 py-16 text-center dark:border-white/10"
-            >
-
-                <p class="font-semibold">
-                    Belum ada pesanan
-                </p>
-
-                <p class="mt-1 text-sm text-gray-500">
-                    Pesanan dengan status ini belum tersedia.
-                </p>
-
-            </div>
-
-        </div>
-
-
-
-        {{-- INFO --}}
-
-        <div
-            class="mt-8 rounded-2xl border border-green-500/20 bg-green-500/5 p-5"
-        >
-
-            <div class="flex gap-4">
-
-                <div
-                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-500/10 font-bold text-green-500"
-                >
-                    i
-                </div>
-
-                <div>
-
-                    <p class="text-sm font-semibold">
-                        Informasi pesanan
-                    </p>
-
-                    <p class="mt-1 text-xs leading-5 text-gray-500">
-                        Pesanan akan diproses oleh admin setelah pembelian
-                        berhasil. Status pesanan dapat berubah sesuai
-                        proses pengambilan atau penyerahan produk.
-                    </p>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-    </main>
-
-
-
-    {{-- FOOTER --}}
-
-    <footer
-        class="mt-10 border-t border-gray-200 dark:border-white/10"
-    >
-
-        <div
-            class="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-8"
-        >
-
-            <p class="text-xs text-gray-500">
-                © {{ date('Y') }} Tercycle
-            </p>
-
-            <p class="text-xs text-gray-500">
-                Bank Sampah Digital
-            </p>
-
-        </div>
-
-    </footer>
-
-</div>
-
-{{-- ========================================================= --}}
-{{-- MODAL KONFIRMASI LOGOUT --}}
-{{-- ========================================================= --}}
-
-<div
-    x-show="logoutModal"
-    x-transition.opacity
-    x-effect="document.body.style.overflow = logoutModal ? 'hidden' : ''"
-    class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
-    style="display: none;"
->
-    {{-- BACKDROP --}}
-    <div
-        class="absolute inset-0 bg-black/50 backdrop-blur-md"
-        @click="logoutModal = false"
-    ></div>
-
-
-    {{-- MODAL --}}
-    <div
-        x-show="logoutModal"
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0 scale-95"
-        x-transition:enter-end="opacity-100 scale-100"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100 scale-100"
-        x-transition:leave-end="opacity-0 scale-95"
-        @click.stop
-        class="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900"
-    >
-
-        {{-- ICON --}}
-        <div class="flex justify-center">
-
-            <div
-                class="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 text-red-500"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-6 w-6"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"
-                    />
-
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="m10 17 5-5-5-5m5 5H3"
-                    />
-                </svg>
-            </div>
-
-        </div>
-
-
-        {{-- TEXT --}}
-        <div class="mt-4 text-center">
-
-            <h2 class="text-lg font-bold">
-                Yakin mau logout?
-            </h2>
-
-            <p class="mt-2 text-sm text-gray-500">
-                Kamu akan keluar dari akun dan harus login kembali.
-            </p>
-
-        </div>
-
-
-        {{-- BUTTON --}}
-        <div class="mt-6 grid grid-cols-2 gap-3">
-
-            {{-- BATAL --}}
-            <button
-                type="button"
-                @click="logoutModal = false"
-                class="rounded-xl border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
-            >
-                Batal
-            </button>
-
-
-            {{-- LOGOUT --}}
-            <form
-                action="/logout"
-                method="POST"
-            >
-                @csrf
-
-                <button
-                    type="submit"
-                    class="w-full rounded-xl bg-red-500 px-4 py-3 text-sm font-bold text-white transition hover:bg-red-600"
-                >
-                    Logout
-                </button>
-
-            </form>
-
-        </div>
+        </table>
 
     </div>
 
 </div>
-</body>
-</html>
+
+
+
+{{-- ========================================================= --}}
+{{-- SEBAGAI PENJUAL --}}
+{{-- ========================================================= --}}
+
+<div class="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/10 dark:bg-white/[0.03]">
+
+    <div class="border-b border-gray-200 px-6 py-5 dark:border-white/10">
+
+        <h2 class="font-bold">
+            Pesanan Masuk
+        </h2>
+
+        <p class="mt-1 text-xs text-gray-500">
+            Pesanan dari siswa yang membeli produk kamu.
+        </p>
+
+    </div>
+
+
+    <div class="overflow-x-auto">
+
+        <table class="w-full text-left text-sm">
+
+            <thead class="border-b border-gray-200 text-xs uppercase text-gray-500 dark:border-white/10">
+
+                <tr>
+
+                    <th class="px-6 py-4">
+                        Pesanan
+                    </th>
+
+                    <th class="px-6 py-4">
+                        Pembeli
+                    </th>
+
+                    <th class="px-6 py-4">
+                        Produk
+                    </th>
+
+                    <th class="px-6 py-4">
+                        Total
+                    </th>
+
+                    <th class="px-6 py-4">
+                        Tanggal
+                    </th>
+
+                    <th class="px-6 py-4">
+                        Status
+                    </th>
+
+                    <th class="px-6 py-4">
+                        Aksi
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody class="divide-y divide-gray-200 dark:divide-white/10">
+
+                @forelse ($pesanansPenjual as $pesanan)
+
+                    <tr>
+
+                        {{-- ID --}}
+                        <td class="px-6 py-5 font-semibold">
+                            #{{ $pesanan->id }}
+                        </td>
+
+
+                        {{-- PEMBELI --}}
+                        <td class="px-6 py-5">
+
+                            <div class="font-semibold">
+                                {{ $pesanan->pembeli->nama_lengkap ?? '-' }}
+                            </div>
+
+                            <div class="text-xs text-gray-500">
+                                {{ $pesanan->pembeli->nis ?? '-' }}
+                            </div>
+
+                        </td>
+
+
+                        {{-- PRODUK --}}
+                        <td class="px-6 py-5">
+
+                            @foreach ($pesanan->detailPesanan as $detail)
+
+                                @if ($detail->penjual_id == auth()->user()->siswa->id)
+
+                                    <div>
+
+                                        {{ $detail->nama_produk }}
+
+                                        <span class="text-gray-500">
+                                            × {{ $detail->jumlah_produk }}
+                                        </span>
+
+                                    </div>
+
+                                @endif
+
+                            @endforeach
+
+                        </td>
+
+
+                        {{-- TOTAL --}}
+                        <td class="px-6 py-5 font-semibold">
+
+                            {{ number_format(
+                                $pesanan->total_poin,
+                                0,
+                                ',',
+                                '.'
+                            ) }}
+
+                            poin
+
+                        </td>
+
+
+                        {{-- TANGGAL --}}
+                        <td class="px-6 py-5 text-gray-500">
+
+                            {{ $pesanan->tanggal->format('d M Y') }}
+
+                        </td>
+
+
+                        {{-- STATUS --}}
+                        <td class="px-6 py-5">
+
+                            @if ($pesanan->status === 'menunggu')
+
+                                <span class="rounded-full bg-yellow-500/10 px-3 py-1 text-xs font-semibold text-yellow-600 dark:text-yellow-400">
+                                    Menunggu
+                                </span>
+
+                            @elseif ($pesanan->status === 'diproses')
+
+                                <span class="rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-600 dark:text-blue-400">
+                                    Diproses
+                                </span>
+
+                            @elseif ($pesanan->status === 'selesai')
+
+                                <span class="rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-600 dark:text-green-400">
+                                    Selesai
+                                </span>
+
+                            @endif
+
+                        </td>
+
+
+                        {{-- AKSI --}}
+                        <td class="px-6 py-5">
+
+                            @if ($pesanan->status === 'menunggu')
+
+                                <form
+                                    action="{{ route('siswa.pesanan.process', $pesanan->id) }}"
+                                    method="POST"
+                                >
+
+                                    @csrf
+                                    @method('PATCH')
+
+                                    <button
+                                        type="submit"
+                                        class="rounded-xl bg-green-500 px-4 py-2 text-xs font-bold text-gray-950 transition hover:bg-green-400"
+                                    >
+                                        Proses
+                                    </button>
+
+                                </form>
+
+                            @elseif ($pesanan->status === 'diproses')
+
+                                <span class="text-xs font-semibold text-blue-500">
+                                    Menunggu pembeli
+                                </span>
+
+                            @else
+
+                                <span class="text-xs font-semibold text-green-500">
+                                    Selesai
+                                </span>
+
+                            @endif
+
+                        </td>
+
+                    </tr>
+
+                @empty
+
+                    <tr>
+
+                        <td
+                            colspan="7"
+                            class="px-6 py-12 text-center text-sm text-gray-500"
+                        >
+                            Belum ada pesanan untuk produk kamu.
+                        </td>
+
+                    </tr>
+
+                @endforelse
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+@endsection

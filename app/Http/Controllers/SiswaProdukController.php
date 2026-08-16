@@ -13,13 +13,27 @@ class SiswaProdukController extends Controller
         $siswa = $request->user()->siswa;
 
         $produk = Produk::with('kategoriProduk')
+        ->where('siswa_id', '!=', $siswa->id)
         ->where('status', 'tersedia')
+        ->where('status_approval', 'disetujui')
         ->latest()
         ->get();
 
         $kategori = KategoriProduk::orderBy('nama_kategori')->get();
 
         return view('siswa.produk', compact('produk', 'kategori'));
+    }
+
+    public function produkSaya(Request $request)
+    {
+        $siswa = $request->user()->siswa;
+
+        $produks = Produk::with('kategoriProduk')
+            ->where('siswa_id', $siswa->id)
+            ->latest()
+            ->get();
+
+        return view('siswa.produk-saya', compact('produks'));
     }
 
     public function store(Request $request)
@@ -71,7 +85,8 @@ class SiswaProdukController extends Controller
             'harga_poin' => $data['harga_poin'],
             'stok' => $data['stok'],
             'gambar' => $data['gambar'] ?? null,
-            'status' => 'tersedia',
+            'status' => 'tidak tersedia',
+            'status_approval' => 'menunggu',
         ]);
 
         return redirect()

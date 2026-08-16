@@ -1,26 +1,16 @@
-<!DOCTYPE html>
-<html
-    lang="id"
+@extends('layouts.siswa.app')
+
+@section('title', 'Produk - Tercycle')
+
+@section('topbar-subtitle', 'Marketplace')
+
+@section('topbar-title', 'Produk Tercycle')
+
+@section('content')
+
+<div
     x-data="{
-        dark: localStorage.getItem('theme') !== 'light',
-        sidebarOpen: false,
-        logoutModal: false,
         productModal: false,
-
-        toggleTheme() {
-            this.dark = !this.dark;
-
-            localStorage.setItem(
-                'theme',
-                this.dark ? 'dark' : 'light'
-            );
-
-            document.documentElement.classList.toggle(
-                'dark',
-                this.dark
-            );
-        },
-
         search: '',
         category: 'Semua',
 
@@ -37,15 +27,9 @@
                 ];
             })
         ),
-        filteredProducts: [],
-
-        init() {
-            this.filteredProducts = this.products;
-        },
 
         get filteredProducts() {
             return this.products.filter(product => {
-
                 const matchSearch =
                     product.name
                         .toLowerCase()
@@ -59,765 +43,209 @@
             });
         }
     }"
-    :class="{ 'dark': dark }"
 >
 
-<head>
+    {{-- HEADER --}}
 
-    <meta charset="UTF-8">
+    <div class="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+        <div>
+            <h2 class="text-2xl font-black">
+                Tukarkan Poinmu
+            </h2>
 
-    <title>Produk - Tercycle</title>
+            <p class="mt-1 text-sm text-gray-500">
+                Gunakan poin yang kamu kumpulkan untuk mendapatkan
+                produk ramah lingkungan.
+            </p>
+        </div>
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <script
-        defer
-        src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
-    ></script>
-
-</head>
-
-
-<body
-    class="min-h-screen bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-950 dark:text-white"
->
-
-
-{{-- ========================================================= --}}
-{{-- SIDEBAR --}}
-{{-- ========================================================= --}}
-
-<aside
-    class="fixed inset-y-0 left-0 z-50 w-64 border-r border-gray-200 bg-white transition-transform duration-300 dark:border-white/10 dark:bg-gray-950 lg:block"
-    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
->
-
-    <div class="flex h-full flex-col">
-
-        {{-- LOGO --}}
-
-        <div
-            class="flex h-20 items-center border-b border-gray-200 px-6 dark:border-white/10"
+        <button
+            type="button"
+            @click="productModal = true"
+            class="inline-flex items-center gap-2 rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950 transition hover:bg-green-400"
         >
-            <a
-                href="/siswa/dashboard"
-                class="flex items-center gap-3"
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                class="h-5 w-5"
             >
-                <div
-                    class="flex h-10 w-10 items-center justify-center rounded-xl bg-green-500 font-black text-gray-950"
-                >
-                    T
-                </div>
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 5v14M5 12h14"
+                />
+            </svg>
 
-                <span class="text-xl font-bold">
-                    Ter<span class="text-green-500">cycle</span>
-                </span>
-            </a>
+            Tambah Produk
+        </button>
+
+    </div>
+
+
+    {{-- SEARCH & CATEGORY --}}
+
+    <div class="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
+        <div class="relative w-full sm:max-w-md">
+
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.8"
+                stroke="currentColor"
+                class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="m21 21-4.35-4.35m1.35-5.65a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
+                />
+            </svg>
+
+            <input
+                type="text"
+                x-model="search"
+                placeholder="Cari produk..."
+                class="w-full rounded-xl border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/10 dark:border-white/10 dark:bg-white/[0.03]"
+            >
+
         </div>
 
 
-        {{-- NAVIGATION --}}
+        <div class="flex gap-2 overflow-x-auto">
 
-        <nav class="flex-1 space-y-1 px-4 py-6">
-
-            <p
-                class="mb-3 px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400"
-            >
-                Menu
-            </p>
-
-
-            {{-- DASHBOARD --}}
-
-            <a
-                href="/siswa/dashboard"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
+            <template
+                x-for="item in ['Semua', 'Alat Tulis', 'Perlengkapan', 'Fashion', 'Aksesoris']"
+                :key="item"
             >
 
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M3 13h8V3H3v10Zm10 8h8V11h-8v10ZM3 21h8v-6H3v6Zm10-18v6h8V3h-8Z"
-                    />
-                </svg>
+                <button
+                    type="button"
+                    @click="category = item"
+                    class="whitespace-nowrap rounded-xl px-4 py-2.5 text-xs font-semibold transition"
+                    :class="
+                        category === item
+                            ? 'bg-green-500 text-gray-950'
+                            : 'border border-gray-200 bg-white text-gray-500 hover:border-green-500 hover:text-green-500 dark:border-white/10 dark:bg-white/[0.03]'
+                    "
+                    x-text="item"
+                ></button>
 
-                Dashboard
+            </template>
 
-            </a>
-
-
-            {{-- POIN --}}
-
-            <a
-                href="/siswa/poin"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
-            >
-
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <circle
-                        cx="12"
-                        cy="12"
-                        r="9"
-                    />
-
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M12 7v5l3 2"
-                    />
-                </svg>
-
-                Riwayat Poin
-
-            </a>
-
-
-            {{-- SETOR BOTOL --}}
-
-            <a
-                href="/siswa/tukar"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
-            >
-
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M7 3h10M8 3v4l-2 3v8a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3v-8l-2-3V3"
-                    />
-                </svg>
-
-                Setor Botol
-
-            </a>
-
-
-            {{-- PRODUK ACTIVE --}}
-
-            <a
-                href="/siswa/produk"
-                class="flex items-center gap-3 rounded-xl bg-green-500/10 px-3 py-3 text-sm font-semibold text-green-500"
-            >
-
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M20 7 12 3 4 7m16 0-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                    />
-                </svg>
-
-                Produk
-
-            </a>
-
-
-            {{-- PESANAN --}}
-
-            <a
-                href="/siswa/pesanan"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
-            >
-
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M3 7h18M5 7v12h14V7M8 7V5a4 4 0 0 1 8 0v2"
-                    />
-                </svg>
-
-                Pesanan
-
-            </a>
-
-
-            <p
-                class="mb-3 mt-8 px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400"
-            >
-                Account
-            </p>
-
-
-            {{-- PROFIL --}}
-
-            <a
-                href="/siswa/profil"
-                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white"
-            >
-
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M15 19a6 6 0 0 0-12 0m6-8a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"
-                    />
-                </svg>
-
-                Profil
-
-            </a>
-
-        </nav>
-
-
-        {{-- USER --}}
-
-        <div
-            class="border-t border-gray-200 p-4 dark:border-white/10"
-        >
-            <div class="flex items-center gap-3">
-
-                {{-- AVATAR --}}
-                <div
-                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-500 font-bold text-gray-950"
-                >
-                    K
-                </div>
-
-                {{-- NAMA --}}
-                <div class="min-w-0 flex-1">
-
-                    <p class="truncate text-sm font-semibold">
-                        Kevin
-                    </p>
-
-                    <p class="text-xs text-gray-500">
-                        Siswa
-                    </p>
-
-                </div>
-
-                {{-- LOGOUT ICON --}}
-                <form
-                    action="/logout"
-                    method="POST"
-                >
-                    @csrf
-
-                    <button
-                        type="button"
-                        @click="logoutModal = true"
-                        class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition hover:bg-red-500/10 hover:text-red-500"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke-width="1.8"
-                            stroke="currentColor"
-                            class="h-5 w-5"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M15 12H3m0 0 4-4m-4 4 4 4M15 4h3a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-3"
-                            />
-                        </svg>
-                    </button>
-
-                </form>
-
-            </div>
         </div>
 
     </div>
 
-</aside>
 
-<div
-    x-show="sidebarOpen"
-    x-transition.opacity
-    @click="sidebarOpen = false"
-    class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
-    style="display: none;"
-></div>
+    {{-- PRODUCT GRID --}}
 
+    <div class="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
 
-
-<!-- MOBILE HEADER -->
-<header
-    class="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-5 dark:border-white/10 dark:bg-gray-950 lg:hidden"
->
-
-    <!-- HAMBURGER -->
-    <button
-        type="button"
-        @click="sidebarOpen = true"
-        class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:border-green-500 hover:text-green-500 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
-        aria-label="Buka menu"
-    >
-
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.8"
-            stroke="currentColor"
-            class="h-5 w-5"
+        <template
+            x-for="product in filteredProducts"
+            :key="product.id"
         >
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M4 6h16M4 12h16M4 18h16"
-            />
-        </svg>
-
-    </button>
-
-
-    <!-- LOGO -->
-
-    <a
-        href="/siswa/dashboard"
-        class="flex items-center gap-2"
-    >
-
-        <div
-            class="flex h-9 w-9 items-center justify-center rounded-lg bg-green-500 font-black text-gray-950"
-        >
-            T
-        </div>
-
-        <span class="font-bold">
-            Ter<span class="text-green-500">cycle</span>
-        </span>
-
-    </a>
-
-
-    <!-- THEME -->
-
-    <button
-        type="button"
-        @click="toggleTheme()"
-        class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
-    >
-
-        <svg
-            x-show="dark"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.8"
-            stroke="currentColor"
-            class="h-5 w-5"
-        >
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M12 3v2m0 14v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M3 12h2m14 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"
-            />
-        </svg>
-
-        <svg
-            x-show="!dark"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.8"
-            stroke="currentColor"
-            class="h-5 w-5"
-        >
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"
-            />
-        </svg>
-
-    </button>
-
-</header>
-
-
-{{-- ========================================================= --}}
-{{-- MAIN --}}
-{{-- ========================================================= --}}
-
-<div class="lg:pl-64">
-
-
-    {{-- TOPBAR --}}
-
-    <header
-        class="sticky top-0 z-30 hidden h-20 items-center justify-between border-b border-gray-200 bg-white/90 px-6 backdrop-blur-xl dark:border-white/10 dark:bg-gray-950/90 lg:flex lg:px-8"
-    >
-
-        <div>
-
-            <p class="text-sm font-medium text-gray-500">
-                Marketplace
-            </p>
-
-            <h1 class="font-bold">
-                Produk Tercycle
-            </h1>
-
-        </div>
-
-
-        <div class="flex items-center gap-4">
-
-            {{-- SALDO --}}
 
             <div
-                class="rounded-xl bg-green-500/10 px-4 py-2"
+                class="group overflow-hidden rounded-2xl border border-gray-200 bg-white transition duration-300 hover:-translate-y-1 hover:border-green-500/30 hover:shadow-lg hover:shadow-green-500/5 dark:border-white/10 dark:bg-white/[0.03]"
             >
 
-                <p class="text-[10px] uppercase tracking-wide text-gray-500">
-                    Saldo
-                </p>
-
-                <p class="text-sm font-bold text-green-500">
-                    12.500 poin
-                </p>
-
-            </div>
-
-
-            <div class="flex items-center gap-2">
-
-            {{-- KERANJANG --}}
-            <a
-                href="/siswa/keranjang"
-                class="relative flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
-                title="Keranjang"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M2.25 3h1.386a1.5 1.5 0 0 1 1.46 1.15L5.42 6m0 0h14.33a1.5 1.5 0 0 1 1.46 1.85l-1.05 4.5a1.5 1.5 0 0 1-1.46 1.15H8.25a1.5 1.5 0 0 1-1.46-1.15L5.42 6Z"
-                    />
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M8.25 18.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm9 0a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"
-                    />
-                </svg>
-
-                {{-- BADGE JUMLAH --}}
-                <span
-                    class="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white"
-                >
-                    0
-                </span>
-            </a>
-
-            {{-- THEME BUTTON --}}
-            <button
-                type="button"
-                @click="toggleTheme()"
-                class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
-            >
-
-                <svg
-                    x-show="dark"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M12 3v2m0 14v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M3 12h2m14 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"
-                    />
-                </svg>
-
-                <svg
-                    x-show="!dark"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"
-                    />
-                </svg>
-
-            </button>
-
-        </div>
-
-        </div>
-
-    </header>
-
-
-
-    {{-- CONTENT --}}
-
-    <main class="mx-auto max-w-7xl px-6 py-8 lg:px-8">
-
-
-        {{-- HEADER --}}
-
-        <div
-            class="flex flex-col justify-between gap-5 sm:flex-row sm:items-center"
-        >
-
-            <div>
-
-                <h2 class="text-2xl font-black">
-                    Tukarkan Poinmu
-                </h2>
-
-                <p class="mt-1 text-sm text-gray-500">
-                    Gunakan poin yang kamu kumpulkan untuk mendapatkan produk ramah lingkungan.
-                </p>
-
-            </div>
-
-
-            <button
-                type="button"
-                @click="productModal = true"
-                class="inline-flex items-center gap-2 rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950 transition hover:bg-green-400"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M12 5v14M5 12h14"
-                    />
-                </svg>
-
-                Tambah Produk
-            </button>
-
-        </div>
-
-
-
-        {{-- ================================================= --}}
-        {{-- SEARCH --}}
-        {{-- ================================================= --}}
-
-        <div
-            class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
-        >
-
-            {{-- SEARCH BOX --}}
-
-            <div class="relative w-full sm:max-w-md">
-
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="m21 21-4.35-4.35m1.35-5.65a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
-                    />
-                </svg>
-
-                <input
-                    type="text"
-                    x-model="search"
-                    placeholder="Cari produk..."
-                    class="w-full rounded-xl border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/10 dark:border-white/10 dark:bg-white/[0.03]"
-                >
-
-            </div>
-
-
-            {{-- CATEGORY --}}
-
-            <div class="flex gap-2 overflow-x-auto">
-
-                <template
-                    x-for="item in ['Semua', 'Alat Tulis', 'Perlengkapan', 'Fashion', 'Aksesoris']"
-                    :key="item"
-                >
-
-                    <button
-                        type="button"
-                        @click="category = item"
-                        class="whitespace-nowrap rounded-xl px-4 py-2.5 text-xs font-semibold transition"
-                        :class="
-                            category === item
-                                ? 'bg-green-500 text-gray-950'
-                                : 'border border-gray-200 bg-white text-gray-500 hover:border-green-500 hover:text-green-500 dark:border-white/10 dark:bg-white/[0.03]'
-                        "
-                        x-text="item"
-                    ></button>
-
-                </template>
-
-            </div>
-
-        </div>
-
-
-
-        {{-- ================================================= --}}
-        {{-- PRODUCT GRID --}}
-        {{-- ================================================= --}}
-
-        <div
-            class="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3"
-        >
-
-            <template
-                x-for="product in filteredProducts"
-                :key="product.id"
-            >
+                {{-- IMAGE --}}
 
                 <div
-                    class="group overflow-hidden rounded-2xl border border-gray-200 bg-white transition duration-300 hover:-translate-y-1 hover:border-green-500/30 hover:shadow-lg hover:shadow-green-500/5 dark:border-white/10 dark:bg-white/[0.03]"
+                    class="flex h-48 items-center justify-center overflow-hidden bg-gray-100 dark:bg-white/5"
                 >
 
+                    <template x-if="product.image">
 
-                    {{-- IMAGE PLACEHOLDER --}}
+                        <img
+                            :src="'/storage/' + product.image"
+                            :alt="product.name"
+                            class="h-full w-full object-cover"
+                        >
 
-                    <div
-                        class="flex h-48 items-center justify-center overflow-hidden bg-gray-100 dark:bg-white/5"
-                    >
-                        <template x-if="product.image">
-                            <img
-                                :src="'/storage/' + product.image"
-                                :alt="product.name"
-                                class="h-full w-full object-cover"
-                            >
-                        </template>
+                    </template>
 
-                        <template x-if="!product.image">
-                            <span class="text-6xl text-gray-400">
-                                📦
-                            </span>
-                        </template>
+                    <template x-if="!product.image">
+
+                        <span class="text-6xl text-gray-400">
+                            📦
+                        </span>
+
+                    </template>
+
+                </div>
+
+
+                {{-- INFO --}}
+
+                <div class="p-5">
+
+                    <div class="flex items-start justify-between gap-3">
+
+                        <div>
+
+                            <p
+                                class="text-[11px] font-semibold uppercase tracking-wider text-green-500"
+                                x-text="product.category"
+                            ></p>
+
+                            <h3
+                                class="mt-1 font-bold"
+                                x-text="product.name"
+                            ></h3>
+
+                        </div>
+
+                        <span class="rounded-full bg-gray-100 px-2.5 py-1 text-[10px] font-semibold text-gray-500 dark:bg-white/5">
+                            Stok
+                            <span x-text="product.stock"></span>
+                        </span>
+
                     </div>
 
-                    {{-- PRODUCT INFO --}}
 
-                    <div class="p-5">
+                    <div class="mt-5 flex items-end justify-between">
 
-                        <div class="flex items-start justify-between gap-3">
+                        <div>
 
-                            <div>
+                            <p class="text-[11px] text-gray-400">
+                                Harga
+                            </p>
 
-                                <p
-                                    class="text-[11px] font-semibold uppercase tracking-wider text-green-500"
-                                    x-text="product.category"
-                                >
-                                </p>
+                            <p class="text-xl font-black text-green-500">
 
-                                <h3
-                                    class="mt-1 font-bold"
-                                    x-text="product.name"
-                                >
-                                </h3>
+                                <span
+                                    x-text="product.price.toLocaleString('id-ID')"
+                                ></span>
 
-                            </div>
+                                <span class="text-xs font-semibold">
+                                    poin
+                                </span>
 
-
-                            <span class="rounded-full bg-gray-100 px-2.5 py-1 text-[10px] font-semibold text-gray-500 dark:bg-white/5">
-                                Stok
-                                <span x-text="product.stock"></span>
-                            </span>
+                            </p>
 
                         </div>
 
 
-                        <div class="mt-5 flex items-end justify-between">
-                            <div>
-                                <p class="text-[11px] text-gray-400">Harga</p>
+                        <div class="flex gap-2">
 
-                                <p class="text-xl font-black text-green-500">
-                                    <span x-text="product.price.toLocaleString('id-ID')"></span>
-                                    <span class="text-xs font-semibold">poin</span>
-                                </p>
-                            </div>
-
-                            <div class="flex gap-2">
-                                <button type="button" class="rounded-xl bg-gray-100 px-4 py-2.5 text-xs font-bold text-gray-950 transition hover:bg-green-400">
+                            <form :action="`{{ route('siswa.keranjang.store', ['produk' => '__ID__']) }}`.replace('__ID__', product.id)" method="POST">
+                                @csrf
+                                <button type="submit" class="rounded-xl bg-gray-100 px-4 py-2.5 text-xs font-bold text-gray-950 transition hover:bg-green-400">
                                     + Keranjang
                                 </button>
+                            </form>
 
-
-                                <button
-                                    type="button"
-                                    class="rounded-xl bg-green-500 px-4 py-2.5 text-xs font-bold text-gray-950 transition hover:bg-green-400"
-                                >
-                                    Beli
-                                </button>
-                            </div>
+                            <button type="button" class="rounded-xl bg-green-500 px-4 py-2.5 text-xs font-bold text-gray-950 transition hover:bg-green-400">
+                                Beli
+                            </button>
 
                         </div>
 
@@ -825,227 +253,178 @@
 
                 </div>
 
-            </template>
+            </div>
+
+        </template>
 
 
-            {{-- EMPTY --}}
+        {{-- EMPTY --}}
 
-            <div
-                x-show="filteredProducts.length === 0"
-                class="col-span-full rounded-2xl border border-dashed border-gray-300 py-16 text-center dark:border-white/10"
-            >
+        <div
+            x-show="filteredProducts.length === 0"
+            class="col-span-full rounded-2xl border border-dashed border-gray-300 py-16 text-center dark:border-white/10"
+        >
 
-                <p class="font-semibold">
-                    Produk tidak ditemukan
+            <p class="font-semibold">
+                Produk tidak ditemukan
+            </p>
+
+            <p class="mt-1 text-sm text-gray-500">
+                Coba gunakan kata pencarian lain.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    {{-- INFO --}}
+
+    <div class="mt-8 rounded-2xl border border-green-500/20 bg-green-500/5 p-5">
+
+        <div class="flex gap-4">
+
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-500/10 font-bold text-green-500">
+                i
+            </div>
+
+            <div>
+
+                <p class="text-sm font-semibold">
+                    Cara membeli produk
                 </p>
 
-                <p class="mt-1 text-sm text-gray-500">
-                    Coba gunakan kata pencarian lain.
+                <p class="mt-1 text-xs leading-5 text-gray-500">
+                    Pilih produk yang kamu inginkan, pastikan saldo
+                    poin mencukupi, lalu lakukan pembelian. Poin akan
+                    otomatis dipotong setelah pesanan berhasil dibuat.
                 </p>
 
             </div>
 
         </div>
 
+    </div>
 
 
-        {{-- ================================================= --}}
-        {{-- INFO --}}
-        {{-- ================================================= --}}
+    {{-- MODAL TAMBAH PRODUK --}}
 
-        <div
-            class="mt-8 rounded-2xl border border-green-500/20 bg-green-500/5 p-5"
-        >
-
-            <div class="flex gap-4">
-
-                <div
-                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-500/10 font-bold text-green-500"
-                >
-                    i
-                </div>
-
-                <div>
-
-                    <p class="text-sm font-semibold">
-                        Cara membeli produk
-                    </p>
-
-                    <p class="mt-1 text-xs leading-5 text-gray-500">
-                        Pilih produk yang kamu inginkan, pastikan saldo
-                        poin mencukupi, lalu lakukan pembelian. Poin akan
-                        otomatis dipotong setelah pesanan berhasil dibuat.
-                    </p>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-    </main>
-
-
-
-    {{-- FOOTER --}}
-
-    <footer
-        class="mt-10 border-t border-gray-200 dark:border-white/10"
-    >
-
-        <div
-            class="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-8"
-        >
-
-            <p class="text-xs text-gray-500">
-                © {{ date('Y') }} Tercycle
-            </p>
-
-            <p class="text-xs text-gray-500">
-                Bank Sampah Digital
-            </p>
-
-        </div>
-
-    </footer>
-
-</div>
-
-{{-- ========================================================= --}}
-{{-- MODAL TAMBAH PRODUK --}}
-{{-- ========================================================= --}}
-
-<div
-    x-show="productModal"
-    x-transition.opacity
-    x-effect="document.body.style.overflow = productModal ? 'hidden' : ''"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-    style="display: none;"
->
-    {{-- BACKDROP --}}
-    <div
-        class="absolute inset-0 bg-black/50 backdrop-blur-md"
-        @click="productModal = false"
-    ></div>
-
-
-    {{-- MODAL --}}
     <div
         x-show="productModal"
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0 scale-95"
-        x-transition:enter-end="opacity-100 scale-100"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100 scale-100"
-        x-transition:leave-end="opacity-0 scale-95"
-        @click.stop
-        class="no-scrollbar relative max-h-[85vh] w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl bg-white p-4 shadow-2xl dark:bg-gray-900 sm:p-5"
+        x-transition.opacity
+        x-effect="document.body.style.overflow = productModal ? 'hidden' : ''"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+        style="display: none;"
     >
 
-        {{-- HEADER --}}
         <div
-            class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10"
+            class="absolute inset-0 bg-black/50 backdrop-blur-md"
+            @click="productModal = false"
+        ></div>
+
+
+        <div
+            x-show="productModal"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+            @click.stop
+            class="no-scrollbar relative max-h-[85vh] w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl bg-white p-4 shadow-2xl dark:bg-gray-900 sm:p-5"
         >
 
-            <div>
-                <h2 class="text-lg font-bold">
-                    Tambah Produk
-                </h2>
+            <div class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10">
 
-                <p class="mt-1 text-xs text-gray-500">
-                    Masukkan informasi produk yang ingin dijual.
-                </p>
-            </div>
-
-
-            {{-- CLOSE --}}
-            <button
-                type="button"
-                @click="productModal = false"
-                class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-5 w-5"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M6 18 18 6M6 6l12 12"
-                    />
-                </svg>
-            </button>
-
-        </div>
-
-
-        {{-- FORM --}}
-        <form
-            action="{{ route('siswa.produk.store') }}"
-            method="POST"
-            enctype="multipart/form-data"
-            class="p-6"
-        >
-
-            @csrf
-
-
-            {{-- NAMA PRODUK --}}
-            <div>
-                <label
-                    for="nama_produk"
-                    class="mb-2 block text-sm font-semibold"
-                >
-                    Nama Produk
-                </label>
-
-                <input
-                    type="text"
-                    id="nama_produk"
-                    name="nama_produk"
-                    placeholder="Contoh: Tumbler Eco"
-                    class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                >
-            </div>
-
-
-            {{-- DESKRIPSI --}}
-            <div class="mt-5">
-                <label
-                    for="deskripsi"
-                    class="mb-2 block text-sm font-semibold"
-                >
-                    Deskripsi
-                </label>
-
-                <textarea
-                    id="deskripsi"
-                    name="deskripsi"
-                    rows="3"
-                    placeholder="Deskripsi singkat produk..."
-                    class="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                ></textarea>
-            </div>
-
-
-            {{-- HARGA + STOK --}}
-            <div class="mt-5 grid gap-4 sm:grid-cols-2">
-
-                {{-- HARGA --}}
                 <div>
+
+                    <h2 class="text-lg font-bold">
+                        Tambah Produk
+                    </h2>
+
+                    <p class="mt-1 text-xs text-gray-500">
+                        Masukkan informasi produk yang ingin dijual.
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    @click="productModal = false"
+                    class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white"
+                >
+                    ✕
+                </button>
+
+            </div>
+
+
+            <form
+                action="{{ route('siswa.produk.store') }}"
+                method="POST"
+                enctype="multipart/form-data"
+                class="p-6"
+            >
+
+                @csrf
+
+                {{-- NAMA --}}
+
+                <div>
+
                     <label
-                        for="harga_poin"
+                        for="nama_produk"
                         class="mb-2 block text-sm font-semibold"
                     >
-                        Harga Poin
+                        Nama Produk
                     </label>
 
-                    <div class="relative">
+                    <input
+                        type="text"
+                        id="nama_produk"
+                        name="nama_produk"
+                        placeholder="Contoh: Tumbler Eco"
+                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                    >
+
+                </div>
+
+
+                {{-- DESKRIPSI --}}
+
+                <div class="mt-5">
+
+                    <label
+                        for="deskripsi"
+                        class="mb-2 block text-sm font-semibold"
+                    >
+                        Deskripsi
+                    </label>
+
+                    <textarea
+                        id="deskripsi"
+                        name="deskripsi"
+                        rows="3"
+                        placeholder="Deskripsi singkat produk..."
+                        class="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                    ></textarea>
+
+                </div>
+
+
+                {{-- HARGA + STOK --}}
+
+                <div class="mt-5 grid gap-4 sm:grid-cols-2">
+
+                    <div>
+
+                        <label
+                            for="harga_poin"
+                            class="mb-2 block text-sm font-semibold"
+                        >
+                            Harga Poin
+                        </label>
 
                         <input
                             type="number"
@@ -1053,234 +432,118 @@
                             name="harga_poin"
                             min="1"
                             placeholder="5000"
-                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 pr-16 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
                         >
-
-                        <span
-                            class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400"
-                        >
-                            poin
-                        </span>
 
                     </div>
+
+
+                    <div>
+
+                        <label
+                            for="stok"
+                            class="mb-2 block text-sm font-semibold"
+                        >
+                            Stok
+                        </label>
+
+                        <input
+                            type="number"
+                            id="stok"
+                            name="stok"
+                            min="0"
+                            placeholder="10"
+                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                        >
+
+                    </div>
+
                 </div>
 
 
-                {{-- STOK --}}
-                <div>
+                {{-- KATEGORI --}}
+
+                <div class="mt-5">
+
                     <label
-                        for="stok"
+                        for="kategori_produk_id"
                         class="mb-2 block text-sm font-semibold"
                     >
-                        Stok
+                        Kategori
+                    </label>
+
+                    <select
+                        id="kategori_produk_id"
+                        name="kategori_produk_id"
+                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                    >
+
+                        <option value="">
+                            Pilih kategori
+                        </option>
+
+                        @foreach ($kategori as $item)
+
+                            <option value="{{ $item->id }}">
+                                {{ $item->nama_kategori }}
+                            </option>
+
+                        @endforeach
+
+                    </select>
+
+                </div>
+
+
+                {{-- GAMBAR --}}
+
+                <div class="mt-5">
+
+                    <label
+                        for="gambar"
+                        class="mb-2 block text-sm font-semibold"
+                    >
+                        Gambar Produk
                     </label>
 
                     <input
-                        type="number"
-                        id="stok"
-                        name="stok"
-                        min="0"
-                        placeholder="10"
-                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
+                        type="file"
+                        id="gambar"
+                        name="gambar"
+                        accept="image/*"
+                        class="block w-full cursor-pointer rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-500 file:mr-4 file:border-0 file:bg-green-500 file:px-4 file:py-3 file:font-semibold file:text-gray-950 hover:file:bg-green-400 dark:border-white/10 dark:bg-gray-950"
                     >
+
+                    <p class="mt-2 text-xs text-gray-400">
+                        Format JPG, PNG, atau WEBP.
+                    </p>
+
                 </div>
 
-            </div>
 
+                {{-- BUTTON --}}
 
-            {{-- KATEGORI --}}
-            <div class="mt-5">
+                <div class="mt-7 flex justify-end gap-3 border-t border-gray-200 pt-5 dark:border-white/10">
 
-                <label
-                    for="kategori_produk_id"
-                    class="mb-2 block text-sm font-semibold"
-                >
-                    Kategori
-                </label>
+                    <button
+                        type="button"
+                        @click="productModal = false"
+                        class="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+                    >
+                        Batal
+                    </button>
 
-                <select
-                    id="kategori_produk_id"
-                    name="kategori_produk_id"
-                    class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                >
-                    <option value="">
-                        Pilih kategori
-                    </option>
+                    <button
+                        type="submit"
+                        class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950 transition hover:bg-green-400"
+                    >
+                        Simpan Produk
+                    </button>
 
-                    @foreach ($kategori as $item)
-                        <option value="{{ $item->id }}">
-                            {{ $item->nama_kategori }}
-                        </option>
-                    @endforeach
-                </select>
-
-            </div>
-
-
-            {{-- GAMBAR --}}
-            <div class="mt-5">
-
-                <label
-                    for="gambar"
-                    class="mb-2 block text-sm font-semibold"
-                >
-                    Gambar Produk
-                </label>
-
-                <input
-                    type="file"
-                    id="gambar"
-                    name="gambar"
-                    accept="image/*"
-                    enctype="multipart/form-data"
-                    class="block w-full cursor-pointer rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-500 file:mr-4 file:border-0 file:bg-green-500 file:px-4 file:py-3 file:font-semibold file:text-gray-950 hover:file:bg-green-400 dark:border-white/10 dark:bg-gray-950"
-                >
-
-                <p class="mt-2 text-xs text-gray-400">
-                    Format JPG, PNG, atau WEBP.
-                </p>
-
-            </div>
-
-
-            {{-- BUTTON --}}
-            <div
-                class="mt-7 flex justify-end gap-3 border-t border-gray-200 pt-5 dark:border-white/10"
-            >
-
-                <button
-                    type="button"
-                    @click="productModal = false"
-                    class="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
-                >
-                    Batal
-                </button>
-
-
-                <button
-                    type="submit"
-                    class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950 transition hover:bg-green-400"
-                >
-                    Simpan Produk
-                </button>
-
-            </div>
-
-        </form>
-
-    </div>
-
-</div>
-
-{{-- ========================================================= --}}
-{{-- MODAL KONFIRMASI LOGOUT --}}
-{{-- ========================================================= --}}
-
-<div
-    x-show="logoutModal"
-    x-transition.opacity
-    x-effect="document.body.style.overflow = logoutModal ? 'hidden' : ''"
-    class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
-    style="display: none;"
->
-    {{-- BACKDROP --}}
-    <div
-        class="absolute inset-0 bg-black/50 backdrop-blur-md"
-        @click="logoutModal = false"
-    ></div>
-
-
-    {{-- MODAL --}}
-    <div
-        x-show="logoutModal"
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0 scale-95"
-        x-transition:enter-end="opacity-100 scale-100"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100 scale-100"
-        x-transition:leave-end="opacity-0 scale-95"
-        @click.stop
-        class="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900"
-    >
-
-        {{-- ICON --}}
-        <div class="flex justify-center">
-
-            <div
-                class="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 text-red-500"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.8"
-                    stroke="currentColor"
-                    class="h-6 w-6"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"
-                    />
-
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="m10 17 5-5-5-5m5 5H3"
-                    />
-                </svg>
-            </div>
-
-        </div>
-
-
-        {{-- TEXT --}}
-        <div class="mt-4 text-center">
-
-            <h2 class="text-lg font-bold">
-                Yakin mau logout?
-            </h2>
-
-            <p class="mt-2 text-sm text-gray-500">
-                Kamu akan keluar dari akun dan harus login kembali.
-            </p>
-
-        </div>
-
-
-        {{-- BUTTON --}}
-        <div class="mt-6 grid grid-cols-2 gap-3">
-
-            {{-- BATAL --}}
-            <button
-                type="button"
-                @click="logoutModal = false"
-                class="rounded-xl border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
-            >
-                Batal
-            </button>
-
-
-            {{-- LOGOUT --}}
-            <form
-                action="/logout"
-                method="POST"
-            >
-                @csrf
-
-                <button
-                    type="submit"
-                    class="w-full rounded-xl bg-red-500 px-4 py-3 text-sm font-bold text-white transition hover:bg-red-600"
-                >
-                    Logout
-                </button>
-
+                </div>
             </form>
-
         </div>
-
     </div>
-
 </div>
-</body>
-</html>
+
+@endsection

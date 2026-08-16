@@ -18,6 +18,7 @@ class Pesanan extends Model
         'total_poin' => 'integer',
         'tanggal' => 'datetime'
     ];
+    protected $table = 'pesanan';
 
     public function pembeli(): BelongsTo
     {
