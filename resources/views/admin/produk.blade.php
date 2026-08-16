@@ -8,6 +8,8 @@
 
 @section('content')
 
+<div x-data="kategoriProduk()">
+
         {{-- HEADER --}}
 
         <div
@@ -140,29 +142,20 @@
                 </div>
 
                 <select
+                    x-model="selectedCategory"
+                    @change="filterProducts()"
                     class="rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 dark:border-white/10 dark:bg-gray-900"
                 >
-
-                    <option>
+                    <option value="">
                         Semua Kategori
                     </option>
 
-                    <option>
-                        Alat Tulis
-                    </option>
-
-                    <option>
-                        Fashion
-                    </option>
-
-                    <option>
-                        Rumah Tangga
-                    </option>
-
-                    <option>
-                        Aksesoris
-                    </option>
-
+                    <template x-for="kategori in categories" :key="kategori.id">
+                        <option
+                            :value="kategori.id"
+                            x-text="kategori.nama_kategori"
+                        ></option>
+                    </template>
                 </select>
 
             </div>
@@ -173,389 +166,405 @@
             </p>
 
         </div>
-        
-        <div x-data="kategoriProduk()">
-            {{-- KATEGORI MANAGEMENT --}}
 
-            <div class="mt-4 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-white/[0.03] lg:flex-row lg:items-center lg:justify-between">
 
-                <div>
-                    <h3 class="font-bold">
-                        Kategori Produk
-                    </h3>
+        {{-- KATEGORI MANAGEMENT --}}
 
-                    <p class="mt-1 text-xs text-gray-500">
-                        Lihat dan atur kategori produk.
-                    </p>
-                </div>
+        <div class="mt-4 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-white/[0.03] lg:flex-row lg:items-center lg:justify-between">
 
-                <div class="flex flex-col gap-3 sm:flex-row">
+            <div>
+                <h3 class="font-bold">
+                    Kategori Produk
+                </h3>
 
-                    {{-- LIHAT KATEGORI --}}
+                <p class="mt-1 text-xs text-gray-500">
+                    Lihat dan atur kategori produk.
+                </p>
+            </div>
+
+            <div class="flex flex-col gap-3 sm:flex-row">
+
+                {{-- LIHAT KATEGORI --}}
+                <button
+                    type="button"
+                    @click="loadCategories()"
+                    class="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-semibold transition hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
+                >
+                    Lihat Kategori
+                </button>
+
+                {{-- ATUR KATEGORI --}}
+                <div class="relative">
+
                     <button
                         type="button"
-                        @click="loadCategories()"
-                        class="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-semibold transition hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
+                        @click="showCategoryOptions = !showCategoryOptions"
+                        class="flex items-center gap-2 rounded-xl bg-green-500 px-4 py-2.5 text-sm font-bold text-gray-950 transition hover:bg-green-400"
                     >
-                        Lihat Kategori
+                        Atur Kategori
+
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="2"
+                            stroke="currentColor"
+                            class="h-4 w-4"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="m6 9 6 6 6-6"
+                            />
+                        </svg>
                     </button>
 
-                    {{-- ATUR KATEGORI --}}
-                    <div class="relative">
+                    {{-- DROPDOWN --}}
+                    <div
+                        x-show="showCategoryOptions"
+                        x-transition
+                        @click.outside="showCategoryOptions = false"
+                        class="absolute right-0 top-full z-40 mt-2 w-52 rounded-xl border border-gray-200 bg-white p-2 shadow-xl dark:border-white/10 dark:bg-gray-900"
+                        style="display: none;"
+                    >
 
                         <button
                             type="button"
-                            @click="showCategoryOptions = !showCategoryOptions"
-                            class="flex items-center gap-2 rounded-xl bg-green-500 px-4 py-2.5 text-sm font-bold text-gray-950 transition hover:bg-green-400"
+                            @click="
+                                showCategoryOptions = false;
+                                showAddCategoryModal = true;
+                            "
+                            class="w-full rounded-lg px-4 py-3 text-left text-sm font-medium transition hover:bg-gray-100 dark:hover:bg-white/5"
                         >
-                            Atur Kategori
-
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke-width="2"
-                                stroke="currentColor"
-                                class="h-4 w-4"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="m6 9 6 6 6-6"
-                                />
-                            </svg>
+                            Tambah Kategori
                         </button>
 
-                        {{-- DROPDOWN --}}
-                        <div
-                            x-show="showCategoryOptions"
-                            x-transition
-                            @click.outside="showCategoryOptions = false"
-                            class="absolute right-0 top-full z-40 mt-2 w-52 rounded-xl border border-gray-200 bg-white p-2 shadow-xl dark:border-white/10 dark:bg-gray-900"
-                            style="display: none;"
+                        <button
+                            type="button"
+                            @click="
+                                showCategoryOptions = false;
+                                loadCategories().then(() => {
+                                    showCategoriesModal = false;
+                                    showDeleteCategoryModal = true;
+                                });
+                            "
+                            class="w-full rounded-lg px-4 py-3 text-left text-sm font-medium transition hover:bg-red-500/10"
                         >
-
-                            <button
-                                type="button"
-                                @click="
-                                    showCategoryOptions = false;
-                                    showAddCategoryModal = true;
-                                "
-                                class="w-full rounded-lg px-4 py-3 text-left text-sm font-medium transition hover:bg-gray-100 dark:hover:bg-white/5"
-                            >
-                                Tambah Kategori
-                            </button>
-
-                            <button
-                                type="button"
-                                @click="
-                                    showCategoryOptions = false;
-                                    loadCategories().then(() => {
-                                        showCategoriesModal = false;
-                                        showDeleteCategoryModal = true;
-                                    });
-                                "
-                                class="w-full rounded-lg px-4 py-3 text-left text-sm font-medium transition hover:bg-red-500/10"
-                            >
-                                Hapus Kategori
-                            </button>
-
-                        </div>
+                            Hapus Kategori
+                        </button>
 
                     </div>
 
                 </div>
-            </div>
 
-            {{-- MODAL LIHAT KATEGORI --}}
+            </div>
+        </div>
+
+        {{-- MODAL LIHAT KATEGORI --}}
+
+        <div
+            x-show="showCategoriesModal"
+            x-transition.opacity
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            style="display: none;"
+        >
+            <div
+                class="absolute inset-0 bg-black/50 backdrop-blur-md"
+                @click="showCategoriesModal = false"
+            ></div>
 
             <div
-                x-show="showCategoriesModal"
-                x-transition.opacity
-                class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-                style="display: none;"
+                @click.stop
+                class="relative w-full max-w-md rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
             >
-                <div
-                    class="absolute inset-0 bg-black/50 backdrop-blur-md"
-                    @click="showCategoriesModal = false"
-                ></div>
 
-                <div
-                    @click.stop
-                    class="relative w-full max-w-md rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
-                >
+                <div class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10">
+                    <div>
+                        <h2 class="text-lg font-bold">
+                            Daftar Kategori
+                        </h2>
 
-                    <div class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10">
-                        <div>
-                            <h2 class="text-lg font-bold">
-                                Daftar Kategori
-                            </h2>
+                        <p class="mt-1 text-xs text-gray-500">
+                            Kategori produk yang tersedia.
+                        </p>
+                    </div>
 
-                            <p class="mt-1 text-xs text-gray-500">
-                                Kategori produk yang tersedia.
-                            </p>
+                    <button
+                        type="button"
+                        @click="showCategoriesModal = false"
+                        class="text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    >
+                        ✕
+                    </button>
+                </div>
+
+                {{-- SCROLL TANPA SCROLLBAR --}}
+                <div class="no-scrollbar max-h-[60vh] space-y-2 overflow-y-auto p-6">
+
+                    <template x-for="kategori in categories" :key="kategori.id">
+
+                        <div class="rounded-xl border border-gray-200 px-4 py-3 dark:border-white/10">
+
+                            <p
+                                class="font-semibold"
+                                x-text="kategori.nama_kategori"
+                            ></p>
+
+                            <p
+                                class="mt-1 text-xs text-gray-500"
+                                x-text="kategori.deskripsi || 'Tidak ada deskripsi.'"
+                            ></p>
+
                         </div>
 
-                        <button
-                            type="button"
-                            @click="showCategoriesModal = false"
-                            class="text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                        >
-                            ✕
-                        </button>
-                    </div>
+                    </template>
 
-                    <div class="space-y-2 p-6">
-                        <template x-for="kategori in categories" :key="kategori.id">
-                            <div class="rounded-xl border border-gray-200 px-4 py-3 dark:border-white/10">
-                                <p class="font-semibold" x-text="kategori.nama_kategori"></p>
-                                <p class="mt-1 text-xs text-gray-500" x-text="kategori.deskripsi || 'Tidak ada deskripsi.'"></p>
-                            </div>
-                        </template>
+                    <template x-if="categories.length === 0">
+                        <p class="py-6 text-center text-sm text-gray-500">
+                            Belum ada kategori.
+                        </p>
+                    </template>
 
-                        <template x-if="categories.length === 0">
-                            <p class="py-6 text-center text-sm text-gray-500">Belum ada kategori.</p>
-                        </template>
-                    </div>
                 </div>
             </div>
+        </div>
 
-            {{-- MODAL TAMBAH KATEGORI --}}
+        {{-- MODAL TAMBAH KATEGORI --}}
+
+        <div
+            x-show="showAddCategoryModal"
+            x-transition.opacity
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            style="display: none;"
+        >
+            <div
+                class="absolute inset-0 bg-black/50 backdrop-blur-md"
+                @click="showAddCategoryModal = false"
+            ></div>
 
             <div
-                x-show="showAddCategoryModal"
-                x-transition.opacity
-                class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-                style="display: none;"
+                @click.stop
+                class="relative w-full max-w-md rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
             >
-                <div
-                    class="absolute inset-0 bg-black/50 backdrop-blur-md"
-                    @click="showAddCategoryModal = false"
-                ></div>
 
-                <div
-                    @click.stop
-                    class="relative w-full max-w-md rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
+                <div class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10">
+                    <div>
+                        <h2 class="text-lg font-bold">
+                            Tambah Kategori
+                        </h2>
+
+                        <p class="mt-1 text-xs text-gray-500">
+                            Tambahkan kategori produk baru.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        @click="showAddCategoryModal = false"
+                        class="text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    >
+                        ✕
+                    </button>
+                </div>
+
+                <form
+                    action="{{ route('admin.kategori.store') }}"
+                    method="POST"
+                    @submit.prevent="openAddCategory()"
+                    class="p-6"
                 >
+                    @csrf
 
-                    <div class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10">
-                        <div>
-                            <h2 class="text-lg font-bold">
-                                Tambah Kategori
-                            </h2>
+                    <div>
+                        <label
+                            for="nama_kategori"
+                            class="mb-2 block text-sm font-semibold"
+                        >
+                            Kategori
+                        </label>
 
-                            <p class="mt-1 text-xs text-gray-500">
-                                Tambahkan kategori produk baru.
-                            </p>
-                        </div>
+                        <input
+                            type="text"
+                            id="nama_kategori"
+                            x-model="newCategory.nama_kategori"
+                            placeholder="Contoh: Elektronik"
+                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 dark:border-white/10 dark:bg-gray-950"
+                            required
+                        >
+                    </div>
+
+                    <div class="mt-5">
+                        <label
+                            for="deskripsi_kategori"
+                            class="mb-2 block text-sm font-semibold"
+                        >
+                            Deskripsi
+                        </label>
+
+                        <textarea
+                            id="deskripsi_kategori"
+                            x-model="newCategory.deskripsi"
+                            rows="4"
+                            placeholder="Deskripsi kategori..."
+                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 dark:border-white/10 dark:bg-gray-950"
+                        ></textarea>
+                    </div>
+
+                    <div class="mt-6 flex justify-end gap-3 border-t border-gray-200 pt-5 dark:border-white/10">
 
                         <button
                             type="button"
                             @click="showAddCategoryModal = false"
-                            class="text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                            class="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold dark:border-white/10"
                         >
-                            ✕
+                            Batal
                         </button>
-                    </div>
-
-                    <form
-                        action="{{ route('admin.kategori.store') }}"
-                        method="POST"
-                        @submit.prevent="openAddCategory()"
-                        class="p-6"
-                    >
-                        @csrf
-
-                        <div>
-                            <label
-                                for="nama_kategori"
-                                class="mb-2 block text-sm font-semibold"
-                            >
-                                Kategori
-                            </label>
-
-                            <input
-                                type="text"
-                                id="nama_kategori"
-                                x-model="newCategory.nama_kategori"
-                                placeholder="Contoh: Elektronik"
-                                class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 dark:border-white/10 dark:bg-gray-950"
-                                required
-                            >
-                        </div>
-
-                        <div class="mt-5">
-                            <label
-                                for="deskripsi_kategori"
-                                class="mb-2 block text-sm font-semibold"
-                            >
-                                Deskripsi
-                            </label>
-
-                            <textarea
-                                id="deskripsi_kategori"
-                                x-model="newCategory.deskripsi"
-                                rows="4"
-                                placeholder="Deskripsi kategori..."
-                                class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-green-500 dark:border-white/10 dark:bg-gray-950"
-                            ></textarea>
-                        </div>
-
-                        <div class="mt-6 flex justify-end gap-3 border-t border-gray-200 pt-5 dark:border-white/10">
-
-                            <button
-                                type="button"
-                                @click="showAddCategoryModal = false"
-                                class="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold dark:border-white/10"
-                            >
-                                Batal
-                            </button>
-
-                            <button
-                                type="submit"
-                                class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950"
-                            >
-                                Simpan
-                            </button>
-
-                        </div>
-                    </form>
-
-                </div>
-            </div>
-
-            {{-- MODAL HAPUS KATEGORI --}}
-
-            <div
-                x-show="showDeleteCategoryModal"
-                x-transition.opacity
-                class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-                style="display: none;"
-            >
-                <div
-                    class="absolute inset-0 bg-black/50 backdrop-blur-md"
-                    @click="showDeleteCategoryModal = false"
-                ></div>
-
-                <div
-                    @click.stop
-                    class="relative w-full max-w-md rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
-                >
-
-                    <div class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10">
-                        <div>
-                            <h2 class="text-lg font-bold">
-                                Hapus Kategori
-                            </h2>
-
-                            <p class="mt-1 text-xs text-gray-500">
-                                Pilih kategori yang ingin dihapus.
-                            </p>
-                        </div>
 
                         <button
-                            type="button"
-                            @click="showDeleteCategoryModal = false"
-                            class="text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                            type="submit"
+                            class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950"
                         >
-                            ✕
+                            Simpan
                         </button>
+
                     </div>
+                </form>
 
-                    <form
-                        @submit.prevent="deleteCategories"
-                        class="p-6"
-                    >
-                        <div class="space-y-3">
-
-                            <template
-                                x-for="kategori in categories"
-                                :key="kategori.id"
-                            >
-                                <label
-                                    class="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 transition hover:bg-gray-50 dark:border-white/10 dark:hover:bg-white/5"
-                                >
-                                    <input
-                                        type="checkbox"
-                                        :value="kategori.id"
-                                        x-model="selectedCategories"
-                                        class="h-4 w-4 rounded border-gray-300 text-green-500 focus:ring-green-500"
-                                    >
-
-                                    <div>
-                                        <p
-                                            class="text-sm font-semibold"
-                                            x-text="kategori.nama_kategori"
-                                        ></p>
-
-                                        <p
-                                            class="mt-1 text-xs text-gray-500"
-                                            x-text="kategori.deskripsi || 'Tidak ada deskripsi.'"
-                                        ></p>
-                                    </div>
-                                </label>
-                            </template>
-
-                            <template x-if="categories.length === 0">
-                                <p class="py-6 text-center text-sm text-gray-500">
-                                    Belum ada kategori.
-                                </p>
-                            </template>
-
-                        </div>
-
-                        <div
-                            class="mt-6 flex justify-end border-t border-gray-200 pt-5 dark:border-white/10"
-                        >
-                            <button
-                                type="button"
-                                @click="openDeleteCategory()"
-                                :disabled="selectedCategories.length === 0 || deletingCategories"
-                                class="rounded-xl bg-red-500 px-5 py-3 text-sm font-bold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                                <span x-show="!deletingCategories">
-                                    Hapus
-                                </span>
-
-                                <span x-show="deletingCategories">
-                                    Menghapus...
-                                </span>
-                            </button>
-                        </div>
-                    </form>
-
-                </div>
             </div>
-
-            <x-confirm-category-modal
-                title="Hapus Kategori?"
-                message="Kategori ini akan dihapus secara permanen."
-                confirm-text="Hapus"
-                confirm-action="confirmDeleteCategory()"
-                state="showConfirmDeleteCategory"
-                confirm-class="bg-red-500 hover:bg-red-600 text-white"
-            />
-
-            <x-confirm-category-modal
-                title="Simpan Kategori?"
-                message="Yakin ingin menambahkan kategori ini?"
-                confirm-text="Simpan"
-                confirm-action="confirmAddCategory()"
-                state="showConfirmAddCategory"
-                confirm-class="bg-green-500 hover:bg-green-400 text-gray-950"
-            />
-
-            <x-success-category-modal
-                state="showSuccessModal"
-                message="successMessage"
-            />
-
-            <x-error-category-modal
-                state="showErrorModal"
-                message="errorMessage"
-            />
         </div>
 
+        {{-- MODAL HAPUS KATEGORI --}}
+
+        <div
+            x-show="showDeleteCategoryModal"
+            x-transition.opacity
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            style="display: none;"
+        >
+            <div
+                class="absolute inset-0 bg-black/50 backdrop-blur-md"
+                @click="showDeleteCategoryModal = false"
+            ></div>
+
+            <div
+                @click.stop
+                class="relative w-full max-w-md rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
+            >
+
+                <div class="flex items-center justify-between border-b border-gray-200 px-6 py-5 dark:border-white/10">
+                    <div>
+                        <h2 class="text-lg font-bold">
+                            Hapus Kategori
+                        </h2>
+
+                        <p class="mt-1 text-xs text-gray-500">
+                            Pilih kategori yang ingin dihapus.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        @click="showDeleteCategoryModal = false"
+                        class="text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    >
+                        ✕
+                    </button>
+                </div>
+
+                <form
+                    @submit.prevent="deleteCategories"
+                    class="p-6"
+                >
+                    <div class="max-h-72 space-y-3 overflow-y-auto">
+
+                        <template
+                            x-for="kategori in categories"
+                            :key="kategori.id"
+                        >
+                            <label
+                                class="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 transition hover:bg-gray-50 dark:border-white/10 dark:hover:bg-white/5"
+                            >
+                                <input
+                                    type="checkbox"
+                                    :value="kategori.id"
+                                    x-model="selectedCategories"
+                                    class="h-4 w-4 rounded border-gray-300 text-green-500 focus:ring-green-500"
+                                >
+
+                                <div>
+                                    <p
+                                        class="text-sm font-semibold"
+                                        x-text="kategori.nama_kategori"
+                                    ></p>
+
+                                    <p
+                                        class="mt-1 text-xs text-gray-500"
+                                        x-text="kategori.deskripsi || 'Tidak ada deskripsi.'"
+                                    ></p>
+                                </div>
+                            </label>
+                        </template>
+
+                        <template x-if="categories.length === 0">
+                            <p class="py-6 text-center text-sm text-gray-500">
+                                Belum ada kategori.
+                            </p>
+                        </template>
+
+                    </div>
+
+                    <div
+                        class="mt-6 flex justify-end border-t border-gray-200 pt-5 dark:border-white/10"
+                    >
+                        <button
+                            type="button"
+                            @click="openDeleteCategory()"
+                            :disabled="selectedCategories.length === 0 || deletingCategories"
+                            class="rounded-xl bg-red-500 px-5 py-3 text-sm font-bold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            <span x-show="!deletingCategories">
+                                Hapus
+                            </span>
+
+                            <span x-show="deletingCategories">
+                                Menghapus...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+        <x-confirm-category-modal
+            title="Hapus Kategori?"
+            message="Kategori ini akan dihapus secara permanen."
+            confirm-text="Hapus"
+            confirm-action="confirmDeleteCategory()"
+            state="showConfirmDeleteCategory"
+            confirm-class="bg-red-500 hover:bg-red-600 text-white"
+        />
+
+        <x-confirm-category-modal
+            title="Simpan Kategori?"
+            message="Yakin ingin menambahkan kategori ini?"
+            confirm-text="Simpan"
+            confirm-action="confirmAddCategory()"
+            state="showConfirmAddCategory"
+            confirm-class="bg-green-500 hover:bg-green-400 text-gray-950"
+        />
+
+        <x-success-category-modal
+            state="showSuccessModal"
+            message="successMessage"
+        />
+
+        <x-error-category-modal
+            state="showErrorModal"
+            message="errorMessage"
+        />
+
+        {{-- POPUP DARI SESSION LARAVEL --}}
         @if (session('success'))
             <div
                 x-init="showSuccess(@js(session('success')))"
@@ -567,6 +576,7 @@
                 x-init="showError(@js(session('error')))"
             ></div>
         @endif
+
 
         <div class="mx-auto mt-6 grid max-w-6xl items-center gap-5 sm:grid-cols-2 xl:grid-cols-3">
 
@@ -714,7 +724,7 @@
             @endforelse
 
         </div>
-        </div>
+
 
         <div
             id="approveModal"
@@ -765,6 +775,7 @@
 
         </div>
 
+
         <div
             id="rejectModal"
             class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4"
@@ -814,6 +825,7 @@
 
         </div>
 
+
         {{-- PAGINATION --}}
 
         <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -835,7 +847,10 @@
 
         </div>
 
-    @endsection
+</div>
+
+@endsection
+
 
 <script>
     window.kategoriProdukRoutes = {

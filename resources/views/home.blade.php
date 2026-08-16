@@ -96,7 +96,7 @@
             </a>
 
             <a
-                href="#tentang"
+                href="/about"
                 class="text-sm font-medium text-gray-600 transition hover:text-green-500 dark:text-gray-300"
             >
                 Tentang

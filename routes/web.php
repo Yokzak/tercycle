@@ -110,7 +110,7 @@ Route::middleware(['auth', 'role:admin', 'no-cache'])->group(function () {
     Route::get('/admin/kategori-produk', [KategoriProdukController::class, 'index'])->name('admin.kategori.index');
     Route::post('/admin/kategori-produk', [KategoriProdukController::class, 'store'])->name('admin.kategori.store');
     Route::delete('/admin/kategori-produk', [KategoriProdukController::class, 'destroy'])->name('admin.kategori.destroy');
-
+    
     Route::get('/admin/produk', [AdminProdukController::class, 'index'])->name('admin.produk');
     Route::patch('/admin/produk/{produk}/approve', [AdminProdukController::class, 'approve'])->name('admin.produk.approve');
     Route::delete('/admin/produk/{produk}/reject', [AdminProdukController::class, 'reject'])->name('admin.produk.reject');
