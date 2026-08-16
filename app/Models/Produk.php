@@ -19,6 +19,7 @@ class Produk extends Model
         'stok',
         'gambar',
         'status',
+        'status_approval',
     ];
 
     protected $casts = [
