@@ -10,6 +10,13 @@
 
 <div
     x-data="{
+        kategori: [
+        {
+        id: null, nama_kategori: 'Semua'
+        },
+        ...@js($kategoriProduk)
+        ],
+        kategoriAktif: null,
         productModal: false,
         search: '',
         category: 'Semua',
@@ -120,20 +127,20 @@
         <div class="flex gap-2 overflow-x-auto">
 
             <template
-                x-for="item in ['Semua', 'Alat Tulis', 'Perlengkapan', 'Fashion', 'Aksesoris']"
-                :key="item"
+                x-for="item in kategori"
+                :key="item.id ?? 'semua'"
             >
 
                 <button
                     type="button"
-                    @click="category = item"
+                    @click="kategoriAktif = item.id"
                     class="whitespace-nowrap rounded-xl px-4 py-2.5 text-xs font-semibold transition"
                     :class="
-                        category === item
+                        kategoriAktif === item.id
                             ? 'bg-green-500 text-gray-950'
                             : 'border border-gray-200 bg-white text-gray-500 hover:border-green-500 hover:text-green-500 dark:border-white/10 dark:bg-white/[0.03]'
                     "
-                    x-text="item"
+                    x-text="item.nama_kategori"
                 ></button>
 
             </template>
@@ -482,7 +489,7 @@
                             Pilih kategori
                         </option>
 
-                        @foreach ($kategori as $item)
+                        @foreach ($kategoriProduk as $item)
 
                             <option value="{{ $item->id }}">
                                 {{ $item->nama_kategori }}

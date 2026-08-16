@@ -10,6 +10,7 @@ class SiswaProdukController extends Controller
 {
     public function index(Request $request)
     {
+        $kategoriProduk = KategoriProduk::orderBy('nama_kategori')->get();
         $siswa = $request->user()->siswa;
 
         $produk = Produk::with('kategoriProduk')
@@ -19,9 +20,8 @@ class SiswaProdukController extends Controller
         ->latest()
         ->get();
 
-        $kategori = KategoriProduk::orderBy('nama_kategori')->get();
 
-        return view('siswa.produk', compact('produk', 'kategori'));
+        return view('siswa.produk', compact('produk', 'kategoriProduk'));
     }
 
     public function produkSaya(Request $request)
