@@ -17,6 +17,7 @@ use App\Http\Controllers\AdminProdukController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminProfilController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\AdminTransaksiController;
 
 
 Route::get('/', function () {
@@ -115,8 +116,6 @@ Route::middleware(['auth', 'role:admin', 'no-cache'])->group(function () {
     Route::patch('/admin/produk/{produk}/approve', [AdminProdukController::class, 'approve'])->name('admin.produk.approve');
     Route::delete('/admin/produk/{produk}/reject', [AdminProdukController::class, 'reject'])->name('admin.produk.reject');
 
-    Route::get('/admin/transaksi', function () {
-        return view('admin.transaksi');
-    })->name('admin.transaksi');
+    Route::get('/admin/transaksi', [AdminTransaksiController::class, 'index'])->name('admin.transaksi.index');
 
 });

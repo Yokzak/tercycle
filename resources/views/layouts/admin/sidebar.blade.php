@@ -201,7 +201,7 @@
             {{-- TRANSAKSI --}}
 
             <a
-                href="{{ route('admin.transaksi') }}"
+                href="{{ route('admin.transaksi.index') }}"
                 class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition
                     {{ request()->routeIs('admin.transaksi*')
                         ? 'bg-green-500/10 text-green-500'
