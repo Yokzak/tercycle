@@ -16,6 +16,7 @@ use App\Http\Controllers\SiswaPesananController;
 use App\Http\Controllers\AdminProdukController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminProfilController;
+use App\Http\Controllers\LoginController;
 
 
 Route::get('/', function () {
@@ -28,6 +29,7 @@ Route::middleware('guest')->group(function () {
     // Login
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/login', [LoginController::class, 'store'])->name('login');
 
     // Register
     Route::get('/register', [RegisterController::class, 'showRegister'])->name('register');
