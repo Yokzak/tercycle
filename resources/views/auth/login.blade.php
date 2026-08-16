@@ -207,31 +207,82 @@
 
                 <div class="mt-5">
 
-                    <div class="mb-2 flex items-center justify-between">
+                    <div x-data="{ showPassword: false }" class="relative">
 
                         <label
                             for="password"
-                            class="block text-sm font-semibold"
+                            class="mb-2 block text-sm font-semibold"
                         >
                             Password
                         </label>
 
-                        <a
-                            href="{{ route('password.request') }}"
-                            class="text-xs font-medium text-green-500 hover:text-green-400"
+                        <input
+                            :type="showPassword ? 'text' : 'password'"
+                            id="password"
+                            name="password"
+                            placeholder="Masukkan password"
+                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 pr-12 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-600 @error('password') border-red-500 focus:border-red-500 focus:ring-red-500/20 @enderror"
                         >
-                            Lupa password?
-                        </a>
+
+                        <button
+                            type="button"
+                            @click="showPassword = !showPassword"
+                            class="absolute right-3 top-[67%] -translate-y-1/2 text-gray-400 transition hover:text-gray-700 dark:hover:text-white"
+                            :title="showPassword ? 'Sembunyikan password' : 'Lihat password'"
+                        >
+
+                            {{-- ICON MATA TERBUKA --}}
+                            <svg
+                                x-show="!showPassword"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.8"
+                                stroke="currentColor"
+                                class="h-5 w-5"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M2.25 12s3.5-6 9.75-6 9.75 6 9.75 6-3.5 6-9.75 6S2.25 12 2.25 12Z"
+                                />
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
+                                />
+                            </svg>
+
+                            {{-- ICON MATA DICORET --}}
+                            <svg
+                                x-show="showPassword"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.8"
+                                stroke="currentColor"
+                                class="h-5 w-5"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M3 3l18 18"
+                                />
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M10.58 10.58a2 2 0 0 0 2.83 2.83"
+                                />
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M9.88 5.09A9.86 9.86 0 0 1 12 4.85c6.25 0 9.75 6 9.75 6a17.38 17.38 0 0 1-3.04 3.82M6.23 6.23C3.75 8.02 2.25 10.85 2.25 10.85s3.5 6 9.75 6c1.17 0 2.25-.21 3.24-.58"
+                                />
+                            </svg>
+
+                        </button>
 
                     </div>
-
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="Masukkan password"
-                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-600 @error('password') border-red-500 focus:border-red-500 focus:ring-red-500/20 @enderror"
-                    >
 
                     @error('password')
                         <p class="mt-1 text-xs text-red-500">{{ $message }}</p>

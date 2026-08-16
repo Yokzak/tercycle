@@ -1151,4 +1151,72 @@
         </div>
     </div>
 
+        {{-- MODAL EDIT SISWA --}}
+        <div
+            x-show="editModal"
+            ...
+        >
+            ...
+        </div>
+
+
+        {{-- POPUP SUCCESS --}}
+        @if (session('success'))
+            <div
+                x-data="{ show: true }"
+                x-show="show"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+                x-init="setTimeout(() => show = false, 3000)"
+                class="fixed right-6 top-6 z-[9999] w-full max-w-sm"
+            >
+                <div
+                    class="flex items-start gap-4 rounded-2xl border border-green-200 bg-white p-4 shadow-2xl dark:border-green-500/20 dark:bg-gray-900"
+                >
+                    <div
+                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-500/10"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="2"
+                            stroke="currentColor"
+                            class="h-5 w-5 text-green-500"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="m4.5 12.75 6 6 9-13.5"
+                            />
+                        </svg>
+                    </div>
+
+                    <div class="flex-1">
+                        <p class="font-bold text-gray-900 dark:text-white">
+                            Berhasil
+                        </p>
+
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                            {{ session('success') }}
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        @click="show = false"
+                        class="text-gray-400 transition hover:text-gray-700 dark:hover:text-white"
+                    >
+                        ✕
+                    </button>
+                </div>
+            </div>
+        @endif
+
+    </div>
+
 @endsection
