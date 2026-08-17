@@ -9,7 +9,7 @@ class KategoriBotolController extends Controller
 {
     public function index()
     {
-        $kategoriBotols = KategoriBotol::orderBy('nama_kategori')->get();
+        $kategoriBotols = KategoriBotol::orderBy('id')->get();
         return view('admin.botol', compact('kategoriBotols'));
     }
 

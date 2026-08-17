@@ -24,6 +24,10 @@ use App\Http\Controllers\PencairanPoinController;
 Route::get('/', function () {
     return view('home');
 })->name('home');
+Route::get('/about', function () {
+    return view('about');
+})->name('about');
+
 
 
 Route::middleware('guest')->group(function () {

@@ -196,17 +196,13 @@
                 <option value="e-wallet">
                     E-Wallet
                 </option>
-
-                <option value="bank">
-                    Bank
-                </option>
             </select>
         </div>
 
 
         {{-- PROVIDER --}}
         <div
-            x-show="metode === 'e-wallet' || metode === 'bank'"
+            x-show="metode === 'e-wallet'"
             x-transition
             style="display: none;"
         >
@@ -215,19 +211,42 @@
                 Provider
             </label>
 
-            <input
-                type="text"
+            <select
                 name="provider"
                 x-model="provider"
-                placeholder="Contoh: DANA, OVO, GoPay, BCA"
+                required
                 class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-white/5"
             >
+                <option value="">
+                    Pilih provider
+                </option>
+
+                <option value="dana">
+                    DANA
+                </option>
+
+                <option value="gopay">
+                    Gopay
+                </option>
+
+                <option value="shopeepay">
+                    Shopeepay
+                </option>
+
+                <option value="ovo">
+                    OVO
+                </option>
+            </select>
 
         </div>
 
 
         {{-- NAMA PENERIMA --}}
-        <div>
+        <div
+        x-show="metode === 'cash'"
+        x-transition
+        style="display: none;"
+        >
 
             <label class="mb-2 block text-sm font-semibold">
                 Nama Penerima
@@ -237,7 +256,7 @@
                 type="text"
                 name="nama_penerima"
                 value="{{ old('nama_penerima') }}"
-                placeholder="Nama pemilik rekening / e-wallet"
+                placeholder="Nama penerima"
                 required
                 class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-white/5"
             >
@@ -247,10 +266,18 @@
 
         {{-- NOMOR TUJUAN --}}
         <div
-            x-show="metode === 'e-wallet' || metode === 'bank'"
+            x-show="metode === 'e-wallet'"
             x-transition
             style="display: none;"
         >
+        <input
+                type="text"
+                name="nama_penerima"
+                value="{{ old('nama_penerima') }}"
+                placeholder="Nama pemilik e-wallet"
+                required
+                class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-white/5"
+            >
 
             <label class="mb-2 block text-sm font-semibold">
                 Nomor Tujuan
@@ -260,7 +287,7 @@
                 type="text"
                 name="nomor_tujuan"
                 value="{{ old('nomor_tujuan') }}"
-                placeholder="Nomor e-wallet / nomor rekening"
+                placeholder="Nomor e-wallet"
                 class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-white/5"
             >
 

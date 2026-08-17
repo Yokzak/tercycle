@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('siswa_id')->constrained('siswa')->restrictOnDelete();
             $table->unsignedInteger('jumlah_poin');
             $table->unsignedBigInteger('jumlah_uang');
-            $table->enum('metode', ['cash','e-wallet','bank']);
-            $table->string('provider')->nullable();
+            $table->enum('metode', ['cash','e-wallet']);
+            $table->enum('provider', ['dana','gopay','shopeepay','ovo'])->nullable();
             $table->string('nama_penerima');
             $table->string('nomor_tujuan')->nullable();
             $table->enum('status', ['menunggu', 'diproses','disetujui','ditolak','selesai'])->default('menunggu');
