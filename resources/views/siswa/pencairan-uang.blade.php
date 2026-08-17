@@ -1,907 +1,404 @@
 @extends('layouts.siswa.app')
 
-@section('title', 'Pencairan Dana')
+@section('title', 'Pencairan Uang')
 
 @section('content')
 
 <div
-    x-data="pencairanDana()"
-    class="space-y-8"
+    x-data="pencairanApp({
+        saldo: {{ $siswa->saldo_poin }},
+        oldJumlah: {{ old('jumlah_poin', 100) }}
+    })"
+    class="space-y-6"
 >
 
-    {{-- HEADER --}}
-    <div>
-        <p class="text-sm font-medium text-green-500">
-            Keuangan
-        </p>
+{{-- HEADER --}}
+<div>
+    <h1 class="text-2xl font-black">
+        Pencairan Uang
+    </h1>
 
-        <h1 class="mt-1 text-2xl font-black">
-            Pencairan Dana
-        </h1>
+    <p class="mt-1 text-sm text-gray-500">
+        Tukarkan poin kamu menjadi uang tunai melalui metode pencairan yang tersedia.
+    </p>
+</div>
+
+
+{{-- FLASH MESSAGE --}}
+@if(session('success'))
+    <div class="rounded-xl border border-green-500/20 bg-green-500/10 px-4 py-3 text-sm text-green-600">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-600">
+        {{ session('error') }}
+    </div>
+@endif
+
+
+{{-- VALIDATION ERROR --}}
+@if($errors->any())
+    <div class="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3">
+        <ul class="list-disc space-y-1 pl-5 text-sm text-red-600">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+
+{{-- SALDO --}}
+<div class="rounded-2xl bg-gray-950 p-6 text-white shadow-lg dark:bg-white dark:text-gray-950">
+
+    <p class="text-sm text-gray-400 dark:text-gray-500">
+        Saldo Poin
+    </p>
+
+    <div class="mt-2 flex flex-col gap-1 sm:flex-row sm:items-end sm:gap-3">
+
+        <span class="text-3xl font-black">
+            {{ number_format($siswa->saldo_poin, 0, ',', '.') }}
+        </span>
+
+        <span class="text-sm text-gray-400 dark:text-gray-500">
+            poin
+        </span>
+
+    </div>
+
+    <p class="mt-3 text-sm text-gray-400 dark:text-gray-500">
+        Estimasi nilai:
+        <span class="font-bold text-green-400 dark:text-green-600">
+            Rp {{ number_format($siswa->saldo_poin * 100, 0, ',', '.') }}
+        </span>
+    </p>
+
+    <p class="mt-2 text-xs text-gray-500">
+        Konversi: 100 poin = Rp10.000
+    </p>
+
+</div>
+
+
+{{-- FORM PENGAJUAN --}}
+<div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/[0.03]">
+
+    <div class="mb-6">
+        <h2 class="text-lg font-bold">
+            Ajukan Pencairan
+        </h2>
 
         <p class="mt-1 text-sm text-gray-500">
-            Cairkan poin yang kamu miliki menjadi uang tunai.
+            Minimal pencairan adalah 100 poin.
+            100 poin setara dengan Rp10.000.
         </p>
     </div>
 
+    <form
+        method="POST"
+        action="{{ route('siswa.pencairan.store') }}"
+        @submit.prevent="
+            if (validateForm()) {
+                submitting = true;
+                setTimeout(() => $el.submit(), 1200);
+            }
+        "
+        class="space-y-5"
+    >
+        @csrf
 
-    {{-- SALDO --}}
-    <div class="grid gap-5 lg:grid-cols-3">
+        {{-- JUMLAH POIN --}}
+        <div>
+            <label class="mb-2 block text-sm font-semibold">
+                Jumlah Poin
+            </label>
 
-        {{-- SALDO POIN --}}
-        <div
-            class="rounded-2xl bg-green-500 p-6 text-gray-950 lg:col-span-2"
-        >
-            <div class="flex items-start justify-between">
+            <input
+                type="number"
+                name="jumlah_poin"
+                min="100"
+                :max="saldo"
+                x-model.number="jumlahPoin"
+                @input="calculate()"
+                value="{{ old('jumlah_poin', 100) }}"
+                required
+                class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-white/5"
+            >
 
-                <div>
-                    <p class="text-sm font-medium opacity-70">
-                        Saldo Poin Saat Ini
-                    </p>
+            <p class="mt-2 text-xs text-gray-500">
+                Saldo tersedia:
+                <span
+                    class="font-semibold text-green-600"
+                    x-text="formatPoin(saldo) + ' poin'"
+                ></span>
+            </p>
 
-                    {{-- NANTI HUBUNGKAN KE DATABASE --}}
-                    <h2 class="mt-2 text-4xl font-black">
-                        12.500
-                        <span class="text-lg">
-                            poin
-                        </span>
-                    </h2>
-
-                    <p class="mt-3 text-sm font-medium opacity-70">
-                        Estimasi nilai saldo
-                    </p>
-
-                    <p class="text-xl font-black">
-                        Rp1.250.000
-                    </p>
-                </div>
-
-                <div
-                    class="flex h-12 w-12 items-center justify-center rounded-xl bg-black/10"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.8"
-                        stroke="currentColor"
-                        class="h-6 w-6"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M12 6v12m-4-4 4 4 4-4M8 8l4-4 4 4"
-                        />
-                    </svg>
-                </div>
-
-            </div>
+            <p
+                class="mt-1 text-xs text-gray-500"
+            >
+                Nilai pencairan:
+                <span
+                    class="font-bold text-green-600"
+                    x-text="'Rp ' + formatRupiah(jumlahUang)"
+                ></span>
+            </p>
         </div>
 
 
-        {{-- NILAI KONVERSI --}}
-        <div
-            class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/[0.03]"
-        >
-            <p class="text-xs font-medium text-gray-500">
-                Nilai Konversi
-            </p>
-
-            <p class="mt-3 text-2xl font-black">
-                100 poin
-            </p>
-
-            <p class="mt-1 text-sm text-gray-500">
-                = Rp10.000
-            </p>
-
-            <div
-                class="mt-5 rounded-xl bg-gray-50 p-4 text-xs text-gray-500 dark:bg-white/5"
-            >
-                Nilai konversi dapat disesuaikan oleh administrator.
-            </div>
-        </div>
-
-    </div>
-
-
-    {{-- FORM + KETENTUAN --}}
-    <div class="grid gap-6 lg:grid-cols-3">
-
-        {{-- FORM PENCAIRAN --}}
-        <div
-            class="rounded-2xl border border-gray-200 bg-white dark:border-white/10 dark:bg-white/[0.03] lg:col-span-2"
-        >
-
-            <div
-                class="border-b border-gray-200 px-6 py-5 dark:border-white/10"
-            >
-                <h2 class="font-bold">
-                    Ajukan Pencairan
-                </h2>
-
-                <p class="mt-1 text-xs text-gray-500">
-                    Isi data pencairan dengan benar.
-                </p>
-            </div>
-
-
-            <div class="space-y-6 p-6">
-
-                {{-- JUMLAH POIN --}}
-                <div>
-
-                    <label
-                        class="mb-2 block text-sm font-semibold"
-                    >
-                        Jumlah Poin
-                    </label>
-
-                    <div class="relative">
-
-                        <input
-                            type="number"
-                            min="1000"
-                            step="100"
-                            x-model.number="points"
-                            @input="calculateAmount()"
-                            placeholder="Masukkan jumlah poin"
-                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 pr-20 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                        >
-
-                        <span
-                            class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400"
-                        >
-                            poin
-                        </span>
-
-                    </div>
-
-
-                    {{-- QUICK AMOUNT --}}
-                    <div class="mt-3 flex flex-wrap gap-2">
-
-                        <button
-                            type="button"
-                            @click="setPoints(1000)"
-                            class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold transition hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
-                        >
-                            1.000
-                        </button>
-
-                        <button
-                            type="button"
-                            @click="setPoints(5000)"
-                            class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold transition hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
-                        >
-                            5.000
-                        </button>
-
-                        <button
-                            type="button"
-                            @click="setPoints(10000)"
-                            class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold transition hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5"
-                        >
-                            10.000
-                        </button>
-
-                        <button
-                            type="button"
-                            @click="setPoints(12500)"
-                            class="rounded-lg border border-green-500/20 bg-green-500/10 px-3 py-2 text-xs font-semibold text-green-500 transition hover:bg-green-500/20"
-                        >
-                            Semua Poin
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                {{-- ESTIMASI --}}
-                <div
-                    class="rounded-xl bg-gray-50 p-5 dark:bg-white/5"
-                >
-
-                    <div class="flex items-center justify-between">
-
-                        <div>
-                            <p class="text-xs text-gray-500">
-                                Poin yang dicairkan
-                            </p>
-
-                            <p
-                                class="mt-1 text-lg font-black"
-                                x-text="formatNumber(points) + ' poin'"
-                            >
-                                0 poin
-                            </p>
-                        </div>
-
-                        <div class="text-right">
-
-                            <p class="text-xs text-gray-500">
-                                Dana diterima
-                            </p>
-
-                            <p
-                                class="mt-1 text-xl font-black text-green-500"
-                                x-text="formatRupiah(amount)"
-                            >
-                                Rp0
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                {{-- METODE --}}
-
-                <div>
-
-                    <label class="mb-3 block text-sm font-semibold">
-                        Metode Pencairan
-                    </label>
-
-                    <div class="grid gap-3 sm:grid-cols-2">
-
-                        {{-- DANA --}}
-                        <button
-                            type="button"
-                            @click="
-                                method = 'DANA';
-                                destination = '';
-                            "
-                            :class="method === 'DANA'
-                                ? 'border-green-500 bg-green-500/10'
-                                : 'border-gray-200 dark:border-white/10'"
-                            class="rounded-xl border p-4 text-left transition hover:bg-gray-50 dark:hover:bg-white/5"
-                        >
-                            <p class="font-bold">
-                                DANA
-                            </p>
-
-                            <p class="mt-1 text-xs text-gray-500">
-                                Dompet digital
-                            </p>
-                        </button>
-
-
-                        {{-- GOPAY --}}
-                        <button
-                            type="button"
-                            @click="
-                                method = 'GoPay';
-                                destination = '';
-                            "
-                            :class="method === 'GoPay'
-                                ? 'border-green-500 bg-green-500/10'
-                                : 'border-gray-200 dark:border-white/10'"
-                            class="rounded-xl border p-4 text-left transition hover:bg-gray-50 dark:hover:bg-white/5"
-                        >
-                            <p class="font-bold">
-                                GoPay
-                            </p>
-
-                            <p class="mt-1 text-xs text-gray-500">
-                                Dompet digital
-                            </p>
-                        </button>
-
-
-                        {{-- SHOPEEPAY --}}
-                        <button
-                            type="button"
-                            @click="
-                                method = 'ShopeePay';
-                                destination = '';
-                            "
-                            :class="method === 'ShopeePay'
-                                ? 'border-green-500 bg-green-500/10'
-                                : 'border-gray-200 dark:border-white/10'"
-                            class="rounded-xl border p-4 text-left transition hover:bg-gray-50 dark:hover:bg-white/5"
-                        >
-                            <p class="font-bold">
-                                ShopeePay
-                            </p>
-
-                            <p class="mt-1 text-xs text-gray-500">
-                                Dompet digital
-                            </p>
-                        </button>
-
-
-                        {{-- CASH --}}
-                        <button
-                            type="button"
-                            @click="
-                                method = 'Cash';
-                                destination = '';
-                            "
-                            :class="method === 'Cash'
-                                ? 'border-green-500 bg-green-500/10'
-                                : 'border-gray-200 dark:border-white/10'"
-                            class="rounded-xl border p-4 text-left transition hover:bg-gray-50 dark:hover:bg-white/5"
-                        >
-                            <p class="font-bold">
-                                Uang Cash
-                            </p>
-
-                            <p class="mt-1 text-xs text-gray-500">
-                                Ambil langsung
-                            </p>
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                {{-- NOMOR TUJUAN --}}
-                <div
-                    x-show="method !== 'Cash'"
-                    x-transition
-                >
-
-                    <label class="mb-2 block text-sm font-semibold">
-                        Nomor Penerima
-                    </label>
-
-                    <input
-                        type="text"
-                        x-model="destination"
-                        placeholder="Contoh: 081234567890"
-                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-gray-950"
-                    >
-
-                    <p class="mt-2 text-xs text-gray-500">
-                        Masukkan nomor akun <span x-text="method"></span> yang akan menerima dana.
-                    </p>
-
-                </div>
-
-
-                {{-- INFORMASI CASH --}}
-                <div
-                    x-show="method === 'Cash'"
-                    x-transition
-                    class="rounded-xl border border-green-500/20 bg-green-500/10 p-4"
-                >
-
-                    <div class="flex gap-3">
-
-                        <div class="mt-0.5 text-green-500">
-                            !
-                        </div>
-
-                        <div>
-                            <p class="text-sm font-semibold">
-                                Pencairan Uang Cash
-                            </p>
-
-                            <p class="mt-1 text-xs text-gray-500">
-                                Dana akan dicairkan secara tunai dan dapat diambil
-                                sesuai prosedur yang ditentukan oleh admin.
-                            </p>
-                        </div>
-
-                    </div>
-
-                </div>
-
-                {{-- SUBMIT --}}
-                <div
-                    class="border-t border-gray-200 pt-6 dark:border-white/10"
-                >
+        {{-- QUICK AMOUNT --}}
+        <div>
+            <label class="mb-2 block text-sm font-semibold">
+                Pilih Cepat
+            </label>
+
+            <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+
+                <template x-for="amount in quickAmounts" :key="amount">
 
                     <button
                         type="button"
-                        @click="openConfirm()"
-                        class="w-full rounded-xl bg-green-500 px-5 py-3.5 text-sm font-bold text-gray-950 transition hover:bg-green-400"
-                    >
-                        Ajukan Pencairan
-                    </button>
+                        @click="setAmount(amount)"
+                        :disabled="amount > saldo"
+                        class="rounded-xl border border-gray-200 px-3 py-2 text-sm font-semibold transition hover:border-green-500 hover:bg-green-500/10 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10"
+                        x-text="formatPoin(amount) + ' poin'"
+                    ></button>
 
-                </div>
+                </template>
 
             </div>
-
         </div>
 
 
-        {{-- KETENTUAN --}}
-        <div
-            class="h-fit rounded-2xl border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/[0.03]"
-        >
-
-            <div class="flex items-center gap-3">
-
-                <div
-                    class="flex h-10 w-10 items-center justify-center rounded-xl bg-green-500/10 text-green-500"
-                >
-                    !
-                </div>
-
-                <div>
-                    <h3 class="font-bold">
-                        Ketentuan Pencairan
-                    </h3>
-
-                    <p class="text-xs text-gray-500">
-                        Harap diperhatikan.
-                    </p>
-                </div>
-
-            </div>
-
-
-            <div class="mt-5 space-y-4">
-
-                <div class="flex gap-3">
-                    <span class="mt-0.5 text-green-500">✓</span>
-
-                    <p class="text-sm text-gray-500">
-                        Minimal pencairan adalah
-                        <strong class="text-gray-900 dark:text-white">
-                            1.000 poin
-                        </strong>.
-                    </p>
-                </div>
-
-
-                <div class="flex gap-3">
-                    <span class="mt-0.5 text-green-500">✓</span>
-
-                    <p class="text-sm text-gray-500">
-                        Pengajuan akan diperiksa oleh admin.
-                    </p>
-                </div>
-
-
-                <div class="flex gap-3">
-                    <span class="mt-0.5 text-green-500">✓</span>
-
-                    <p class="text-sm text-gray-500">
-                        Pastikan nama penerima sudah benar.
-                    </p>
-                </div>
-
-
-                <div class="flex gap-3">
-                    <span class="mt-0.5 text-green-500">✓</span>
-
-                    <p class="text-sm text-gray-500">
-                        Poin akan diproses sesuai status pengajuan.
-                    </p>
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    {{-- RIWAYAT --}}
-    <div
-        class="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/10 dark:bg-white/[0.03]"
-    >
-
-        <div
-            class="border-b border-gray-200 px-6 py-5 dark:border-white/10"
-        >
-
-            <h2 class="font-bold">
-                Riwayat Pencairan
-            </h2>
-
-            <p class="mt-1 text-xs text-gray-500">
-                Riwayat pengajuan pencairan dana kamu.
-            </p>
-
-        </div>
-
-
-        <div class="overflow-x-auto">
-
-            <table class="w-full text-left text-sm">
-
-                <thead
-                    class="border-b border-gray-200 text-xs uppercase text-gray-500 dark:border-white/10"
-                >
-
-                    <tr>
-
-                        <th class="px-6 py-4">
-                            Tanggal
-                        </th>
-
-                        <th class="px-6 py-4">
-                            Poin
-                        </th>
-
-                        <th class="px-6 py-4">
-                            Metode
-                        </th>
-
-                        <th class="px-6 py-4">
-                            Nominal
-                        </th>
-
-                        <th class="px-6 py-4">
-                            Status
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody
-                    class="divide-y divide-gray-200 dark:divide-white/10"
-                >
-
-                    {{-- DATA CONTOH --}}
-                    <tr class="transition hover:bg-gray-50 dark:hover:bg-white/[0.02]">
-
-                        <td class="px-6 py-5 text-gray-500">
-                            16 Agu 2026
-                        </td>
-
-                        <td class="px-6 py-5 font-semibold">
-                            10.000 poin
-                        </td>
-
-                        <td class="px-6 py-5">
-                            DANA
-                        </td>
-
-                        <td class="px-6 py-5 font-bold text-green-500">
-                            Rp1.000.000
-                        </td>
-
-                        <td class="px-6 py-5">
-
-                            <span
-                                class="rounded-full bg-yellow-500/10 px-3 py-1 text-xs font-semibold text-yellow-500"
-                            >
-                                Menunggu
-                            </span>
-
-                        </td>
-
-                    </tr>
-
-
-                    <tr class="transition hover:bg-gray-50 dark:hover:bg-white/[0.02]">
-
-                        <td class="px-6 py-5 text-gray-500">
-                            10 Agu 2026
-                        </td>
-
-                        <td class="px-6 py-5 font-semibold">
-                            5.000 poin
-                        </td>
-
-                        <td class="px-6 py-5">
-                            Cash
-                        </td>
-
-                        <td class="px-6 py-5 font-bold text-green-500">
-                            Rp500.000
-                        </td>
-
-                        <td class="px-6 py-5">
-
-                            <span
-                                class="rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-500"
-                            >
-                                Berhasil
-                            </span>
-
-                        </td>
-
-                    </tr>
-
-
-                    <tr class="transition hover:bg-gray-50 dark:hover:bg-white/[0.02]">
-
-                        <td class="px-6 py-5 text-gray-500">
-                            3 Agu 2026
-                        </td>
-
-                        <td class="px-6 py-5 font-semibold">
-                            2.000 poin
-                        </td>
-
-                        <td class="px-6 py-5">
-                            OVO
-                        </td>
-
-                        <td class="px-6 py-5 font-bold text-green-500">
-                            Rp200.000
-                        </td>
-
-                        <td class="px-6 py-5">
-
-                            <span
-                                class="rounded-full bg-red-500/10 px-3 py-1 text-xs font-semibold text-red-500"
-                            >
-                                Ditolak
-                            </span>
-
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
-
-    {{-- ========================================================= --}}
-    {{-- MODAL ERROR --}}
-    {{-- ========================================================= --}}
-
-    <div
-        x-show="errorModal"
-        x-transition.opacity
-        class="fixed inset-0 z-[120] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
-        style="display: none;"
-    >
-
-        <div
-            class="absolute inset-0"
-            @click="errorModal = false"
-        ></div>
-
-
-        <div
-            x-show="errorModal"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 scale-95"
-            x-transition:enter-end="opacity-100 scale-100"
-            @click.stop
-            class="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900"
-        >
-
-            <div class="flex items-start gap-4">
-
-                <div
-                    class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-500/10 text-red-500"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="2"
-                        stroke="currentColor"
-                        class="h-6 w-6"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M12 9v3.75m0 3h.01M10.29 3.86 2.82 17a2 2 0 0 0 1.74 3h14.88a2 2 0 0 0 1.74-3L13.71 3.86a2 2 0 0 0-3.42 0Z"
-                        />
-                    </svg>
-                </div>
-
-                <div>
-                    <h2 class="text-lg font-bold">
-                        Pengajuan Tidak Dapat Dilanjutkan
-                    </h2>
-
-                    <p
-                        class="mt-2 text-sm text-gray-500"
-                        x-text="errorMessage"
-                    ></p>
-                </div>
-
-            </div>
-
-
-            <button
-                type="button"
-                @click="errorModal = false"
-                class="mt-6 w-full rounded-xl bg-red-500 px-5 py-3 text-sm font-bold text-white transition hover:bg-red-400"
+        {{-- METODE --}}
+        <div>
+            <label class="mb-2 block text-sm font-semibold">
+                Metode Pencairan
+            </label>
+
+            <select
+                name="metode"
+                x-model="metode"
+                @change="changeMetode()"
+                required
+                class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-white/5"
             >
-                Mengerti
-            </button>
+                <option value="">
+                    Pilih metode
+                </option>
 
+                <option value="cash">
+                    Cash
+                </option>
+
+                <option value="e-wallet">
+                    E-Wallet
+                </option>
+
+                <option value="bank">
+                    Bank
+                </option>
+            </select>
         </div>
 
-    </div>
 
-
-    {{-- ========================================================= --}}
-    {{-- MODAL KONFIRMASI --}}
-    {{-- ========================================================= --}}
-
-    <div
-        x-show="confirmModal"
-        x-transition.opacity
-        class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
-        style="display: none;"
-    >
-
+        {{-- PROVIDER --}}
         <div
-            class="absolute inset-0"
-            @click="confirmModal = false"
-        ></div>
-
-
-        <div
-            x-show="confirmModal"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 scale-95"
-            x-transition:enter-end="opacity-100 scale-100"
-            @click.stop
-            class="relative w-full max-w-md rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
+            x-show="metode === 'e-wallet' || metode === 'bank'"
+            x-transition
+            style="display: none;"
         >
 
-            <div
-                class="border-b border-gray-200 px-6 py-5 dark:border-white/10"
+            <label class="mb-2 block text-sm font-semibold">
+                Provider
+            </label>
+
+            <input
+                type="text"
+                name="provider"
+                x-model="provider"
+                placeholder="Contoh: DANA, OVO, GoPay, BCA"
+                class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-white/5"
             >
 
-                <h2 class="text-lg font-bold">
-                    Konfirmasi Pencairan
-                </h2>
-
-                <p class="mt-1 text-xs text-gray-500">
-                    Periksa kembali data pencairan kamu.
-                </p>
-
-            </div>
+        </div>
 
 
-            <div class="space-y-4 p-6">
+        {{-- NAMA PENERIMA --}}
+        <div>
 
-                <div class="flex justify-between">
-                    <span class="text-sm text-gray-500">
-                        Poin
-                    </span>
+            <label class="mb-2 block text-sm font-semibold">
+                Nama Penerima
+            </label>
 
-                    <span
-                        class="font-bold"
-                        x-text="formatNumber(points) + ' poin'"
-                    ></span>
-                </div>
-
-
-                <div class="flex justify-between">
-                    <span class="text-sm text-gray-500">
-                        Dana
-                    </span>
-
-                    <span
-                        class="font-bold text-green-500"
-                        x-text="formatRupiah(amount)"
-                    ></span>
-                </div>
-
-
-                <div class="flex justify-between">
-                    <span class="text-sm text-gray-500">
-                        Metode
-                    </span>
-
-                    <span
-                        class="font-semibold"
-                        x-text="method"
-                    ></span>
-                </div>
-
-
-                <div class="flex justify-between gap-5">
-                    <span class="text-sm text-gray-500">
-                        Penerima
-                    </span>
-
-                    <span
-                        class="text-right font-semibold"
-                        x-text="destination || '-'"
-                    ></span>
-                </div>
-
-            </div>
-
-
-            <div
-                class="flex justify-end gap-3 border-t border-gray-200 px-6 py-5 dark:border-white/10"
+            <input
+                type="text"
+                name="nama_penerima"
+                value="{{ old('nama_penerima') }}"
+                placeholder="Nama pemilik rekening / e-wallet"
+                required
+                class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-white/5"
             >
 
-                <button
-                    type="button"
-                    @click="confirmModal = false"
-                    class="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold dark:border-white/10"
-                >
-                    Batal
-                </button>
+        </div>
 
 
-                {{-- NANTI HUBUNGKAN KE FORM / ROUTE BACKEND --}}
-                <button
-                    type="button"
-                    @click="submitPencairan()"
-                    class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950"
-                >
-                    Konfirmasi Pencairan
-                </button>
+        {{-- NOMOR TUJUAN --}}
+        <div
+            x-show="metode === 'e-wallet' || metode === 'bank'"
+            x-transition
+            style="display: none;"
+        >
+
+            <label class="mb-2 block text-sm font-semibold">
+                Nomor Tujuan
+            </label>
+
+            <input
+                type="text"
+                name="nomor_tujuan"
+                value="{{ old('nomor_tujuan') }}"
+                placeholder="Nomor e-wallet / nomor rekening"
+                class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-white/5"
+            >
+
+        </div>
+
+
+        {{-- RINGKASAN --}}
+        <div class="rounded-xl bg-gray-100 p-4 dark:bg-white/5">
+
+            <div class="flex items-center justify-between gap-4">
+
+                <span class="text-sm text-gray-500">
+                    Poin yang dicairkan
+                </span>
+
+                <span
+                    class="font-bold"
+                    x-text="formatPoin(jumlahPoin) + ' poin'"
+                ></span>
+
+            </div>
+
+            <div class="mt-2 flex items-center justify-between gap-4">
+
+                <span class="text-sm text-gray-500">
+                    Jumlah uang
+                </span>
+
+                <span
+                    class="text-lg font-black text-green-600"
+                    x-text="'Rp ' + formatRupiah(jumlahUang)"
+                ></span>
 
             </div>
 
         </div>
 
-    </div>
 
-
-    {{-- ========================================================= --}}
-    {{-- MODAL BERHASIL --}}
-    {{-- ========================================================= --}}
-
-    <div
-        x-show="successModal"
-        x-transition.opacity
-        class="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
-        style="display: none;"
-    >
-
-        <div
-            class="absolute inset-0"
-            @click="successModal = false"
-        ></div>
-
-
-        <div
-            x-show="successModal"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 scale-95"
-            x-transition:enter-end="opacity-100 scale-100"
-            @click.stop
-            class="relative w-full max-w-md rounded-2xl bg-white p-6 text-center shadow-2xl dark:bg-gray-900"
+        {{-- BUTTON --}}
+        <button
+            type="submit"
+            :disabled="submitting"
+            class="w-full rounded-xl bg-green-500 px-4 py-3 font-bold text-gray-950 transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60"
         >
 
-            <div
-                class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-500/10 text-green-500"
+            <span x-show="!submitting">
+                Ajukan Pencairan
+            </span>
+
+            <span
+                x-show="submitting"
+                class="flex items-center justify-center gap-2"
             >
+
                 <svg
+                    class="h-5 w-5 animate-spin"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    class="h-7 w-7"
                 >
+                    <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4"
+                    ></circle>
+
                     <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="m5 12 4 4L19 6"
-                    />
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    ></path>
                 </svg>
+
+                Memeriksa saldo...
+            </span>
+
+        </button>
+
+    </form>
+
+
+    {{-- POPUP LOADING --}}
+    <div
+        x-show="submitting"
+        x-transition.opacity
+        class="fixed inset-0 z-[999] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+        style="display: none;"
+    >
+
+        <div
+            class="mx-4 w-full max-w-sm rounded-2xl bg-white p-8 text-center shadow-2xl dark:bg-gray-900"
+        >
+
+            <div class="flex justify-center">
+
+                <div class="flex h-16 w-16 items-center justify-center rounded-full bg-green-500/10">
+
+                    <svg
+                        class="h-8 w-8 animate-spin text-green-500"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                    >
+                        <circle
+                            class="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="4"
+                        ></circle>
+
+                        <path
+                            class="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        ></path>
+                    </svg>
+
+                </div>
+
             </div>
 
-            <h2 class="mt-4 text-lg font-bold">
-                Pengajuan Berhasil
-            </h2>
+            <h3 class="mt-5 text-lg font-bold">
+                Memeriksa saldo
+            </h3>
 
             <p class="mt-2 text-sm text-gray-500">
-                Pengajuan pencairan kamu berhasil dibuat dan sedang menunggu pemeriksaan admin.
+                Sistem sedang memeriksa kesesuaian saldo poin
+                dengan jumlah pencairan.
             </p>
 
-            <button
-                type="button"
-                @click="successModal = false"
-                class="mt-6 w-full rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950"
-            >
-                Mengerti
-            </button>
+            <p class="mt-4 text-xs text-gray-400">
+                Mohon jangan tutup halaman ini.
+            </p>
 
         </div>
 
@@ -910,150 +407,353 @@
 </div>
 
 
+{{-- RIWAYAT --}}
+<div class="rounded-2xl border border-gray-200 bg-white dark:border-white/10 dark:bg-white/[0.03]">
+
+    <div class="border-b border-gray-200 p-6 dark:border-white/10">
+
+        <h2 class="font-bold">
+            Riwayat Pencairan
+        </h2>
+
+        <p class="mt-1 text-sm text-gray-500">
+            Pantau status pengajuan pencairan kamu.
+        </p>
+
+    </div>
+
+
+    <div class="overflow-x-auto">
+
+        <table class="w-full text-left text-sm">
+
+            <thead class="border-b border-gray-200 text-xs uppercase text-gray-500 dark:border-white/10">
+
+                <tr>
+
+                    <th class="px-6 py-4">
+                        Tanggal
+                    </th>
+
+                    <th class="px-6 py-4">
+                        Jumlah
+                    </th>
+
+                    <th class="px-6 py-4">
+                        Metode
+                    </th>
+
+                    <th class="px-6 py-4">
+                        Tujuan
+                    </th>
+
+                    <th class="px-6 py-4">
+                        Status
+                    </th>
+
+                    <th class="px-6 py-4">
+                        Aksi
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody class="divide-y divide-gray-200 dark:divide-white/10">
+
+                @forelse($pencairan as $item)
+
+                    <tr>
+
+                        <td class="whitespace-nowrap px-6 py-5">
+
+                            <p class="font-medium">
+                                {{ $item->tanggal_pengajuan->format('d M Y') }}
+                            </p>
+
+                            <p class="text-xs text-gray-500">
+                                {{ $item->tanggal_pengajuan->format('H:i') }}
+                            </p>
+
+                        </td>
+
+
+                        <td class="px-6 py-5">
+
+                            <p class="font-bold">
+                                {{ number_format($item->jumlah_poin, 0, ',', '.') }}
+                                poin
+                            </p>
+
+                            <p class="text-xs text-green-500">
+                                Rp {{ number_format($item->jumlah_uang, 0, ',', '.') }}
+                            </p>
+
+                        </td>
+
+
+                        <td class="px-6 py-5">
+
+                            <p class="font-semibold">
+                                {{ $item->metode === 'e-wallet'
+                                    ? 'E-Wallet'
+                                    : ucfirst($item->metode) }}
+                            </p>
+
+                            @if($item->provider)
+
+                                <p class="text-xs text-gray-500">
+                                    {{ $item->provider }}
+                                </p>
+
+                            @endif
+
+                        </td>
+
+
+                        <td class="px-6 py-5">
+
+                            <p class="font-medium">
+                                {{ $item->nama_penerima }}
+                            </p>
+
+                            @if($item->nomor_tujuan)
+
+                                <p class="text-xs text-gray-500">
+                                    {{ $item->nomor_tujuan }}
+                                </p>
+
+                            @endif
+
+                        </td>
+
+
+                        <td class="px-6 py-5">
+
+                            @php
+
+                                $statusClass = match($item->status) {
+
+                                    'menunggu' =>
+                                        'bg-yellow-500/10 text-yellow-600',
+
+                                    'diproses' =>
+                                        'bg-blue-500/10 text-blue-600',
+
+                                    'disetujui' =>
+                                        'bg-green-500/10 text-green-600',
+
+                                    'selesai' =>
+                                        'bg-green-500/10 text-green-600',
+
+                                    'ditolak' =>
+                                        'bg-red-500/10 text-red-600',
+
+                                    default =>
+                                        'bg-gray-500/10 text-gray-600',
+                                };
+
+                                $statusLabel = ucfirst($item->status);
+
+                            @endphp
+
+                            <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $statusClass }}">
+                                {{ $statusLabel }}
+                            </span>
+
+                        </td>
+
+
+                        <td class="px-6 py-5">
+
+                            @if($item->status === 'disetujui')
+
+                                <form
+                                    method="POST"
+                                    action="{{ route('siswa.pencairan.selesai', $item) }}"
+                                >
+
+                                    @csrf
+                                    @method('PATCH')
+
+                                    <button
+                                        type="submit"
+                                        class="rounded-lg bg-green-500 px-3 py-2 text-xs font-bold text-gray-950 hover:bg-green-400"
+                                    >
+                                        Sudah Diterima
+                                    </button>
+
+                                </form>
+
+                            @elseif($item->status === 'selesai')
+
+                                <span class="text-xs font-semibold text-green-600">
+                                    Selesai
+                                </span>
+
+                            @elseif($item->status === 'ditolak')
+
+                                <span class="text-xs font-semibold text-red-600">
+                                    Ditolak
+                                </span>
+
+                                @if($item->catatan)
+                                    <p class="mt-1 max-w-xs text-xs text-gray-500">
+                                        {{ $item->catatan }}
+                                    </p>
+                                @endif
+
+                            @else
+
+                                <span class="text-xs text-gray-400">
+                                    Menunggu proses
+                                </span>
+
+                            @endif
+
+                        </td>
+
+                    </tr>
+
+                @empty
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="px-6 py-10 text-center text-sm text-gray-500"
+                        >
+                            Belum ada riwayat pencairan.
+                        </td>
+
+                    </tr>
+
+                @endforelse
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+</div>
+
 <script>
-    function pencairanDana() {
-        return {
 
-            // ==========================================
-            // DATA SEMENTARA
-            // NANTI TEMEN LU GANTI DENGAN DATABASE
-            // ==========================================
+function pencairanApp(config) {
 
-            points: 0,
+    return {
 
-            balance: 12500,
+        saldo: Number(config.saldo || 0),
+        jumlahPoin: Number(config.oldJumlah || 100),
+        jumlahUang: 10000,
+        submitting:false,
+        metode: '',
+        provider: '',
+        quickAmounts: [100, 500, 1000, 5000],
 
-            // 100 poin = Rp10.000
-            conversionRate: 100,
+        init() {
 
-            amount: 0,
+            this.calculate();
 
-            method: 'DANA',
+        },
 
-            destination: '',
+        formatPoin(value) {
 
-            confirmModal: false,
+            return new Intl.NumberFormat('id-ID')
+                .format(Number(value) || 0);
 
-            successModal: false,
+        },
 
-            errorModal: false,
+        formatRupiah(value) {
 
-            errorMessage: '',
+            return new Intl.NumberFormat('id-ID')
+                .format(Number(value) || 0);
 
+        },
 
-            // ==========================================
-            // HITUNG NOMINAL
-            // ==========================================
+        calculate() {
 
-            calculateAmount() {
+            let poin = Number(this.jumlahPoin) || 0;
 
-                if (!this.points || this.points < 0) {
-                    this.amount = 0;
-                    return;
-                }
-
-                this.amount =
-                    Math.floor(this.points / this.conversionRate) * 10000;
-            },
-
-
-            // ==========================================
-            // QUICK POINT
-            // ==========================================
-
-            setPoints(value) {
-
-                if (value > this.balance) {
-                    value = this.balance;
-                }
-
-                this.points = value;
-
-                this.calculateAmount();
-            },
-
-
-            // ==========================================
-            // FORMAT ANGKA
-            // ==========================================
-
-            formatNumber(value) {
-
-                return new Intl.NumberFormat('id-ID')
-                    .format(value || 0);
-            },
-
-
-            // ==========================================
-            // FORMAT RUPIAH
-            // ==========================================
-
-            formatRupiah(value) {
-
-                return new Intl.NumberFormat(
-                    'id-ID',
-                    {
-                        style: 'currency',
-                        currency: 'IDR',
-                        maximumFractionDigits: 0
-                    }
-                ).format(value || 0);
-            },
-
-            showError(message) {
-
-                this.errorMessage = message;
-
-                this.errorModal = true;
-            },
-
-            openConfirm() {
-
-                if (!this.points || this.points < 1000) {
-
-                    this.showError(
-                        'Minimal pencairan adalah 1.000 poin.'
-                    );
-
-                    return;
-                }
-
-
-                if (this.points > this.balance) {
-
-                    this.showError(
-                        'Jumlah poin melebihi saldo kamu.'
-                    );
-
-                    return;
-                }
-
-
-                if (!this.destination.trim()) {
-
-                    this.showError(
-                        'Nama penerima wajib diisi.'
-                    );
-
-                    return;
-                }
-
-
-                this.calculateAmount();
-
-                this.confirmModal = true;
-            },
-
-
-            submitPencairan() {
-
-                this.confirmModal = false;
-
-                this.successModal = true;
+            if (poin < 0) {
+                poin = 0;
             }
 
+            this.jumlahPoin = poin;
+
+            this.jumlahUang = poin * 100;
+
+        },
+
+        setAmount(amount) {
+
+            if (amount <= this.saldo) {
+
+                this.jumlahPoin = amount;
+
+                this.calculate();
+
+            }
+
+        },
+
+        changeMetode() {
+
+            this.provider = '';
+
+        },
+
+        validateForm() {
+
+            const poin = Number(this.jumlahPoin);
+
+            if (poin < 100) {
+
+                alert('Minimal pencairan adalah 100 poin.');
+
+                return false;
+
+            }
+
+            if (poin > this.saldo) {
+
+                alert('Saldo poin tidak mencukupi.');
+
+                return false;
+
+            }
+
+            if (this.metode === '') {
+
+                alert('Silakan pilih metode pencairan.');
+
+                return false;
+
+            }
+
+            if (
+                (this.metode === 'e-wallet' || this.metode === 'bank')
+                && this.provider === ''
+            ) {
+
+                alert('Silakan pilih provider.');
+
+                return false;
+
+            }
+
+            return true;
+
         }
-    }
+
+    };
+
+}
+
 </script>
 
 @endsection

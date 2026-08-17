@@ -18,6 +18,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminProfilController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AdminTransaksiController;
+use App\Http\Controllers\PencairanPoinController;
 
 
 Route::get('/', function () {
@@ -66,9 +67,10 @@ Route::middleware(['auth', 'role:siswa', 'no-cache'])->prefix('siswa')->name('si
         Route::post('/pesanan', [SiswaPesananController::class, 'store'])->name('pesanan.store');
         Route::patch('/pesanan/{pesanan}/proses',[SiswaPesananController::class, 'process'])->name('pesanan.process');
         Route::patch('/pesanan/{pesanan}/selesai', [SiswaPesananController::class, 'selesai'])->name('pesanan.selesai');
-        Route::get('/pencairan-uang', function () {
-            return view('siswa.pencairan-uang');
-        })->name('pencairan.uang');
+
+        Route::get('/pencairan-uang', [PencairanPoinController::class, 'index'])->name('pencairan.uang');
+        Route::post('/pencairan-uang', [PencairanPoinController::class, 'store'])->name('pencairan.store');
+        Route::patch('/pencairan-uang/{pencairan}/selesai', [PencairanPoinController::class, 'selesai'])->name('pencairan.selesai');
 
         // PRODUK
         Route::get('/produk', [SiswaProdukController::class, 'index'])->name('produk.index');
@@ -120,5 +122,10 @@ Route::middleware(['auth', 'role:admin', 'no-cache'])->group(function () {
     Route::delete('/admin/produk/{produk}/reject', [AdminProdukController::class, 'reject'])->name('admin.produk.reject');
 
     Route::get('/admin/transaksi', [AdminTransaksiController::class, 'index'])->name('admin.transaksi.index');
+
+    Route::get('/admin/pencairan-uang',[PencairanPoinController::class, 'indexAdmin'])->name('admin.pencairan-uang.indexAdmin');
+    Route::patch('/admin/pencairan-uang/{pencairan}/process', [PencairanPoinController::class, 'process'])->name('admin.pencairan-uang.process');
+    Route::patch('/admin/pencairan-uang/{pencairan}/approve', [PencairanPoinController::class, 'approve'])->name('admin.pencairan-uang.approve');
+    Route::patch('/admin/pencairan-uang/{pencairan}/reject', [PencairanPoinController::class, 'reject'])->name('admin.pencairan-uang.reject');
 
 });

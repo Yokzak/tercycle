@@ -186,16 +186,7 @@
                 >
                     Dashboard
                 </a>
-
-                <form action="{{ route('logout') }}" method="POST" class="inline">
-                    @csrf
-                    <button
-                        type="submit"
-                        class="rounded-xl bg-red-500 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-red-400"
-                    >
-                        Keluar
-                    </button>
-                </form>
+                
             @endauth
 
 
@@ -280,16 +271,6 @@
                 >
                     Dashboard
                 </a>
-
-                <form action="{{ route('logout') }}" method="POST" class="block">
-                    @csrf
-                    <button
-                        type="submit"
-                        class="w-full text-left rounded-lg px-3 py-2.5 text-sm font-semibold text-red-500 hover:bg-gray-100 dark:hover:bg-white/5"
-                    >
-                        Keluar
-                    </button>
-                </form>
             @endauth
 
         </div>
