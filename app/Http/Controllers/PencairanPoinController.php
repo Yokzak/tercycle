@@ -50,18 +50,17 @@ class PencairanPoinController extends Controller
             'jumlah_poin' => [
                 'required',
                 'integer',
-                'min:100',
+                'min:10',
             ],
 
             'metode' => [
                 'required',
-                'in:cash,e-wallet,bank',
+                'in:cash,e-wallet',
             ],
 
             'provider' => [
                 'nullable',
-                'string',
-                'max:255',
+                'in:dana,gopay,shopeepay,ovo',
             ],
 
             'nama_penerima' => [
@@ -85,9 +84,7 @@ class PencairanPoinController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        if (
-            in_array($validated['metode'], ['e-wallet', 'bank'])
-        ) {
+        if ($validated['metode'] === 'e-wallet') {
             if (
                 empty($validated['provider']) ||
                 empty($validated['nomor_tujuan'])
@@ -95,8 +92,7 @@ class PencairanPoinController extends Controller
                 return back()
                     ->withInput()
                     ->withErrors([
-                        'nomor_tujuan' =>
-                            'Provider dan nomor tujuan wajib diisi.'
+                        'nomor_tujuan' => 'Provider dan nomor tujuan wajib diisi.',
                     ]);
             }
         }
@@ -219,7 +215,7 @@ class PencairanPoinController extends Controller
 
         return back()->with(
             'success',
-            'Pencairan berhasil disetujui. Silakan pastikan dana sudah ditransfer ke siswa.'
+            'Transfer dana berhasil dikonfirmasi. Pengajuan pencairan telah disetujui.'
         );
     }
 
@@ -232,26 +228,38 @@ class PencairanPoinController extends Controller
             );
         }
 
-        DB::transaction(function () use ($request, $pencairan) {
+        try {
+            DB::transaction(function () use ($request, $pencairan) {
 
-            // Kalau sudah diproses, saldo sudah dikurangi.
-            // Karena ditolak, saldo harus dikembalikan.
-            if ($pencairan->status === 'diproses') {
-                $pencairan->siswa->increment(
-                    'saldo_poin',
-                    $pencairan->jumlah_poin
-                );
-            }
+                if ($pencairan->status === 'diproses') {
 
-            $pencairan->update([
-                'status' => 'ditolak',
-                'catatan' => $request->input('catatan'),
-            ]);
-        });
+                    $siswa = $pencairan->siswa()
+                        ->lockForUpdate()
+                        ->first();
+
+                    $siswa->increment(
+                        'saldo_poin',
+                        $pencairan->jumlah_poin
+                    );
+                }
+
+                $pencairan->update([
+                    'status' => 'ditolak',
+                    'catatan' => $request->input('catatan'),
+                ]);
+            });
+
+        } catch (\Throwable $e) {
+
+            return back()->with(
+                'error',
+                'Gagal menolak pengajuan pencairan.'
+            );
+        }
 
         return back()->with(
             'success',
-            'Pengajuan pencairan berhasil ditolak.'
+            'Pengajuan pencairan berhasil ditolak dan saldo poin telah dikembalikan.'
         );
     }
 

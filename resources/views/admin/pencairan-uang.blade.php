@@ -8,7 +8,29 @@
 
 @section('content')
 
-<div class="space-y-6">
+<div
+    class="space-y-6"
+    x-data="{
+        showConfirm: false,
+        showResult: false,
+        resultType: '',
+        resultMessage: '',
+        selectedForm: null,
+        confirmMessage: '',
+
+        openConfirm(form, message) {
+            this.selectedForm = form;
+            this.confirmMessage = message;
+            this.showConfirm = true;
+        },
+
+        submitAction() {
+            if (this.selectedForm) {
+                this.selectedForm.submit();
+            }
+        }
+    }"
+>
 
 {{-- HEADER --}}
 <div>
@@ -20,21 +42,6 @@
         Kelola pengajuan pencairan poin siswa.
     </p>
 </div>
-
-
-{{-- FLASH MESSAGE --}}
-@if (session('success'))
-    <div class="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-400">
-        {{ session('success') }}
-    </div>
-@endif
-
-@if (session('error'))
-    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400">
-        {{ session('error') }}
-    </div>
-@endif
-
 
 {{-- TABLE --}}
 <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/10 dark:bg-white/[0.03]">
@@ -316,15 +323,14 @@
                                         @method('PATCH')
 
                                         <button
-                                            type="submit"
-                                            onclick="return confirm('Proses pengajuan pencairan ini? Saldo siswa akan dikurangi.')"
+                                            type="button"
+                                            @click="openConfirm($el.closest('form'), 'Proses pengajuan pencairan ini? Saldo siswa akan dikurangi.')"
                                             class="rounded-lg bg-blue-500 px-3 py-2 text-xs font-bold text-white transition hover:bg-blue-600"
                                         >
                                             Proses
                                         </button>
 
                                     </form>
-
 
                                     <form
                                         method="POST"
@@ -335,8 +341,8 @@
                                         @method('PATCH')
 
                                         <button
-                                            type="submit"
-                                            onclick="return confirm('Tolak pengajuan pencairan ini?')"
+                                            type="button"
+                                            @click="openConfirm($el.closest('form'), 'Tolak pengajuan pencairan ini?')"
                                             class="rounded-lg border border-red-200 px-3 py-2 text-xs font-bold text-red-500 transition hover:bg-red-50 dark:border-red-500/20 dark:hover:bg-red-500/10"
                                         >
                                             Tolak
@@ -357,8 +363,8 @@
                                         @method('PATCH')
 
                                         <button
-                                            type="submit"
-                                            onclick="return confirm('Pastikan dana sebesar Rp {{ number_format($item->jumlah_uang, 0, ',', '.') }} sudah ditransfer kepada siswa sebelum melanjutkan.')"
+                                            type="button"
+                                            @click="openConfirm($el.closest('form'), 'Konfirmasi bahwa transfer dana kepada siswa sudah dilakukan?')"
                                             class="rounded-lg bg-green-500 px-3 py-2 text-xs font-bold text-gray-950 transition hover:bg-green-400"
                                         >
                                             Konfirmasi Transfer
@@ -376,8 +382,8 @@
                                         @method('PATCH')
 
                                         <button
-                                            type="submit"
-                                            onclick="return confirm('Tolak pengajuan ini? Saldo siswa akan dikembalikan.')"
+                                            type="button"
+                                            @click="openConfirm($el.closest('form'), 'Tolak pengajuan ini? Saldo siswa akan dikembalikan.')"
                                             class="rounded-lg border border-red-200 px-3 py-2 text-xs font-bold text-red-500 transition hover:bg-red-50 dark:border-red-500/20 dark:hover:bg-red-500/10"
                                         >
                                             Tolak
@@ -467,7 +473,155 @@
 
 </div>
 
+{{-- MODAL KONFIRMASI --}}
+<div
+    x-show="showConfirm"
+    x-cloak
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+>
+    <div
+        @click.outside="showConfirm = false"
+        class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900"
+    >
 
+        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500/10 text-yellow-500">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.8"
+                stroke="currentColor"
+                class="h-6 w-6"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 9v3.75m0 3.75h.008M10.29 3.86l-7.1 12.28A1.5 1.5 0 0 0 4.49 18.4h15.02a1.5 1.5 0 0 0 1.3-2.26L13.71 3.86a1.98 1.98 0 0 0-3.42 0Z"
+                />
+            </svg>
+        </div>
+
+        <h3 class="mt-4 text-lg font-bold">
+            Konfirmasi Tindakan
+        </h3>
+
+        <p
+            class="mt-2 text-sm text-gray-500"
+            x-text="confirmMessage"
+        ></p>
+
+        <div class="mt-6 flex justify-end gap-3">
+
+            <button
+                type="button"
+                @click="showConfirm = false"
+                class="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+            >
+                Batal
+            </button>
+
+            <button
+                type="button"
+                @click="submitAction()"
+                class="rounded-lg bg-green-500 px-4 py-2 text-sm font-bold text-gray-950 transition hover:bg-green-400"
+            >
+                Ya, Lanjutkan
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
+@if (session('success') || session('error'))
+
+    <div
+        x-data="{ open: true }"
+        x-show="open"
+        x-cloak
+        class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4"
+    >
+
+        <div
+            @click.outside="open = false"
+            class="w-full max-w-md rounded-2xl bg-white p-6 text-center shadow-2xl dark:bg-gray-900"
+        >
+
+            @if (session('success'))
+
+                {{-- SUCCESS ICON --}}
+                <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-500/10 text-green-500">
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                        class="h-8 w-8"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="m4.5 12.75 6 6 9-13.5"
+                        />
+                    </svg>
+
+                </div>
+
+                <h3 class="mt-4 text-xl font-bold">
+                    Berhasil
+                </h3>
+
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    {{ session('success') }}
+                </p>
+
+            @else
+
+                {{-- FAILED ICON --}}
+                <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10 text-red-500">
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                        class="h-8 w-8"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M6 18 18 6M6 6l12 12"
+                        />
+                    </svg>
+
+                </div>
+
+                <h3 class="mt-4 text-xl font-bold">
+                    Gagal
+                </h3>
+
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    {{ session('error') }}
+                </p>
+
+            @endif
+
+            <button
+                type="button"
+                @click="open = false"
+                class="mt-6 w-full rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-900"
+            >
+                Tutup
+            </button>
+
+        </div>
+
+    </div>
+
+@endif
 </div>
 
 @endsection

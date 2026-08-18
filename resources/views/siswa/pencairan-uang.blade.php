@@ -119,7 +119,7 @@
             <input
                 type="number"
                 name="jumlah_poin"
-                min="100"
+                min="10"
                 :max="saldo"
                 x-model.number="jumlahPoin"
                 @input="calculate()"
@@ -214,7 +214,8 @@
             <select
                 name="provider"
                 x-model="provider"
-                required
+                :required="metode === 'e-wallet'"
+                :disabled="metode !== 'e-wallet'"
                 class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-white/5"
             >
                 <option value="">
@@ -257,7 +258,8 @@
                 name="nama_penerima"
                 value="{{ old('nama_penerima') }}"
                 placeholder="Nama penerima"
-                required
+                :required="metode === 'cash'"
+                :disabled="metode !== 'cash'"
                 class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-white/5"
             >
 
@@ -270,16 +272,21 @@
             x-transition
             style="display: none;"
         >
-        <input
+            <label class="mb-2 block text-sm font-semibold">
+                Nama Pemilik E-Wallet
+            </label>
+
+            <input
                 type="text"
                 name="nama_penerima"
                 value="{{ old('nama_penerima') }}"
                 placeholder="Nama pemilik e-wallet"
-                required
-                class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-white/5"
+                :required="metode === 'e-wallet'"
+                :disabled="metode !== 'e-wallet'"
+                class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-white/5"
             >
 
-            <label class="mb-2 block text-sm font-semibold">
+            <label class="mb-2 mt-5 block text-sm font-semibold">
                 Nomor Tujuan
             </label>
 
@@ -288,9 +295,10 @@
                 name="nomor_tujuan"
                 value="{{ old('nomor_tujuan') }}"
                 placeholder="Nomor e-wallet"
+                :required="metode === 'e-wallet'"
+                :disabled="metode !== 'e-wallet'"
                 class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-white/5"
             >
-
         </div>
 
 
