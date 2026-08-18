@@ -1,5 +1,6 @@
 @import "tailwindcss";
-
+@source "../../resources/views";
+@source "../../app";
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* Hilangkan tombol + / - pada input number */
