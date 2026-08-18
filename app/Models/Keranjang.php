@@ -20,4 +20,8 @@ class Keranjang extends Model
     {
         return $this->hasMany(DetailKeranjang::class, 'keranjang_id');
     }
+    public function getJumlahProdukAttribute()
+    {
+        return $this->detailKeranjang()->sum('jumlah_produk');
+    }
 }

@@ -70,6 +70,7 @@ Route::middleware(['auth', 'role:siswa', 'no-cache'])->prefix('siswa')->name('si
         Route::post('/pesanan', [SiswaPesananController::class, 'store'])->name('pesanan.store');
         Route::patch('/pesanan/{pesanan}/proses',[SiswaPesananController::class, 'process'])->name('pesanan.process');
         Route::patch('/pesanan/{pesanan}/selesai', [SiswaPesananController::class, 'selesai'])->name('pesanan.selesai');
+        Route::post('/pesanan/beli', [SiswaPesananController::class, 'buy'])->name('pesanan.buy');
 
         Route::get('/pencairan-uang', [PencairanPoinController::class, 'index'])->name('pencairan.uang');
         Route::post('/pencairan-uang', [PencairanPoinController::class, 'store'])->name('pencairan.store');

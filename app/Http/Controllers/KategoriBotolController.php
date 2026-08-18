@@ -9,8 +9,29 @@ class KategoriBotolController extends Controller
 {
     public function index()
     {
-        $kategoriBotols = KategoriBotol::orderBy('id')->get();
-        return view('admin.botol', compact('kategoriBotols'));
+        $kategoriBotols = KategoriBotol::withSum(
+            [
+                'detailPenukaran as total_ditukar' => function ($query) {
+                    $query->whereHas('penukaran', function ($q) {
+                        $q->where('status', 'disetujui');
+                    });
+                }
+            ],
+            'jumlah_botol'
+        )
+        ->orderBy('id')
+        ->get();
+
+        // Total seluruh botol yang sudah ditukar
+        // dari semua kategori dengan status disetujui.
+        $totalDitukar = $kategoriBotols->sum(
+            fn ($kategori) => $kategori->total_ditukar ?? 0
+        );
+
+        return view('admin.botol', compact(
+            'kategoriBotols',
+            'totalDitukar'
+        ));
     }
 
     public function store(Request $request)

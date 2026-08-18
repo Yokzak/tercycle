@@ -20,7 +20,6 @@ class SiswaProdukController extends Controller
         ->latest()
         ->get();
 
-
         return view('siswa.produk', compact('produk', 'kategoriProduk'));
     }
 

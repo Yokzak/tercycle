@@ -8,6 +8,7 @@
 
 @section('content')
 
+
 <div
     x-data="{
         kategori: [
@@ -20,6 +21,28 @@
         productModal: false,
         search: '',
         category: 'Semua',
+
+        buyModal: false,
+        selectedProduct: null,
+        buyQuantity: 1,
+
+        openBuyModal(product) {
+            this.selectedProduct = product;
+            this.buyQuantity = 1;
+            this.buyModal = true;
+        },
+
+        closeBuyModal() {
+            this.buyModal = false;
+            this.selectedProduct = null;
+            this.buyQuantity = 1;
+        },
+
+        get buyTotal() {
+            if (!this.selectedProduct) return 0;
+
+            return this.selectedProduct.price * this.buyQuantity;
+        },
 
         products: @js(
             $produk->map(function ($produk) {
@@ -250,7 +273,7 @@
                                 </button>
                             </form>
 
-                            <button type="button" class="rounded-xl bg-green-500 px-4 py-2.5 text-xs font-bold text-gray-950 transition hover:bg-green-400">
+                            <button type="button" @click="openBuyModal(product)" class="rounded-xl bg-green-500 px-4 py-2.5 text-xs font-bold text-gray-950 transition hover:bg-green-400">
                                 Beli
                             </button>
 
@@ -550,6 +573,250 @@
                 </div>
             </form>
         </div>
+    </div>
+
+    {{-- MODAL BELI PRODUK --}}
+
+    <div
+        x-show="buyModal"
+        x-transition.opacity
+        x-effect="document.body.style.overflow = buyModal ? 'hidden' : ''"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+        style="display: none;"
+    >
+        <div
+            class="absolute inset-0 bg-black/50 backdrop-blur-md"
+            @click="closeBuyModal()"
+        ></div>
+
+        <div
+            x-show="buyModal"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+            @click.stop
+            class="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900"
+        >
+
+            {{-- HEADER --}}
+
+            <div class="flex items-start justify-between">
+
+                <div>
+                    <h2 class="text-lg font-bold">
+                        Beli Produk
+                    </h2>
+
+                    <p class="mt-1 text-xs text-gray-500">
+                        Atur jumlah produk yang ingin kamu beli.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    @click="closeBuyModal()"
+                    class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10"
+                >
+                    ✕
+                </button>
+
+            </div>
+
+
+            {{-- PRODUK --}}
+
+            <div
+                class="mt-6 rounded-xl border border-gray-200 p-4 dark:border-white/10"
+            >
+
+                <div class="flex gap-4">
+
+                    <div
+                        class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-white/5"
+                    >
+
+                        <template x-if="selectedProduct?.image">
+
+                            <img
+                                :src="'/storage/' + selectedProduct.image"
+                                :alt="selectedProduct?.name"
+                                class="h-full w-full object-cover"
+                            >
+
+                        </template>
+
+                        <template x-if="!selectedProduct?.image">
+
+                            <span class="text-3xl">
+                                📦
+                            </span>
+
+                        </template>
+
+                    </div>
+
+
+                    <div class="min-w-0">
+
+                        <p
+                            class="text-xs font-semibold text-green-500"
+                            x-text="selectedProduct?.category"
+                        ></p>
+
+                        <h3
+                            class="mt-1 truncate font-bold"
+                            x-text="selectedProduct?.name"
+                        ></h3>
+
+                        <p class="mt-1 text-sm text-gray-500">
+
+                            <span
+                                x-text="selectedProduct?.price?.toLocaleString('id-ID')"
+                            ></span>
+
+                            poin / produk
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            {{-- JUMLAH --}}
+
+            <div class="mt-6">
+
+                <div class="flex items-center justify-between">
+
+                    <label class="text-sm font-semibold">
+                        Jumlah
+                    </label>
+
+                    <span class="text-xs text-gray-500">
+
+                        Stok:
+                        <span x-text="selectedProduct?.stock"></span>
+
+                    </span>
+
+                </div>
+
+
+                <div class="mt-3 flex items-center gap-3">
+
+                    <button
+                        type="button"
+                        @click="
+                            if (buyQuantity > 1) {
+                                buyQuantity--;
+                            }
+                        "
+                        class="flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 text-lg font-bold hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/10"
+                    >
+                        −
+                    </button>
+
+
+                    <div
+                        class="flex h-11 flex-1 items-center justify-center rounded-xl border border-gray-200 font-bold dark:border-white/10"
+                        x-text="buyQuantity"
+                    ></div>
+
+
+                    <button
+                        type="button"
+                        @click="
+                            if (
+                                selectedProduct &&
+                                buyQuantity < selectedProduct.stock
+                            ) {
+                                buyQuantity++;
+                            }
+                        "
+                        class="flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 text-lg font-bold hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/10"
+                    >
+                        +
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            {{-- TOTAL --}}
+
+            <div
+                class="mt-6 rounded-xl bg-green-500/10 p-4"
+            >
+
+                <div class="flex items-center justify-between">
+
+                    <span class="text-sm text-gray-500">
+                        Total
+                    </span>
+
+                    <span
+                        class="text-xl font-black text-green-500"
+                        x-text="' ' + buyTotal.toLocaleString('id-ID') + ' poin'"
+                    ></span>
+
+                </div>
+
+            </div>
+
+
+            {{-- BUTTON --}}
+
+            <div class="mt-6 flex gap-3">
+
+                <button
+                    type="button"
+                    @click="closeBuyModal()"
+                    class="flex-1 rounded-xl border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+                >
+                    Batal
+                </button>
+
+
+                <form
+                    method="POST"
+                    action="{{ route('siswa.pesanan.store') }}"
+                    class="flex-1"
+                >
+
+                    @csrf
+
+                    <input
+                        type="hidden"
+                        name="produk_id"
+                        :value="selectedProduct?.id"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="jumlah_produk"
+                        :value="buyQuantity"
+                    >
+
+                    <button
+                        type="submit"
+                        class="w-full rounded-xl bg-green-500 px-4 py-3 text-sm font-bold text-gray-950 hover:bg-green-400"
+                    >
+                        Lanjutkan Pesanan
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
     </div>
 </div>
 

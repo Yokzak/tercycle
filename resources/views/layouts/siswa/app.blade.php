@@ -1,3 +1,26 @@
+@php
+    $jumlahKeranjang = 0;
+
+    if (auth()->check()) {
+        $user = auth()->user();
+        $siswa = $user->siswa;
+
+        if ($siswa) {
+            $keranjang = \App\Models\Keranjang::where(
+                'siswa_id',
+                $siswa->id
+            )->first();
+
+            if ($keranjang) {
+                $jumlahKeranjang = \App\Models\DetailKeranjang::where(
+                    'keranjang_id',
+                    $keranjang->id
+                )->sum('jumlah_produk');
+            }
+        }
+    }
+@endphp
+
 <!DOCTYPE html>
 <html
     lang="id"

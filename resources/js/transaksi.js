@@ -1,154 +1,118 @@
 export default function transaksiFilter() {
     return {
-        // =========================================================
-        // FILTER PANEL
-        // =========================================================
 
         showFilter: false,
 
-        // =========================================================
-        // DETAIL TRANSAKSI
-        // =========================================================
-
         openDetail: null,
 
-        toggleDetail(id) {
-            if (this.openDetail === id) {
-                this.openDetail = null;
-            } else {
-                this.openDetail = id;
-            }
+        jenis: window.transaksiFilterData.jenis ?? [],
+
+        statusPenukaran: window.transaksiFilterData.statusPenukaran ?? [],
+
+        statusPenjualan: window.transaksiFilterData.statusPenjualan ?? [],
+
+        statusPembelian: window.transaksiFilterData.statusPembelian ?? [],
+
+        minPoin: Number(window.transaksiFilterData.minPoin ?? 0),
+
+        maxPoin: Number(window.transaksiFilterData.maxPoin ?? 999999),
+
+
+        get minPoinDisplay() {
+            return this.formatPoin(this.minPoin);
         },
 
-        // =========================================================
-        // FILTER JENIS
-        // =========================================================
 
-        jenis: [],
-
-        // =========================================================
-        // FILTER POIN
-        // =========================================================
-
-        minPoin: 0,
-        maxPoin: 9999999,
-
-        minPoinDisplay: '0',
-        maxPoinDisplay: '9.999.999',
-
-        // =========================================================
-        // FILTER STATUS
-        // =========================================================
-
-        statusPenukaran: [],
-        statusPenjualan: [],
-        statusPembelian: [],
-
-        // =========================================================
-        // INIT
-        // =========================================================
-
-        init() {
-            const data = window.transaksiFilterData ?? {};
-
-            this.jenis = Array.isArray(data.jenis)
-                ? data.jenis
-                : [];
-
-            this.statusPenukaran = Array.isArray(data.statusPenukaran)
-                ? data.statusPenukaran
-                : [];
-
-            this.statusPenjualan = Array.isArray(data.statusPenjualan)
-                ? data.statusPenjualan
-                : [];
-
-            this.statusPembelian = Array.isArray(data.statusPembelian)
-                ? data.statusPembelian
-                : [];
-
-            this.minPoin = Number(
-                data.minPoin ?? 0
-            );
-
-            this.maxPoin = Number(
-                data.maxPoin ?? 999999999
-            );
-
-            this.updatePoinDisplay();
+        get maxPoinDisplay() {
+            return this.formatPoin(this.maxPoin);
         },
 
-        // =========================================================
-        // FORMAT POIN
-        // =========================================================
 
         formatPoin(value) {
-            return new Intl.NumberFormat('id-ID').format(value);
+            return Number(value || 0).toLocaleString('id-ID');
         },
 
-        updatePoinDisplay() {
-            this.minPoinDisplay =
-                this.formatPoin(this.minPoin);
 
-            this.maxPoinDisplay =
-                this.formatPoin(this.maxPoin);
-        },
+        updateMinPoin() {
 
-        // =========================================================
-        // SLIDER MINIMUM
-        // =========================================================
-
-        updateMinPoin(event) {
-            const value = Number(event.target.value);
-
-            if (value > this.maxPoin) {
-                this.minPoin = this.maxPoin;
-            } else {
-                this.minPoin = value;
-            }
-
-            this.updatePoinDisplay();
-        },
-
-        // =========================================================
-        // SLIDER MAXIMUM
-        // =========================================================
-
-        updateMaxPoin(event) {
-            const value = Number(event.target.value);
-
-            if (value < this.minPoin) {
+            if (this.minPoin > this.maxPoin) {
                 this.maxPoin = this.minPoin;
-            } else {
-                this.maxPoin = value;
             }
 
-            this.updatePoinDisplay();
         },
 
-        // =========================================================
-        // RESET FILTER
-        // =========================================================
+
+        updateMaxPoin() {
+
+            if (this.maxPoin < this.minPoin) {
+                this.minPoin = this.maxPoin;
+            }
+
+        },
+
+
+        updateMinPoinFromInput() {
+
+            if (this.minPoin < 0) {
+                this.minPoin = 0;
+            }
+
+            if (this.minPoin > 999999) {
+                this.minPoin = 999999;
+            }
+
+            if (this.minPoin > this.maxPoin) {
+                this.maxPoin = this.minPoin;
+            }
+
+        },
+
+
+        updateMaxPoinFromInput() {
+
+            if (this.maxPoin < 0) {
+                this.maxPoin = 0;
+            }
+
+            if (this.maxPoin > 999999) {
+                this.maxPoin = 999999;
+            }
+
+            if (this.maxPoin < this.minPoin) {
+                this.minPoin = this.maxPoin;
+            }
+
+        },
+
+
+        hasJenis(value) {
+            return this.jenis.includes(value);
+        },
+
+
+        toggleDetail(id) {
+            this.openDetail =
+                this.openDetail === id
+                    ? null
+                    : id;
+        },
+
 
         resetFilter() {
+
+            this.minPoin = 0;
+
+            this.maxPoin = 999999;
+
             this.jenis = [];
 
             this.statusPenukaran = [];
+
             this.statusPenjualan = [];
+
             this.statusPembelian = [];
 
-            this.minPoin = 0;
-            this.maxPoin = 999999999;
-
-            this.updatePoinDisplay();
-        },
-
-        // =========================================================
-        // CEK JENIS
-        // =========================================================
-
-        hasJenis(jenis) {
-            return this.jenis.includes(jenis);
         }
+
     };
 }

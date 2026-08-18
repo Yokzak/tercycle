@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Siswa;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\PenukaranBotol;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\Jurusan;
 
@@ -28,6 +30,21 @@ class AdminSiswaController extends Controller
             })
             ->latest()
             ->get();
+
+        
+        $penukaranHariIni = PenukaranBotol::where('status', 'disetujui')
+            ->whereDate('created_at', today())
+            ->count();
+
+        $penukaranKemarin = PenukaranBotol::where('status', 'disetujui')
+            ->whereDate('created_at', today()->subDay())
+            ->count();
+
+        if ($penukaranKemarin > 0) {
+            $persentasePenukaran = (($penukaranHariIni - $penukaranKemarin) / $penukaranKemarin) * 100;
+        } else {
+            $persentasePenukaran = $penukaranHariIni > 0 ? 100 : 0;
+        }
         
         $totalPoin = Siswa::sum('saldo_poin');
         $totalSiswa = Siswa::count();
@@ -50,7 +67,7 @@ class AdminSiswaController extends Controller
             );
         }
 
-        return view('admin.siswa', compact('siswas', 'totalSiswa', 'siswaBulanIni', 'jurusans', 'totalPoin'));
+        return view('admin.siswa', compact('siswas', 'totalSiswa', 'siswaBulanIni', 'jurusans', 'totalPoin', 'penukaranHariIni', 'penukaranKemarin', 'persentasePenukaran'));
     }
 
     public function store(Request $request)

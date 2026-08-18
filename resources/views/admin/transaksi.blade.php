@@ -765,82 +765,97 @@
             class="mt-6"
         >
 
-            {{-- =================================================
-                POIN
-            ================================================== --}}
+            {{-- POIN --}}
 
             <div>
-
                 <div class="flex items-center justify-between">
-
                     <label class="font-semibold">
                         Rentang Poin
                     </label>
 
                     <span class="text-xs text-gray-500">
-                        <span x-text="minPoinDisplay"></span>
+                        <span x-text="formatPoin(minPoin)"></span>
                         -
-                        <span x-text="maxPoinDisplay"></span>
+                        <span x-text="formatPoin(maxPoin)"></span>
                     </span>
+                </div>
+
+                {{-- INPUT ANGKA --}}
+                <div class="mt-4 flex gap-3">
+
+                    <div class="flex-1">
+                        <label class="mb-1 block text-xs text-gray-500">
+                            Minimum
+                        </label>
+
+                        <input
+                            type="number"
+                            name="min_poin"
+                            min="0"
+                            max="999999"
+                            step="1"
+                            x-model.number="minPoin"
+                            @input="updateMinPoinFromInput"
+                            class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-green-500 dark:border-white/10 dark:bg-gray-900"
+                        >
+                    </div>
+
+                    <div class="flex-1">
+                        <label class="mb-1 block text-xs text-gray-500">
+                            Maximum
+                        </label>
+
+                        <input
+                            type="number"
+                            name="max_poin"
+                            min="0"
+                            max="999999"
+                            step="1"
+                            x-model.number="maxPoin"
+                            @input="updateMaxPoinFromInput"
+                            class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-green-500 dark:border-white/10 dark:bg-gray-900"
+                        >
+                    </div>
 
                 </div>
 
+                {{-- DUAL SLIDER --}}
+                <div class="relative mt-6 h-6">
 
-                {{-- MIN --}}
+                    {{-- TRACK --}}
+                    <div
+                        class="absolute top-1/2 h-2 w-full -translate-y-1/2 rounded-full bg-gray-200 dark:bg-white/10"
+                    ></div>
 
-                <div class="mt-5">
+                    {{-- RANGE AKTIF --}}
+                    <div
+                        class="absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-green-500"
+                        :style="`
+                            left: ${(minPoin / 999999) * 100}%;
+                            right: ${100 - (maxPoin / 999999) * 100}%;
+                        `"
+                    ></div>
 
-                    <div class="mb-2 flex justify-between text-xs text-gray-500">
-
-                        <span>
-                            Minimum
-                        </span>
-
-                        <span>
-                            <span x-text="minPoinDisplay"></span>
-                        </span>
-
-                    </div>
-
+                    {{-- MIN --}}
                     <input
                         type="range"
-                        name="min_poin"
                         min="0"
-                        max="999999999"
+                        max="999999"
                         step="1"
                         x-model.number="minPoin"
                         @input="updateMinPoin"
-                        class="w-full accent-green-500"
+                        class="pointer-events-none absolute top-1/2 h-2 w-full -translate-y-1/2 appearance-none bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-green-500 [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-green-500"
                     >
 
-                </div>
-
-
-                {{-- MAX --}}
-
-                <div class="mt-5">
-
-                    <div class="mb-2 flex justify-between text-xs text-gray-500">
-
-                        <span>
-                            Maximum
-                        </span>
-
-                        <span>
-                            <span x-text="maxPoinDisplay"></span>
-                        </span>
-
-                    </div>
-
+                    {{-- MAX --}}
                     <input
                         type="range"
-                        name="max_poin"
                         min="0"
-                        max="999999999"
+                        max="999999"
                         step="1"
                         x-model.number="maxPoin"
                         @input="updateMaxPoin"
-                        class="w-full accent-green-500"
+                        class="pointer-events-none absolute top-1/2 h-2 w-full -translate-y-1/2 appearance-none bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-green-500 [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-green-500"
                     >
 
                 </div>
@@ -848,9 +863,7 @@
             </div>
 
 
-            {{-- =================================================
-                JENIS
-            ================================================== --}}
+            {{-- JENIS --}}
 
             <div class="mt-8">
 
@@ -1182,7 +1195,7 @@ DATA UNTUK ALPINE
 
         minPoin: {{ $minPoin ?? 0 }},
 
-        maxPoin: {{ $maxPoin ?? 999999999 }}
+        maxPoin: {{ $maxPoin ?? 999999 }}
     };
 
 </script>

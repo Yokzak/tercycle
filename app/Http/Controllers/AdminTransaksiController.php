@@ -22,7 +22,7 @@ class AdminTransaksiController extends Controller
 
         $maxPoin = (int) $request->input(
             'max_poin',
-            999999999
+            999999
         );
 
         $jenis = $request->input('jenis', []);

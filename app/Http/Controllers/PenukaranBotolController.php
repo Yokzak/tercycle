@@ -12,20 +12,35 @@ use Illuminate\Support\Facades\DB;
 class PenukaranBotolController extends Controller
 {
     /**
-     * Halaman penukaran admin
+     * Menampilkan halaman penukaran botol admin.
+     *
+     * Menampilkan:
+     * - Pengajuan online yang masih menunggu persetujuan
+     * - Riwayat seluruh penukaran
+     * - Kategori botol untuk penukaran offline
      */
     public function index(Request $request)
     {
-        // Pengajuan online yang masih menunggu persetujuan
+        // Ambil pengajuan online yang masih menunggu persetujuan admin.
+        // Admin dapat mencari berdasarkan nama atau kode siswa.
         $pengajuan = PenukaranBotol::with([
             'siswa',
             'detailPenukaran.kategoriBotol',
         ])
             ->where('status', 'menunggu')
-            ->latest('tanggal')
-            ->get();
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = $request->search;
 
-        // Riwayat penukaran
+                $query->whereHas('siswa', function ($q) use ($search) {
+                    $q->where('nama_lengkap', 'like', "%{$search}%")
+                        ->orWhere('kode_siswa', 'like', "%{$search}%");
+                });
+            })
+            ->latest('tanggal')
+            ->paginate(10)
+            ->withQueryString();
+
+        // Ambil seluruh riwayat penukaran botol.
         $riwayat = PenukaranBotol::with([
             'siswa',
             'admin',
@@ -34,7 +49,7 @@ class PenukaranBotolController extends Controller
             ->latest('tanggal')
             ->get();
 
-        // Jenis botol untuk input offline
+        // Ambil seluruh kategori botol untuk input penukaran offline.
         $kategoriBotol = KategoriBotol::orderBy('nama_kategori')->get();
 
         return view('admin.penukaran', compact(
@@ -45,7 +60,7 @@ class PenukaranBotolController extends Controller
     }
 
     /**
-     * Cari siswa untuk penukaran offline
+     * Mencari siswa untuk melakukan penukaran botol secara offline.
      */
     public function cariSiswa(Request $request)
     {
@@ -73,7 +88,7 @@ class PenukaranBotolController extends Controller
     }
 
     /**
-     * Form penukaran botol siswa
+     * Menampilkan halaman penukaran botol untuk siswa.
      */
     public function create()
     {
@@ -91,7 +106,10 @@ class PenukaranBotolController extends Controller
     }
 
     /**
-     * Siswa mengajukan penukaran secara online
+     * Menyimpan pengajuan penukaran botol dari siswa.
+     *
+     * Pengajuan dibuat dengan status "menunggu"
+     * dan belum menambahkan poin ke saldo siswa.
      */
     public function store(Request $request)
     {
@@ -158,7 +176,10 @@ class PenukaranBotolController extends Controller
     }
 
     /**
-     * Admin membuat penukaran secara offline
+     * Menyimpan penukaran botol yang dilakukan secara offline oleh admin.
+     *
+     * Penukaran offline langsung disetujui dan poin
+     * langsung ditambahkan ke saldo siswa.
      */
     public function storeOffline(Request $request)
     {
@@ -248,8 +269,14 @@ class PenukaranBotolController extends Controller
             );
     }
 
-    /**
-     * Admin menyetujui pengajuan online
+   /**
+     * Menyetujui pengajuan penukaran botol dari siswa.
+     *
+     * Setelah disetujui:
+     * - Status pengajuan menjadi "disetujui"
+     * - Admin dicatat sebagai pemroses
+     * - Poin ditambahkan ke saldo siswa
+     * - Transaksi poin dicatat ke riwayat
      */
     public function setujui(Request $request, PenukaranBotol $penukaran)
     {
@@ -291,7 +318,10 @@ class PenukaranBotolController extends Controller
     }
 
     /**
-     * Admin menolak pengajuan online
+     * Menolak pengajuan penukaran botol dari siswa.
+     *
+     * Pengajuan yang ditolak tidak menambahkan poin
+     * ke saldo siswa.
      */
     public function tolak(Request $request, PenukaranBotol $penukaran) 
     {

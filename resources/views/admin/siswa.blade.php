@@ -94,11 +94,11 @@
                 </p>
 
                 <p class="mt-2 text-3xl font-black">
-                    37
+                    {{ number_format($penukaranHariIni, 0, ',', '.') }}
                 </p>
 
                 <p class="mt-2 text-xs text-green-500">
-                    +8,4% dari kemarin
+                    {{ $persentasePenukaran >= 0 ? '+' : '' }}{{ number_format($persentasePenukaran, 1, ',', '.') }}% dari kemarin
                 </p>
 
             </div>
@@ -197,10 +197,6 @@
                                 Saldo Poin
                             </th>
 
-                            <th class="px-6 py-4">
-                                Botol Ditukar
-                            </th>
-
                             <th class="px-6 py-4 text-center">
                                 Aksi
                             </th>
@@ -234,14 +230,12 @@
                             <td class="px-6 py-5">
                                 <p class="font-bold text-green-500" x-text="Number(siswa.saldo_poin).toLocaleString('id-ID')"></p>
                                 <p class="mt-1 text-xs text-gray-500">poin</p>
-                            </td>
-
-                            <td class="px-6 py-5 font-semibold">0</td>
+                            </td>   
 
 
                             <td class="px-6 py-5 ">
 
-                                <div class="flex justify-end gap-2">
+                                <div class="flex justify-center items-center gap-2">
 
                                     <button
                                     type="button"

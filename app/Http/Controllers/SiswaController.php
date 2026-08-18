@@ -229,7 +229,7 @@ class SiswaController extends Controller
             'nis' => 'required|string|max:50',
             'no_telepon' => 'nullable|string|max:20',
             'kelas' => 'required|in:X,XI,XII',
-            'jurusan_id' => 'required|exists:jurusans,id',
+            'jurusan_id' => 'required|exists:jurusan,id',
         ]);
 
         $siswa->update($validated);
