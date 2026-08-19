@@ -17,6 +17,30 @@
         resultMessage: '',
         selectedForm: null,
         confirmMessage: '',
+        showDetail: false,
+        detail: {
+            id: null,
+            nama: '',
+            kodeSiswa: '',
+            poin: 0,
+            uang: 0,
+            metode: '',
+            provider: '',
+            penerima: '',
+            nomor: '',
+            status: '',
+            tanggal: '',
+            waktu: ''
+        },
+
+        openDetail(data) {
+            this.detail = data;
+            this.showDetail = true;
+        },
+
+        closeDetail() {
+            this.showDetail = false;
+        },
 
         openConfirm(form, message) {
             this.selectedForm = form;
@@ -49,25 +73,109 @@
     {{-- TABLE HEADER --}}
     <div class="border-b border-gray-200 p-6 dark:border-white/10">
 
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex flex-col gap-5">
 
-            <div>
-                <h3 class="font-bold">
-                    Pengajuan Pencairan
-                </h3>
+            {{-- JUDUL --}}
+            <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
 
-                <p class="mt-1 text-xs text-gray-500">
-                    Daftar pengajuan pencairan poin dari siswa.
+                <div>
+                    <h3 class="font-bold">
+                        Pengajuan Pencairan
+                    </h3>
+
+                    <p class="mt-1 text-xs text-gray-500">
+                        Daftar pengajuan pencairan poin dari siswa.
+                    </p>
+                </div>
+
+                <div class="text-sm text-gray-500">
+                    Total:
+                    <span class="font-bold text-gray-900 dark:text-white">
+                        {{ $pencairan->total() }}
+                    </span>
+                    pengajuan
+                </div>
+
+            </div>
+
+
+            {{-- SEARCH --}}
+            <form
+                method="GET"
+                action="{{ route('admin.pencairan-uang.indexAdmin') }}"
+                class="flex flex-col gap-2 sm:flex-row"
+            >
+
+                <div class="relative flex-1">
+
+                    {{-- ICON SEARCH --}}
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
+
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            class="h-5 w-5"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="m21 21-4.35-4.35m2.1-5.4a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"
+                            />
+                        </svg>
+
+                    </div>
+
+
+                    {{-- INPUT --}}
+                    <input
+                        type="text"
+                        name="search"
+                        value="{{ $search ?? '' }}"
+                        placeholder="Cari ID, nama siswa, kode siswa, penerima..."
+                        class="w-full rounded-xl border border-gray-300 bg-white py-3 pl-11 pr-4 text-sm outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-500/20 dark:border-white/10 dark:bg-white/5"
+                    >
+
+                </div>
+
+
+                {{-- BUTTON --}}
+                <button
+                    type="submit"
+                    class="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-gray-950 transition hover:bg-green-400"
+                >
+                    Cari
+                </button>
+
+
+                {{-- RESET --}}
+                @if(!empty($search))
+
+                    <a
+                        href="{{ route('admin.pencairan-uang.indexAdmin') }}"
+                        class="rounded-xl border border-gray-200 px-5 py-3 text-center text-sm font-semibold text-gray-600 transition hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+                    >
+                        Reset
+                    </a>
+
+                @endif
+
+            </form>
+
+
+            {{-- HASIL SEARCH --}}
+            @if(!empty($search))
+
+                <p class="text-xs text-gray-500">
+                    Menampilkan hasil pencarian untuk:
+                    <span class="font-semibold text-gray-900 dark:text-white">
+                        "{{ $search }}"
+                    </span>
                 </p>
-            </div>
 
-            <div class="text-sm text-gray-500">
-                Total:
-                <span class="font-bold text-gray-900 dark:text-white">
-                    {{ $pencairan->total() }}
-                </span>
-                pengajuan
-            </div>
+            @endif
 
         </div>
 
@@ -113,6 +221,10 @@
 
                     <th class="whitespace-nowrap px-6 py-4">
                         Pengajuan
+                    </th>
+
+                    <th class="whitespace-nowrap px-6 py-4 text-center">
+                        Detail
                     </th>
 
                     <th class="whitespace-nowrap px-6 py-4 text-right">
@@ -305,6 +417,32 @@
 
                         </td>
 
+                        {{-- DETAIL --}}
+                        <td class="px-6 py-5 text-center">
+
+                            <button
+                                type="button"
+                                @click="openDetail({
+                                    id: {{ $item->id }},
+                                    nama: @js($item->siswa->nama_lengkap ?? '-'),
+                                    kodeSiswa: @js($item->siswa->kode_siswa ?? '-'),
+                                    poin: {{ $item->jumlah_poin }},
+                                    uang: {{ $item->jumlah_uang }},
+                                    metode: @js($item->metode),
+                                    provider: @js($item->provider),
+                                    penerima: @js($item->nama_penerima),
+                                    nomor: @js($item->nomor_tujuan),
+                                    status: @js($item->status),
+                                    tanggal: @js($item->tanggal_pengajuan?->format('d M Y')),
+                                    waktu: @js($item->tanggal_pengajuan?->format('H:i'))
+                                })"
+                                class="rounded-lg border border-green-200 px-3 py-2 text-xs font-bold text-green-600 transition hover:bg-green-50 dark:border-green-500/20 dark:hover:bg-green-500/10"
+                            >
+                                Lihat Detail
+                            </button>
+
+                        </td>
+
 
                         {{-- AKSI --}}
                         <td class="px-6 py-5">
@@ -412,7 +550,7 @@
                     <tr>
 
                         <td
-                            colspan="9"
+                            colspan="10"
                             class="px-6 py-16 text-center"
                         >
 
@@ -471,6 +609,232 @@
 
     @endif
 
+</div>
+
+{{-- POPUP DETAIL --}}
+<div
+    x-show="showDetail"
+    x-cloak
+    x-transition.opacity
+    class="fixed inset-0 z-[90] flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm"
+>
+    <div
+        x-show="showDetail"
+        x-transition
+        @click.outside="closeDetail()"
+        class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
+    >
+
+        {{-- HEADER --}}
+        <div class="bg-gray-950 px-6 py-5 text-white dark:bg-white dark:text-gray-950">
+
+            <div class="flex items-center justify-between">
+
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                        Detail Pencairan
+                    </p>
+
+                    <h3 class="mt-1 text-xl font-black">
+                        Informasi Pengajuan
+                    </h3>
+                </div>
+
+                <button
+                    type="button"
+                    @click="closeDetail()"
+                    class="rounded-lg p-2 text-gray-400 transition hover:bg-white/10 hover:text-white dark:hover:bg-black/10 dark:hover:text-gray-950"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                        class="h-5 w-5"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M6 18 18 6M6 6l12 12"
+                        />
+                    </svg>
+                </button>
+
+            </div>
+
+        </div>
+
+
+        {{-- CONTENT --}}
+        <div class="p-6">
+
+            {{-- ID --}}
+            <div class="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4 text-center dark:border-white/10 dark:bg-white/5">
+
+                <p class="text-xs text-gray-500">
+                    ID Pencairan
+                </p>
+
+                <p
+                    class="mt-1 font-mono text-xl font-black tracking-wider"
+                    x-text="'PEN-' + String(detail.id).padStart(6, '0')"
+                ></p>
+
+            </div>
+
+
+            {{-- NOMINAL --}}
+            <div class="mt-5 rounded-xl bg-green-500/10 p-5 text-center">
+
+                <p class="text-xs text-gray-500">
+                    Jumlah Pencairan
+                </p>
+
+                <p
+                    class="mt-1 text-3xl font-black text-green-600"
+                    x-text="'Rp ' + new Intl.NumberFormat('id-ID').format(detail.uang)"
+                ></p>
+
+                <p
+                    class="mt-1 text-sm text-gray-500"
+                    x-text="new Intl.NumberFormat('id-ID').format(detail.poin) + ' poin'"
+                ></p>
+
+            </div>
+
+
+            {{-- DETAIL --}}
+            <div class="mt-6 space-y-3">
+
+                <div class="flex justify-between gap-4">
+                    <span class="text-sm text-gray-500">
+                        Nama Siswa
+                    </span>
+
+                    <span
+                        class="text-right text-sm font-semibold"
+                        x-text="detail.nama"
+                    ></span>
+                </div>
+
+
+                <div class="flex justify-between gap-4">
+                    <span class="text-sm text-gray-500">
+                        Kode Siswa
+                    </span>
+
+                    <span
+                        class="font-mono text-sm font-semibold"
+                        x-text="detail.kodeSiswa"
+                    ></span>
+                </div>
+
+
+                <div class="flex justify-between gap-4">
+                    <span class="text-sm text-gray-500">
+                        Metode
+                    </span>
+
+                    <span
+                        class="text-right text-sm font-semibold"
+                        x-text="detail.metode === 'e-wallet' ? 'E-Wallet' : detail.metode === 'cash' ? 'Cash' : detail.metode"
+                    ></span>
+                </div>
+
+
+                <template x-if="detail.provider">
+
+                    <div class="flex justify-between gap-4">
+
+                        <span class="text-sm text-gray-500">
+                            Provider
+                        </span>
+
+                        <span
+                            class="text-right text-sm font-semibold"
+                            x-text="detail.provider.toUpperCase()"
+                        ></span>
+
+                    </div>
+
+                </template>
+
+
+                <div class="flex justify-between gap-4">
+
+                    <span class="text-sm text-gray-500">
+                        Penerima
+                    </span>
+
+                    <span
+                        class="text-right text-sm font-semibold"
+                        x-text="detail.penerima"
+                    ></span>
+
+                </div>
+
+
+                <template x-if="detail.nomor">
+
+                    <div class="flex justify-between gap-4">
+
+                        <span class="text-sm text-gray-500">
+                            Nomor Tujuan
+                        </span>
+
+                        <span
+                            class="font-mono text-sm font-semibold"
+                            x-text="detail.nomor"
+                        ></span>
+
+                    </div>
+
+                </template>
+
+
+                <div class="flex justify-between gap-4">
+
+                    <span class="text-sm text-gray-500">
+                        Status
+                    </span>
+
+                    <span
+                        class="rounded-full bg-gray-500/10 px-3 py-1 text-xs font-semibold"
+                        x-text="detail.status.charAt(0).toUpperCase() + detail.status.slice(1)"
+                    ></span>
+
+                </div>
+
+
+                <div class="flex justify-between gap-4">
+
+                    <span class="text-sm text-gray-500">
+                        Pengajuan
+                    </span>
+
+                    <span
+                        class="text-right text-sm font-semibold"
+                        x-text="detail.tanggal + ' ' + detail.waktu"
+                    ></span>
+
+                </div>
+
+            </div>
+
+
+            {{-- CLOSE --}}
+            <button
+                type="button"
+                @click="closeDetail()"
+                class="mt-6 w-full rounded-xl bg-gray-950 px-4 py-3 text-sm font-bold text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200"
+            >
+                Tutup
+            </button>
+
+        </div>
+
+    </div>
 </div>
 
 {{-- MODAL KONFIRMASI --}}

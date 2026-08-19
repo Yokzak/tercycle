@@ -2,6 +2,10 @@
 
 @section('title', 'Pencairan Uang')
 
+@section('topbar-subtitle', 'Menu')
+
+@section('topbar-title', 'Pencairan Uang')
+
 @section('content')
 
 <div
@@ -486,7 +490,11 @@
                         Status
                     </th>
 
-                    <th class="px-6 py-4">
+                    <th class="px-6 py-4 text-center">
+                        Detail
+                    </th>
+
+                    <th class="px-6 py-4 text-center">
                         Aksi
                     </th>
 
@@ -600,7 +608,45 @@
                         </td>
 
 
-                        <td class="px-6 py-5">
+                        {{-- DETAIL --}}
+                        <td class="px-6 py-5 text-center">
+
+                            @if(in_array($item->status, ['diproses', 'disetujui', 'selesai']))
+
+                                <button
+                                    type="button"
+                                    @click="openBukti({
+                                        id: {{ $item->id }},
+                                        nama: @js($item->siswa->nama_lengkap ?? Auth::user()->name),
+                                        kodeSiswa: @js($item->siswa->kode_siswa ?? '-'),
+                                        poin: {{ $item->jumlah_poin }},
+                                        uang: {{ $item->jumlah_uang }},
+                                        metode: @js($item->metode),
+                                        provider: @js($item->provider),
+                                        penerima: @js($item->nama_penerima),
+                                        nomor: @js($item->nomor_tujuan),
+                                        status: @js($item->status),
+                                        tanggal: @js($item->tanggal_pengajuan?->format('d M Y')),
+                                        waktu: @js($item->tanggal_pengajuan?->format('H:i'))
+                                    })"
+                                    class="rounded-lg border border-green-200 px-3 py-2 text-xs font-bold text-green-600 transition hover:bg-green-50 dark:border-green-500/20 dark:hover:bg-green-500/10"
+                                >
+                                    Lihat Bukti
+                                </button>
+
+                            @else
+
+                                <span class="text-xs text-gray-400">
+                                    -
+                                </span>
+
+                            @endif
+
+                        </td>
+
+
+                        {{-- AKSI --}}
+                        <td class="px-6 py-5 text-center">
 
                             @if($item->status === 'disetujui')
 
@@ -614,7 +660,7 @@
 
                                     <button
                                         type="submit"
-                                        class="rounded-lg bg-green-500 px-3 py-2 text-xs font-bold text-gray-950 hover:bg-green-400"
+                                        class="rounded-lg bg-green-500 px-3 py-2 text-xs font-bold text-gray-950 transition hover:bg-green-400"
                                     >
                                         Sudah Diterima
                                     </button>
@@ -634,9 +680,11 @@
                                 </span>
 
                                 @if($item->catatan)
+
                                     <p class="mt-1 max-w-xs text-xs text-gray-500">
                                         {{ $item->catatan }}
                                     </p>
+
                                 @endif
 
                             @else
@@ -656,7 +704,7 @@
                     <tr>
 
                         <td
-                            colspan="6"
+                            colspan="7"
                             class="px-6 py-10 text-center text-sm text-gray-500"
                         >
                             Belum ada riwayat pencairan.
@@ -674,6 +722,268 @@
 
 </div>
 
+{{-- POPUP BUKTI PENCAIRAN --}}
+<div
+    x-show="showBukti"
+    x-cloak
+    x-transition.opacity
+    class="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm"
+>
+    <div
+        x-show="showBukti"
+        x-transition
+        @click.outside="closeBukti()"
+        class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
+    >
+
+        {{-- HEADER --}}
+        <div class="bg-gray-950 px-6 py-5 text-white dark:bg-white dark:text-gray-950">
+
+            <div class="flex items-center justify-between">
+
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                        Bukti Pencairan
+                    </p>
+
+                    <h3 class="mt-1 text-xl font-black">
+                        Pencairan Poin
+                    </h3>
+                </div>
+
+                <button
+                    type="button"
+                    @click="closeBukti()"
+                    class="rounded-lg p-2 text-gray-400 transition hover:bg-white/10 hover:text-white dark:hover:bg-black/10 dark:hover:text-gray-950"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                        class="h-5 w-5"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M6 18 18 6M6 6l12 12"
+                        />
+                    </svg>
+                </button>
+
+            </div>
+
+        </div>
+
+
+        {{-- CONTENT --}}
+        <div class="p-6">
+
+            {{-- ID TRANSAKSI --}}
+            <div class="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4 text-center dark:border-white/10 dark:bg-white/5">
+
+                <p class="text-xs text-gray-500">
+                    ID Pencairan
+                </p>
+
+                <p
+                    class="mt-1 font-mono text-xl font-black tracking-wider"
+                    x-text="'PEN-' + String(bukti.id).padStart(6, '0')"
+                ></p>
+
+            </div>
+
+
+            {{-- STATUS --}}
+            <div class="mt-5 text-center">
+
+                <span
+                    class="inline-flex rounded-full px-3 py-1 text-xs font-bold"
+                    :class="{
+                        'bg-blue-500/10 text-blue-600': bukti.status === 'diproses',
+                        'bg-green-500/10 text-green-600': ['disetujui', 'selesai'].includes(bukti.status)
+                    }"
+                    x-text="formatStatus(bukti.status)"
+                ></span>
+
+            </div>
+
+
+            {{-- JUMLAH --}}
+            <div class="mt-6 rounded-xl bg-green-500/10 p-5 text-center">
+
+                <p class="text-xs font-medium text-gray-500">
+                    Jumlah Pencairan
+                </p>
+
+                <p
+                    class="mt-1 text-3xl font-black text-green-600"
+                    x-text="'Rp ' + formatRupiah(bukti.uang)"
+                ></p>
+
+                <p
+                    class="mt-1 text-sm text-gray-500"
+                    x-text="formatPoin(bukti.poin) + ' poin'"
+                ></p>
+
+            </div>
+
+
+            {{-- DETAIL --}}
+            <div class="mt-6 space-y-3">
+
+                <div class="flex justify-between gap-4">
+
+                    <span class="text-sm text-gray-500">
+                        Nama
+                    </span>
+
+                    <span
+                        class="text-right text-sm font-semibold"
+                        x-text="bukti.nama"
+                    ></span>
+
+                </div>
+
+
+                <div class="flex justify-between gap-4">
+
+                    <span class="text-sm text-gray-500">
+                        Kode Siswa
+                    </span>
+
+                    <span
+                        class="font-mono text-sm font-semibold"
+                        x-text="bukti.kodeSiswa"
+                    ></span>
+
+                </div>
+
+
+                <div class="flex justify-between gap-4">
+
+                    <span class="text-sm text-gray-500">
+                        Metode
+                    </span>
+
+                    <span
+                        class="text-right text-sm font-semibold"
+                        x-text="formatMetode(bukti.metode)"
+                    ></span>
+
+                </div>
+
+
+                <template x-if="bukti.provider">
+
+                    <div class="flex justify-between gap-4">
+
+                        <span class="text-sm text-gray-500">
+                            Provider
+                        </span>
+
+                        <span
+                            class="text-right text-sm font-semibold"
+                            x-text="bukti.provider.toUpperCase()"
+                        ></span>
+
+                    </div>
+
+                </template>
+
+
+                <div class="flex justify-between gap-4">
+
+                    <span class="text-sm text-gray-500">
+                        Penerima
+                    </span>
+
+                    <span
+                        class="text-right text-sm font-semibold"
+                        x-text="bukti.penerima"
+                    ></span>
+
+                </div>
+
+
+                <template x-if="bukti.nomor">
+
+                    <div class="flex justify-between gap-4">
+
+                        <span class="text-sm text-gray-500">
+                            Nomor Tujuan
+                        </span>
+
+                        <span
+                            class="font-mono text-sm font-semibold"
+                            x-text="bukti.nomor"
+                        ></span>
+
+                    </div>
+
+                </template>
+
+
+                <div class="flex justify-between gap-4">
+
+                    <span class="text-sm text-gray-500">
+                        Tanggal
+                    </span>
+
+                    <span
+                        class="text-right text-sm font-semibold"
+                        x-text="bukti.tanggal + ' ' + bukti.waktu"
+                    ></span>
+
+                </div>
+
+            </div>
+
+
+            {{-- INFO --}}
+            <div class="mt-6 rounded-xl border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-500/20 dark:bg-yellow-500/10">
+
+                <div class="flex gap-3">
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.8"
+                        stroke="currentColor"
+                        class="h-5 w-5 shrink-0 text-yellow-600"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M12 9v3.75m0 3.75h.008M10.29 3.86l-7.1 12.28A1.5 1.5 0 0 0 4.49 18.4h15.02a1.5 1.5 0 0 0 1.3-2.26L13.71 3.86a1.98 1.98 0 0 0-3.42 0Z"
+                        />
+                    </svg>
+
+                    <p class="text-xs leading-relaxed text-yellow-700 dark:text-yellow-400">
+                        Tunjukkan bukti ini kepada kasir untuk membantu proses pencairan.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            {{-- CLOSE --}}
+            <button
+                type="button"
+                @click="closeBukti()"
+                class="mt-6 w-full rounded-xl bg-gray-950 px-4 py-3 text-sm font-bold text-white transition hover:bg-gray-800 dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200"
+            >
+                Tutup
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
 </div>
 
 <script>
@@ -685,7 +995,25 @@ function pencairanApp(config) {
         saldo: Number(config.saldo || 0),
         jumlahPoin: Number(config.oldJumlah || 100),
         jumlahUang: 10000,
-        submitting:false,
+        submitting: false,
+
+        showBukti: false,
+
+        bukti: {
+            id: null,
+            nama: '',
+            kodeSiswa: '',
+            poin: 0,
+            uang: 0,
+            metode: '',
+            provider: '',
+            penerima: '',
+            nomor: '',
+            status: '',
+            tanggal: '',
+            waktu: ''
+        },
+
         metode: '',
         provider: '',
         quickAmounts: [100, 500, 1000, 5000],
@@ -693,6 +1021,50 @@ function pencairanApp(config) {
         init() {
 
             this.calculate();
+
+        },
+
+        openBukti(data) {
+
+            this.bukti = data;
+
+            this.showBukti = true;
+
+            document.body.classList.add('overflow-hidden');
+
+        },
+
+        closeBukti() {
+
+            this.showBukti = false;
+
+            document.body.classList.remove('overflow-hidden');
+
+        },
+
+        formatStatus(status) {
+
+            const labels = {
+                diproses: 'Sedang Diproses',
+                disetujui: 'Disetujui',
+                selesai: 'Selesai'
+            };
+
+            return labels[status] || status;
+
+        },
+
+        formatMetode(metode) {
+
+            if (metode === 'e-wallet') {
+                return 'E-Wallet';
+            }
+
+            if (metode === 'cash') {
+                return 'Cash';
+            }
+
+            return metode;
 
         },
 
@@ -771,7 +1143,7 @@ function pencairanApp(config) {
             }
 
             if (
-                (this.metode === 'e-wallet' || this.metode === 'bank')
+                this.metode === 'e-wallet'
                 && this.provider === ''
             ) {
 

@@ -2,7 +2,7 @@
 
 @section('title', 'Pesanan')
 
-@section('topbar-subtitle', 'Marketplace')
+@section('topbar-subtitle', 'Menu')
 
 @section('topbar-title', 'Pesanan Saya')
 

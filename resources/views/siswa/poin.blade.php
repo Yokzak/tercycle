@@ -2,7 +2,7 @@
 
 @section('title', 'Riwayat Poin')
 
-@section('topbar-subtitle', 'Keuangan Poin')
+@section('topbar-subtitle', 'Menu')
 
 @section('topbar-title', 'Riwayat Poin')
 

@@ -1,6 +1,6 @@
 @extends('layouts.siswa.app')
 @section('title', 'Produk Saya')
-@section('topbar-subtitle', 'Marketplace')
+@section('topbar-subtitle', 'Menu')
 @section('topbar-title', 'Produk Saya')
 @section('content')
 

@@ -29,13 +29,47 @@ class PencairanPoinController extends Controller
         );
     }
 
-    public function indexAdmin()
+    public function indexAdmin(Request $request)
     {
-        $pencairan = PencairanPoin::with('siswa')
-            ->latest('tanggal_pengajuan')
-            ->paginate(10);
+        $search = $request->input('search');
 
-        return view('admin.pencairan-uang', compact('pencairan'));
+        $pencairan = PencairanPoin::with('siswa')
+            ->when($search, function ($query) use ($search) {
+
+                $query->where(function ($q) use ($search) {
+
+                    // Cari berdasarkan ID pencairan
+                    $q->where('id', 'like', "%{$search}%")
+
+                        // Nama penerima
+                        ->orWhere('nama_penerima', 'like', "%{$search}%")
+
+                        // Nomor tujuan
+                        ->orWhere('nomor_tujuan', 'like', "%{$search}%")
+
+                        // Provider
+                        ->orWhere('provider', 'like', "%{$search}%")
+
+                        // Status
+                        ->orWhere('status', 'like', "%{$search}%")
+
+                        // Cari berdasarkan data siswa
+                        ->orWhereHas('siswa', function ($siswa) use ($search) {
+                            $siswa->where('nama_lengkap', 'like', "%{$search}%")
+                                ->orWhere('kode_siswa', 'like', "%{$search}%");
+                        });
+
+                });
+
+            })
+            ->latest('tanggal_pengajuan')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('admin.pencairan-uang', compact(
+            'pencairan',
+            'search'
+        ));
     }
 
 

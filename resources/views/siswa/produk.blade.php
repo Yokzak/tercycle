@@ -2,7 +2,7 @@
 
 @section('title', 'Produk - Tercycle')
 
-@section('topbar-subtitle', 'Marketplace')
+@section('topbar-subtitle', 'Menu')
 
 @section('topbar-title', 'Produk Tercycle')
 

@@ -2,7 +2,7 @@
 
 @section('title', 'Setor Botol')
 
-@section('topbar-subtitle', 'Marketplace')
+@section('topbar-subtitle', 'Menu')
 
 @section('topbar-title', 'Tukar Botol')
 
